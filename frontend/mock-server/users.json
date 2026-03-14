@@ -1,0 +1,14 @@
+[
+  {
+    "id": "user-1",
+    "email": "demo@ai-career-helper.com",
+    "password": "Admin1234",
+    "applicationId": "3326168f-5238-405b-aad3-eb8b1f9872bd"
+  },
+  {
+    "id": "6bb8c787-0ab0-4795-ae32-fb3023173715",
+    "email": "new-mail@mail.com",
+    "password": "Admin1234",
+    "applicationId": "3326168f-5238-405b-aad3-eb8b1f9872bd"
+  }
+]

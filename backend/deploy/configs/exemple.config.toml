@@ -1,0 +1,17 @@
+[api]
+host = 'localhost'
+port = 8000
+project_name = 'base'
+cors = ["http://localhost:5173"]
+
+[database]
+host='database'
+port=5432
+username='postgres'
+password='postgres'
+database='postgres'
+
+[gigachat]
+client_id="019b12fa-ff03-708b-839a-e560fd465e41"
+scope="GIGACHAT_API_PERS"
+authorization_key="MDE5YjEyZmEtZmYwMy03MDhiLTgzOWEtZTU2MGZkNDY1ZTQxOjNjYjExMDUzLTM3MmYtNGVjMi1iYmNlLWFmZTUzMDRlN2I1Nw=="
