@@ -7,10 +7,19 @@ export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   resolve: {
     alias: {
-      "~": path.resolve(__dirname, "app"), // теперь ~ резолвит в frontend/app
+      "~": path.resolve(__dirname, "app"), // ~ резолвит в frontend/app
     },
   },
   server: {
     port: 5173,
+    // fallback для всех маршрутов React Router
+    fs: {
+      strict: false, // позволяет обращаться к файлам вне root, безопасно для dev
+    },
+  },
+  build: {
+    rollupOptions: {
+      input: path.resolve(__dirname, "index.html"), // чтобы build понимал точку входа
+    },
   },
 });
