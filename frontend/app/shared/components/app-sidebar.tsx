@@ -1,5 +1,5 @@
 import { BookOpen, MessageCircle } from "lucide-react"
-import { Link, useLocation } from "react-router"
+import { Link, useLocation } from "react-router-dom"
 
 import { useUser } from "~/modules/user/lib/use-user"
 import { Button } from "~/shared/components/ui/button"

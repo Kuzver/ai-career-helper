@@ -5,7 +5,7 @@ import {
   useLoaderData,
   useNavigation,
   useSearchParams,
-} from "react-router"
+} from "react-router-dom"
 
 import type { Route } from "./+types/chat"
 import { createChat, getChatById, getChats } from "~/modules/chat/api/chats"

@@ -1,4 +1,4 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router-dom";
 import "./app.css";
 import { UserContextProvider } from "./modules/user/ui/user-context";
 

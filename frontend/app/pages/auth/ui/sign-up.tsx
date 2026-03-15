@@ -1,6 +1,6 @@
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Link, useFetcher, useNavigate } from "react-router"
+import { Link, useFetcher, useNavigate } from "react-router-dom"
 import type { Route } from "../ui/+types/sign-up"
 import {
   Field,

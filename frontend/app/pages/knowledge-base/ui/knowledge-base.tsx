@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from "react-router"
+import { Link, useLoaderData } from "react-router-dom"
 
 import type { Route } from "./+types/knowledge-base"
 import { getKnowledgeBaseCards } from "~/modules/knowledge-base/api/get-cards"
