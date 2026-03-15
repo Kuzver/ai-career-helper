@@ -15,5 +15,4 @@ def setup_core_router() -> APIRouter:
     router.include_router(prefix='/user_careers', router=USER_CAREER_ROUTER, tags=["User Careers"])
     router.include_router(prefix='/messages', router=MESSAGE_ROUTER, tags=["Messages"])
     router.include_router(prefix='/chats', router=CHAT_ROUTER, tags=["Chats"])
-    router.include_router(CHAT_ROUTER)
     return router
