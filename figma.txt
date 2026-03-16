@@ -1,0 +1,540 @@
+<div style="width: 100%; height: 100%; background: white; overflow: hidden; justify-content: flex-start; align-items: flex-start; display: inline-flex">
+    <div data-property-1="ИИ-Ассистент" style="width: 300px; align-self: stretch; padding: 40px; background: white; flex-direction: column; justify-content: space-between; align-items: center; display: inline-flex">
+        <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: center; gap: 75px; display: flex">
+            <div style="justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                <div style="width: 42px; height: 42px; background: #3649F9; border-radius: 9999px"></div>
+                <div style="color: black; font-size: 18px; font-family: Poppins; font-weight: 600; line-height: 21.60px; word-wrap: break-word">ИИ-ассистент</div>
+            </div>
+            <div style="align-self: stretch; flex-direction: column; justify-content: center; align-items: flex-start; gap: 40px; display: flex">
+                <div style="align-self: stretch; padding-left: 10px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 40px; display: flex">
+                    <div style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                        <div style="width: 20px; height: 20px; position: relative">
+                            <div style="width: 4.67px; height: 14.72px; left: 2px; top: 2.16px; position: absolute; background: #C5CBD3"></div>
+                            <div style="width: 4px; height: 15.49px; left: 8px; top: 2.25px; position: absolute; background: #C5CBD3"></div>
+                            <div style="width: 4.67px; height: 14.72px; left: 13.33px; top: 3.11px; position: absolute; background: #C5CBD3"></div>
+                            <div style="width: 8px; height: 8px; left: 6px; top: 6px; position: absolute"></div>
+                        </div>
+                        <div style="flex: 1 1 0; color: #C5CBD3; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Дорожная карта</div>
+                    </div>
+                </div>
+                <div style="align-self: stretch; min-height: 49px; padding: 10px; background: #3649F9; border-radius: 10px; flex-direction: column; justify-content: center; align-items: flex-start; display: flex">
+                    <div style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                        <div style="width: 20px; height: 20px; position: relative">
+                            <div style="width: 16px; height: 13.60px; left: 2px; top: 3.20px; position: absolute; background: white"></div>
+                            <div style="width: 8px; height: 8px; left: 6px; top: 6px; position: absolute"></div>
+                        </div>
+                        <div style="flex: 1 1 0; color: white; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">ИИ-ассистент</div>
+                    </div>
+                </div>
+                <div style="align-self: stretch; padding-left: 10px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 40px; display: flex">
+                    <div style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                        <div style="width: 20px; height: 20px; position: relative">
+                            <div style="width: 7.58px; height: 7.58px; left: 3.83px; top: 2.02px; position: absolute; background: #C5CBD3"></div>
+                            <div style="width: 11.24px; height: 7.38px; left: 2px; top: 10.60px; position: absolute; background: #C5CBD3"></div>
+                            <div style="width: 4.70px; height: 5.73px; left: 11.70px; top: 3.66px; position: absolute; background: #C5CBD3"></div>
+                            <div style="width: 6.40px; height: 5.79px; left: 11.60px; top: 10.40px; position: absolute; background: #C5CBD3"></div>
+                            <div style="width: 8px; height: 8px; left: 6px; top: 6px; position: absolute"></div>
+                        </div>
+                        <div style="flex: 1 1 0; color: #C5CBD3; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Мой профиль</div>
+                    </div>
+                    <div style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                        <div style="width: 20px; height: 20px; position: relative">
+                            <div style="width: 16px; height: 16px; left: 2px; top: 2px; position: absolute; outline: 2.40px #C5CBD3 solid; outline-offset: -1.20px"></div>
+                            <div style="width: 20px; height: 20px; left: 0px; top: 0px; position: absolute"></div>
+                        </div>
+                        <div style="flex: 1 1 0; color: #C5CBD3; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">База знаний</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="opacity: 0.40; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+            <div style="width: 20px; height: 20px; position: relative">
+                <div style="width: 10.40px; height: 16.01px; left: 7.60px; top: 1.99px; position: absolute; background: #FF383C"></div>
+                <div style="width: 5.60px; height: 6.56px; left: 2px; top: 6.72px; position: absolute; background: #FF383C"></div>
+                <div style="width: 8px; height: 8px; left: 6px; top: 6px; position: absolute"></div>
+            </div>
+            <div style="color: #FF383C; font-size: 18px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Выйти</div>
+        </div>
+    </div>
+    <div style="flex: 1 1 0; align-self: stretch; padding-top: 40px; padding-bottom: 40px; overflow: hidden; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+        <div data-property-1="Default" style="align-self: stretch; padding-left: 40px; padding-right: 40px; justify-content: space-between; align-items: center; display: inline-flex">
+            <div style="justify-content: flex-start; align-items: center; gap: 40px; display: flex">
+                <div style="width: 460px; align-self: stretch; background: white; border-radius: 100px; justify-content: flex-start; align-items: center; gap: 15px; display: flex">
+                    <div style="width: 24px; height: 24px; position: relative">
+                        <div style="width: 19px; height: 19px; left: 2px; top: 2px; position: absolute; outline: 1.50px #ADA7A7 solid; outline-offset: -0.75px"></div>
+                        <div style="width: 2px; height: 2px; left: 20px; top: 20px; position: absolute; outline: 1.50px #ADA7A7 solid; outline-offset: -0.75px"></div>
+                        <div style="width: 24px; height: 24px; left: 0px; top: 0px; position: absolute; opacity: 0"></div>
+                    </div>
+                    <div style="color: #ADA7A7; font-size: 16px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Поиск</div>
+                </div>
+            </div>
+            <div style="justify-content: flex-end; align-items: center; gap: 40px; display: flex">
+                <div style="width: 60px; height: 52px; background: white; border-radius: 10px; justify-content: center; align-items: center; display: flex">
+                    <div style="width: 30px; height: 30px; position: relative">
+                        <div style="width: 21.21px; height: 20.97px; left: 4.40px; top: 3px; position: absolute; outline: 2.10px #C5CBD3 solid; outline-offset: -1.05px"></div>
+                        <div style="width: 7.93px; height: 3.97px; left: 11.03px; top: 23.03px; position: absolute; outline: 2.10px #C5CBD3 solid; outline-offset: -1.05px"></div>
+                        <div style="width: 30px; height: 30px; left: 0px; top: 0px; position: absolute"></div>
+                    </div>
+                </div>
+                <div style="width: 60px; align-self: stretch; justify-content: center; align-items: center; display: flex">
+                    <div style="width: 52px; height: 52px; background: #D9D9D9; border-radius: 10px"></div>
+                </div>
+            </div>
+        </div>
+        <div style="align-self: stretch; flex: 1 1 0; padding-left: 40px; padding-right: 40px; padding-top: 10px; padding-bottom: 10px; overflow: hidden; flex-direction: column; justify-content: flex-end; align-items: flex-end; gap: 10px; display: flex">
+            <div style="overflow: hidden; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 28px; display: flex">
+                <div style="width: 965.44px; flex-direction: column; justify-content: flex-start; align-items: flex-end; gap: 27.07px; display: flex">
+                    <div style="width: 380.09px; padding-left: 12.41px; padding-right: 12.41px; padding-top: 6.77px; padding-bottom: 6.77px; background: #EEF2FF; border-radius: 112.79px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 11.28px; display: flex">
+                        <div style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 16.92px; display: inline-flex">
+                            <div style="width: 39.47px; height: 39.47px; padding-left: 16.92px; padding-right: 16.92px; padding-top: 15.79px; padding-bottom: 15.79px; background: #0157FF; overflow: hidden; border-radius: 112.79px; flex-direction: column; justify-content: center; align-items: center; gap: 11.28px; display: inline-flex">
+                                <div style="width: 18.05px; height: 31.58px; text-align: center; justify-content: center; display: flex; flex-direction: column; color: white; font-size: 22.56px; font-family: Gilroy; font-weight: 700; word-wrap: break-word">J</div>
+                            </div>
+                            <div style="width: 298.88px; color: black; font-size: 18.05px; font-family: Roboto; font-weight: 400; letter-spacing: 0.72px; word-wrap: break-word">топ лучших сред для программной разработки</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 988px; height: 150.74px; position: relative; background: #EEF2FF; border-radius: 11.51px">
+                    <div style="width: 911.36px; left: 23.01px; top: 11.51px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 17.26px; display: inline-flex">
+                        <div style="width: 211.73px; height: 40.27px; position: relative">
+                            <div style="left: 0px; top: 0px; position: absolute; justify-content: flex-start; align-items: center; gap: 11.51px; display: inline-flex">
+                                <img style="width: 40.27px; height: 40.27px" src="https://placehold.co/40x40" />
+                                <div style="width: 136.93px; height: 23.01px; text-align: center; color: black; font-size: 18.41px; font-family: Gilroy; font-weight: 700; word-wrap: break-word">ChatBuddy  AI</div>
+                            </div>
+                        </div>
+                        <div style="align-self: stretch; height: 70.19px; color: black; font-size: 18.41px; font-family: Roboto; font-weight: 400; line-height: 28.77px; letter-spacing: 0.74px; word-wrap: break-word">Лучшие программы для программирования включают редакторы кода (Visual Studio Code, Sublime Text, Atom) и интегрированные среды (IDE) (Android Studio для Android, Xcode для Apple).</div>
+                    </div>
+                </div>
+                <div style="width: 966.59px; padding-left: 18.41px; padding-right: 18.41px; padding-top: 14.96px; padding-bottom: 14.96px; background: #EEF2FF; border-radius: 11.51px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 11.51px; display: flex">
+                    <div style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 107.02px; display: inline-flex">
+                        <div style="width: 680.06px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 8.05px; display: inline-flex">
+                            <div style="align-self: stretch; height: 27.62px; color: black; font-size: 18.41px; font-family: Roboto; font-weight: 500; line-height: 28.77px; letter-spacing: 0.74px; word-wrap: break-word">Редакторы кода</div>
+                            <div style="align-self: stretch; height: 85.15px"><span style="color: black; font-size: 18.41px; font-family: Roboto; font-weight: 400; text-decoration: underline; line-height: 28.77px; letter-spacing: 0.74px; word-wrap: break-word">Visual Studio Code</span><span style="color: black; font-size: 18.41px; font-family: Roboto; font-weight: 400; line-height: 28.77px; letter-spacing: 0.74px; word-wrap: break-word">: Популярный бесплатный редактор с множеством функций, включая встроенный терминал и отладчик. </span></div>
+                        </div>
+                        <img style="width: 142.92px; height: 95.35px; border-radius: 11.51px" src="https://placehold.co/143x95" />
+                    </div>
+                </div>
+                <div style="width: 966.59px; padding-left: 18.41px; padding-right: 18.41px; padding-top: 14.96px; padding-bottom: 14.96px; background: #EEF2FF; border-radius: 11.51px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 11.51px; display: flex">
+                    <div style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 107.02px; display: inline-flex">
+                        <div style="width: 680.06px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 8.05px; display: inline-flex">
+                            <div style="align-self: stretch; height: 27.62px; color: black; font-size: 18.41px; font-family: Roboto; font-weight: 500; line-height: 28.77px; letter-spacing: 0.74px; word-wrap: break-word">Интегрированные среды разработки (IDE)</div>
+                            <div style="align-self: stretch; height: 85.15px"><span style="color: black; font-size: 18.41px; font-family: Roboto; font-weight: 400; text-decoration: underline; line-height: 28.77px; letter-spacing: 0.74px; word-wrap: break-word">Android Studio</span><span style="color: black; font-size: 18.41px; font-family: Roboto; font-weight: 400; line-height: 28.77px; letter-spacing: 0.74px; word-wrap: break-word">: Официальная IDE от Google для создания приложений под Android с инструментами для отладки, тестирования и визуального редактирования. </span></div>
+                        </div>
+                        <img style="width: 142.92px; height: 95.35px; border-radius: 11.51px" src="https://placehold.co/143x95" />
+                    </div>
+                </div>
+            </div>
+            <div style="align-self: stretch; padding-left: 28px; padding-right: 28px; padding-top: 15px; padding-bottom: 15px; box-shadow: 0px 4.511415481567383px 4.511415481567383px rgba(1, 87, 255, 0.20); overflow: hidden; border-radius: 11.28px; outline: 1.13px #0157FF solid; outline-offset: -1.13px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 88px; display: flex">
+                <div style="color: #475569; font-size: 19.17px; font-family: Poppins; font-weight: 400; line-height: 24.81px; word-wrap: break-word">Спроси меня о чём угодно...</div>
+                <div style="align-self: stretch; justify-content: space-between; align-items: center; display: inline-flex">
+                    <div style="justify-content: center; align-items: center; gap: 22.56px; display: flex">
+                        <div style="width: 24.81px; height: 22.56px; background: #0157FF"></div>
+                        <div style="justify-content: center; align-items: center; gap: 11.28px; display: flex">
+                            <div style="width: 22.56px; height: 22.56px; position: relative; overflow: hidden">
+                                <div style="width: 19.09px; height: 19.09px; left: 1.88px; top: 1.88px; position: absolute; background: #0157FF"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="justify-content: flex-start; align-items: flex-start; gap: 4.51px; display: flex">
+                        <div data-color="Gray" data-hierarchy="No Fill" data-size="md" data-state="Default" style="width: 45.11px; height: 45.11px; padding: 18.05px; overflow: hidden; border-radius: 138.73px; justify-content: center; align-items: center; gap: 11.28px; display: flex">
+                            <div data-format="Outline" data-weight="Bold" style="width: 27.07px; height: 27.07px; position: relative">
+                                <div style="width: 19.46px; height: 25.38px; left: 3.81px; top: 1.27px; position: absolute; background: #94A3B8; border: 0.11px #94A3B8 solid"></div>
+                            </div>
+                        </div>
+                        <div data-color="Brand" data-hierarchy="Primary" data-size="md" data-state="Default" style="width: 45.11px; height: 45.11px; padding: 18.05px; background: #0157FF; overflow: hidden; border-radius: 138.73px; justify-content: center; align-items: center; gap: 11.28px; display: flex">
+                            <div data-format="Outline" data-weight="Bold" style="width: 27.07px; height: 27.07px; position: relative">
+                                <div style="width: 17.77px; height: 21.15px; left: 4.65px; top: 2.96px; position: absolute; background: white; border: 0.11px white solid"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div style="width: 100%; height: 100%; padding: 25px; background: white; justify-content: flex-start; align-items: flex-start; gap: 25px; display: inline-flex; flex-wrap: wrap; align-content: flex-start">
+    <div style="width: 841px; height: 724px; padding: 25px; background: white; overflow: hidden; outline: 1px black solid; flex-direction: column; justify-content: center; align-items: flex-start; gap: 10px; display: inline-flex">
+        <div style="color: black; font-size: 36px; font-family: Poppins; font-weight: 600; text-transform: uppercase; word-wrap: break-word">Цвета</div>
+        <div style="align-self: stretch; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex; flex-wrap: wrap; align-content: flex-start">
+            <div style="width: 150px; height: 300px; background: #0157FF"></div>
+            <div style="width: 150px; height: 300px; background: white; outline: 0.50px black solid"></div>
+            <div style="width: 150px; height: 300px; background: black"></div>
+            <div style="width: 150px; height: 300px; background: #6D7C90"></div>
+            <div style="width: 150px; height: 300px; background: #C5CBD3"></div>
+            <div style="width: 150px; height: 300px; background: white"></div>
+            <div style="width: 150px; height: 300px; background: #FF383C"></div>
+            <div style="width: 150px; height: 300px; background: #FFCC00"></div>
+            <div style="width: 150px; height: 300px; background: #2CBE47"></div>
+        </div>
+    </div>
+    <div style="height: 724px; padding: 25px; background: white; overflow: hidden; outline: 1px black solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+        <div style="color: black; font-size: 36px; font-family: Poppins; font-weight: 600; text-transform: uppercase; word-wrap: break-word">Шрифты</div>
+        <div style="width: 533.33px; justify-content: flex-start; align-items: flex-start; gap: 25px; display: inline-flex">
+            <div style="padding: 10px; overflow: hidden; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                <div style="color: black; font-size: 50px; font-family: Poppins; font-weight: 800; text-transform: uppercase; word-wrap: break-word">Заголовок 1</div>
+                <div style="color: black; font-size: 50px; font-family: Poppins; font-weight: 600; text-transform: uppercase; word-wrap: break-word">Заголовок 2</div>
+                <div style="color: black; font-size: 36px; font-family: Poppins; font-weight: 600; text-transform: uppercase; word-wrap: break-word">Заголовок 3</div>
+                <div style="color: black; font-size: 24px; font-family: Poppins; font-weight: 500; text-transform: uppercase; word-wrap: break-word">Заголовок 4</div>
+            </div>
+            <div style="width: 290px; height: 0px; transform: rotate(-90deg); transform-origin: top left; outline: 1px black solid; outline-offset: -0.50px"></div>
+            <div style="padding: 10px; overflow: hidden; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                <div style="color: black; font-size: 24px; font-family: Poppins; font-weight: 600; text-transform: uppercase; word-wrap: break-word">Текст 1</div>
+                <div style="color: black; font-size: 24px; font-family: Poppins; font-weight: 500; text-transform: uppercase; word-wrap: break-word">Текст 2</div>
+                <div style="color: black; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Текст 3</div>
+                <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Текст 4</div>
+            </div>
+        </div>
+        <div style="align-self: stretch; height: 0px; outline: 1px black solid; outline-offset: -0.50px"></div>
+        <div style="align-self: stretch; padding: 10px; overflow: hidden; justify-content: space-between; align-items: center; display: inline-flex; flex-wrap: wrap; align-content: center">
+            <div style="color: black; font-size: 24px; font-family: Poppins; font-weight: 500; text-transform: uppercase; word-wrap: break-word">Ссылка 1</div>
+            <div style="color: black; font-size: 24px; font-family: Poppins; font-weight: 275; text-transform: uppercase; word-wrap: break-word">Ссылка 2</div>
+            <div style="color: black; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Ссылка 3</div>
+            <div style="color: black; font-size: 18px; font-family: Poppins; font-weight: 275; word-wrap: break-word">Ссылка 4</div>
+        </div>
+    </div>
+    <img style="width: 197.53px; height: 724px" src="https://placehold.co/198x724" />
+    <div style="padding: 25px; background: white; overflow: hidden; outline: 1px black solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+        <div style="color: black; font-size: 36px; font-family: Poppins; font-weight: 600; text-transform: uppercase; word-wrap: break-word">Кнопки</div>
+        <div style="align-self: stretch; padding: 10px; overflow: hidden; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+            <div style="padding: 20px; overflow: hidden; border-radius: 5px; border: 1px #8A38F5 solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: inline-flex">
+                <div style="align-self: stretch; padding-left: 15px; padding-right: 15px; padding-top: 10px; padding-bottom: 10px; background: #3649F9; overflow: hidden; border-radius: 10px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: white; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Повысить тариф</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 15px; padding-right: 15px; padding-top: 10px; padding-bottom: 10px; background: #3649F9; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.40); overflow: hidden; border-radius: 10px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: white; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Повысить тариф</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 15px; padding-right: 15px; padding-top: 10px; padding-bottom: 10px; background: #C5CBD3; overflow: hidden; border-radius: 10px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: #6D7C90; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Повысить тариф</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 15px; padding-right: 15px; padding-top: 10px; padding-bottom: 10px; background: #3649F9; box-shadow: 0px 0px 14.399999618530273px rgba(53.87, 73.34, 248.63, 0.71); overflow: hidden; border-radius: 10px; outline: 1px white solid; outline-offset: -0.50px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: white; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Повысить тариф</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 15px; padding-right: 15px; padding-top: 10px; padding-bottom: 10px; background: #3649F9; box-shadow: 0px 0px 6.099999904632568px rgba(0, 0, 0, 0.25) inset; overflow: hidden; border-radius: 10px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: white; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Повысить тариф</div>
+                </div>
+            </div>
+            <div style="padding: 20px; overflow: hidden; border-radius: 5px; border: 1px #8A38F5 solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: inline-flex">
+                <div style="align-self: stretch; padding-left: 30px; padding-right: 30px; padding-top: 10px; padding-bottom: 10px; background: white; overflow: hidden; border-radius: 100px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="width: 25px; height: 25px; position: relative">
+                        <div style="width: 19.86px; height: 19.86px; left: 2.65px; top: 2.54px; position: absolute; background: #3649F9"></div>
+                        <div style="width: 24.83px; height: 24.83px; left: 0.17px; top: 0.09px; position: absolute"></div>
+                    </div>
+                    <div style="color: black; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Поиск</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 15px; padding-right: 15px; padding-top: 10px; padding-bottom: 10px; background: white; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.40); overflow: hidden; border-radius: 100px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="width: 25px; height: 25px; position: relative">
+                        <div style="width: 19.86px; height: 19.86px; left: 2.65px; top: 2.54px; position: absolute; background: #3649F9"></div>
+                        <div style="width: 24.83px; height: 24.83px; left: 0.17px; top: 0.09px; position: absolute"></div>
+                    </div>
+                    <div style="color: black; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Поиск</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 15px; padding-right: 15px; padding-top: 10px; padding-bottom: 10px; background: #C5CBD3; overflow: hidden; border-radius: 100px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="width: 25px; height: 25px; position: relative">
+                        <div style="width: 19.86px; height: 19.86px; left: 2.65px; top: 2.54px; position: absolute; background: #6D7C90"></div>
+                        <div style="width: 24.83px; height: 24.83px; left: 0.17px; top: 0.09px; position: absolute"></div>
+                    </div>
+                    <div style="color: #6D7C90; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Поиск</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 15px; padding-right: 15px; padding-top: 10px; padding-bottom: 10px; background: white; box-shadow: 0px 0px 14.399999618530273px rgba(53.87, 73.34, 248.63, 0.71); overflow: hidden; border-radius: 100px; outline: 1px white solid; outline-offset: -0.50px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="width: 25px; height: 25px; position: relative">
+                        <div style="width: 19.86px; height: 19.86px; left: 2.65px; top: 2.54px; position: absolute; background: #3649F9"></div>
+                        <div style="width: 24.83px; height: 24.83px; left: 0.17px; top: 0.09px; position: absolute"></div>
+                    </div>
+                    <div style="color: black; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Поиск</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 15px; padding-right: 15px; padding-top: 10px; padding-bottom: 10px; background: white; box-shadow: 0px 0px 6.099999904632568px #3649F9 inset; overflow: hidden; border-radius: 100px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="width: 25px; height: 25px; position: relative">
+                        <div style="width: 19.86px; height: 19.86px; left: 2.65px; top: 2.54px; position: absolute; background: #3649F9"></div>
+                        <div style="width: 24.83px; height: 24.83px; left: 0.17px; top: 0.09px; position: absolute"></div>
+                    </div>
+                    <div style="color: black; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Поиск</div>
+                </div>
+            </div>
+            <div style="padding: 20px; overflow: hidden; border-radius: 5px; border: 1px #8A38F5 solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: inline-flex">
+                <div style="align-self: stretch; padding-left: 15px; padding-right: 15px; padding-top: 10px; padding-bottom: 10px; background: white; overflow: hidden; border-radius: 10px; outline: 1px #3649F9 solid; outline-offset: -1px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: #3649F9; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Выбрать файл</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 15px; padding-right: 15px; padding-top: 10px; padding-bottom: 10px; background: white; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.40); overflow: hidden; border-radius: 10px; outline: 1px #3649F9 solid; outline-offset: -1px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: #3649F9; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Выбрать файл</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 15px; padding-right: 15px; padding-top: 10px; padding-bottom: 10px; background: #C5CBD3; overflow: hidden; border-radius: 10px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: #6D7C90; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Выбрать файл</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 15px; padding-right: 15px; padding-top: 10px; padding-bottom: 10px; background: white; box-shadow: 0px 0px 10.699999809265137px #3649F9; overflow: hidden; border-radius: 10px; outline: 1px #3649F9 solid; outline-offset: -0.50px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: #3649F9; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Выбрать файл</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 15px; padding-right: 15px; padding-top: 10px; padding-bottom: 10px; background: white; box-shadow: 0px 0px 6.099999904632568px #3649F9 inset; overflow: hidden; border-radius: 10px; outline: 1px #3649F9 solid; outline-offset: -1px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: #3649F9; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Выбрать файл</div>
+                </div>
+            </div>
+            <div style="padding: 20px; overflow: hidden; border-radius: 5px; border: 1px #8A38F5 solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: inline-flex">
+                <div style="align-self: stretch; padding-left: 30px; padding-right: 30px; padding-top: 10px; padding-bottom: 10px; background: white; overflow: hidden; border-radius: 10px; outline: 1px #C5CBD3 solid; outline-offset: -1px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: #6D7C90; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Отмена</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 30px; padding-right: 30px; padding-top: 10px; padding-bottom: 10px; background: white; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.40); overflow: hidden; border-radius: 10px; outline: 1px #C5CBD3 solid; outline-offset: -1px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: #6D7C90; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Отмена</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 30px; padding-right: 30px; padding-top: 10px; padding-bottom: 10px; background: #C5CBD3; overflow: hidden; border-radius: 10px; outline: 1px #C5CBD3 solid; outline-offset: -1px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: #6D7C90; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Отмена</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 30px; padding-right: 30px; padding-top: 10px; padding-bottom: 10px; background: white; box-shadow: 0px 0px 10.699999809265137px #6D7C90; overflow: hidden; border-radius: 10px; outline: 1px #6D7C90 solid; outline-offset: -0.50px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: #6D7C90; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Отмена</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 30px; padding-right: 30px; padding-top: 10px; padding-bottom: 10px; background: white; box-shadow: 0px 0px 6.099999904632568px rgba(0, 0, 0, 0.25) inset; overflow: hidden; border-radius: 10px; outline: 1px #C5CBD3 solid; outline-offset: -1px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: #6D7C90; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Отмена</div>
+                </div>
+            </div>
+            <div style="padding: 20px; overflow: hidden; border-radius: 5px; border: 1px #8A38F5 solid; flex-direction: column; justify-content: flex-start; align-items: center; gap: 20px; display: inline-flex">
+                <div style="align-self: stretch; padding-left: 30px; padding-right: 30px; padding-top: 10px; padding-bottom: 10px; background: #FF383C; overflow: hidden; border-radius: 10px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: white; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Отмена</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 30px; padding-right: 30px; padding-top: 10px; padding-bottom: 10px; background: #FF383C; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.40); overflow: hidden; border-radius: 10px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: white; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Отмена</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 30px; padding-right: 30px; padding-top: 10px; padding-bottom: 10px; background: #C5CBD3; overflow: hidden; border-radius: 10px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: #6D7C90; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Отмена</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 30px; padding-right: 30px; padding-top: 10px; padding-bottom: 10px; background: #FF383C; box-shadow: 0px 0px 10.699999809265137px #FF383C; overflow: hidden; border-radius: 10px; outline: 1px white solid; outline-offset: -0.50px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: white; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Отмена</div>
+                </div>
+                <div style="align-self: stretch; padding-left: 30px; padding-right: 30px; padding-top: 10px; padding-bottom: 10px; background: #FF383C; box-shadow: 0px 0px 6.099999904632568px rgba(0, 0, 0, 0.25) inset; overflow: hidden; border-radius: 10px; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+                    <div style="color: white; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">Отмена</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="flex: 1 1 0; height: 489px; min-width: 250px; padding: 25px; background: white; overflow: hidden; outline: 1px black solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+        <div style="color: black; font-size: 36px; font-family: Poppins; font-weight: 600; text-transform: uppercase; word-wrap: break-word">Иконки</div>
+        <div style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex; flex-wrap: wrap; align-content: center">
+            <div style="justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                <div style="width: 42px; height: 42px; background: #3649F9; border-radius: 9999px"></div>
+                <div style="color: black; font-size: 18px; font-family: Poppins; font-weight: 600; line-height: 21.60px; word-wrap: break-word">ИИ-ассистент</div>
+            </div>
+            <div style="width: 49.83px; height: 49.83px; position: relative">
+                <div style="width: 40px; height: 34px; left: 5px; top: 8px; position: absolute; background: #3649F9"></div>
+                <div style="width: 50px; height: 50px; left: 0px; top: 0px; position: absolute"></div>
+            </div>
+            <div style="width: 49.83px; height: 49.83px; position: relative">
+                <div style="width: 18.96px; height: 18.94px; left: 9.57px; top: 5.04px; position: absolute; background: #3649F9"></div>
+                <div style="width: 28.10px; height: 18.45px; left: 5px; top: 26.51px; position: absolute; background: #3649F9"></div>
+                <div style="width: 11.76px; height: 14.33px; left: 29.25px; top: 9.15px; position: absolute; background: #3649F9"></div>
+                <div style="width: 15.99px; height: 14.48px; left: 29.01px; top: 26px; position: absolute; background: #3649F9"></div>
+                <div style="width: 50px; height: 50px; left: 0px; top: 0px; position: absolute"></div>
+            </div>
+            <div style="width: 49.83px; height: 49.83px; position: relative">
+                <div style="width: 40px; height: 37.74px; left: 5px; top: 6.13px; position: absolute; background: #3649F9"></div>
+                <div style="width: 50px; height: 50px; left: 0px; top: 0px; position: absolute"></div>
+            </div>
+            <div style="width: 49.83px; height: 49.83px; position: relative">
+                <div style="width: 40px; height: 40px; left: 5px; top: 5px; position: absolute; outline: 6px #3649F9 solid; outline-offset: -3px"></div>
+                <div style="width: 50px; height: 50px; left: 0px; top: 0px; position: absolute"></div>
+            </div>
+            <div style="width: 49.83px; height: 49.83px; position: relative">
+                <div style="width: 26px; height: 40.03px; left: 19px; top: 4.99px; position: absolute; background: #3649F9"></div>
+                <div style="width: 14px; height: 16.40px; left: 5px; top: 16.80px; position: absolute; background: #3649F9"></div>
+                <div style="width: 50px; height: 50px; left: 0px; top: 0px; position: absolute"></div>
+            </div>
+            <div style="width: 49.83px; height: 49.83px; position: relative">
+                <div style="width: 17.90px; height: 23.16px; left: 27.11px; top: 3.95px; position: absolute; background: #3649F9"></div>
+                <div style="width: 17.90px; height: 23.16px; left: 5px; top: 22.90px; position: absolute; background: #3649F9"></div>
+                <div style="width: 17.90px; height: 14.74px; left: 27.11px; top: 31.32px; position: absolute; background: #3649F9"></div>
+                <div style="width: 17.90px; height: 14.74px; left: 5px; top: 3.95px; position: absolute; background: #3649F9"></div>
+                <div style="width: 50px; height: 50px; left: 0px; top: 0px; position: absolute"></div>
+            </div>
+            <div style="width: 49.83px; height: 49.83px; position: relative">
+                <div style="width: 11.67px; height: 36.81px; left: 5px; top: 5.41px; position: absolute; background: #3649F9"></div>
+                <div style="width: 9.99px; height: 38.74px; left: 20px; top: 5.63px; position: absolute; background: #3649F9"></div>
+                <div style="width: 11.67px; height: 36.81px; left: 33.33px; top: 7.78px; position: absolute; background: #3649F9"></div>
+                <div style="width: 50px; height: 50px; left: 0px; top: 0px; position: absolute"></div>
+            </div>
+            <div style="width: 49.83px; height: 49.83px; position: relative">
+                <div style="width: 40px; height: 29.57px; left: 5px; top: 4.54px; position: absolute; background: #3649F9"></div>
+                <div style="width: 38.69px; height: 17.78px; left: 5.67px; top: 27.69px; position: absolute; background: #3649F9"></div>
+                <div style="width: 50px; height: 50px; left: 0px; top: 0px; position: absolute"></div>
+            </div>
+            <div style="width: 49.83px; height: 49.83px; position: relative">
+                <div style="width: 35.35px; height: 34.94px; left: 7.33px; top: 5px; position: absolute; outline: 3.50px #3649F9 solid; outline-offset: -1.75px"></div>
+                <div style="width: 13.22px; height: 6.61px; left: 18.38px; top: 38.39px; position: absolute; outline: 3.50px #3649F9 solid; outline-offset: -1.75px"></div>
+                <div style="width: 50px; height: 50px; left: 0px; top: 0px; position: absolute"></div>
+            </div>
+            <div style="width: 50.35px; height: 50.35px; position: relative">
+                <div style="width: 43.86px; height: 39.85px; left: 3.31px; top: 5.18px; position: absolute; background: #3649F9"></div>
+                <div style="width: 49.83px; height: 49.83px; left: 0.35px; top: 0.17px; position: absolute"></div>
+            </div>
+            <div style="width: 50.35px; height: 50.35px; position: relative">
+                <div style="width: 39.86px; height: 39.86px; left: 5.31px; top: 5.09px; position: absolute; background: #3649F9"></div>
+                <div style="width: 49.83px; height: 49.83px; left: 0.35px; top: 0.17px; position: absolute"></div>
+            </div>
+            <div style="width: 50.35px; height: 50.35px; position: relative">
+                <div style="width: 43.86px; height: 39.85px; left: 3.22px; top: 5.18px; position: absolute; background: #3649F9"></div>
+                <div style="width: 49.83px; height: 49.83px; left: 0.35px; top: 0.17px; position: absolute"></div>
+            </div>
+            <div style="width: 50.35px; height: 50.35px; position: relative">
+                <div style="width: 39.93px; height: 39.86px; left: 5.28px; top: 5.17px; position: absolute; background: #3649F9"></div>
+                <div style="width: 49.83px; height: 49.83px; left: 0.35px; top: 0.17px; position: absolute"></div>
+            </div>
+        </div>
+    </div>
+    <div style="height: 489px; padding: 25px; background: white; overflow: hidden; outline: 1px black solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+        <div style="color: black; font-size: 36px; font-family: Poppins; font-weight: 600; text-transform: uppercase; word-wrap: break-word">Поля ввода</div>
+        <div style="align-self: stretch; padding: 10px; overflow: hidden; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+            <div style="padding: 20px; overflow: hidden; border-radius: 5px; border: 1px #8A38F5 solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: inline-flex">
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; outline: 0.50px #6D7C90 solid; outline-offset: -0.25px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="color: #6D7C90; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Пароль</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: white; box-shadow: 0px 2px 7.800000190734863px rgba(0, 0, 0, 0.25); border-radius: 5px; outline: 0.50px #6D7C90 solid; outline-offset: -0.25px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="color: #6D7C90; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Пароль</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; outline: 1px #3649F9 solid; outline-offset: -0.50px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">qwerty</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: #C5CBD3; border-radius: 5px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="color: #6D7C90; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Пароль</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; outline: 1px #2CBE47 solid; outline-offset: -0.50px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Пароль</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; outline: 1px #FF383C solid; outline-offset: -0.50px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Пароль</div>
+                </div>
+            </div>
+            <div style="padding: 20px; overflow: hidden; border-radius: 5px; border: 1px #8A38F5 solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: inline-flex">
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; outline: 0.50px #6D7C90 solid; outline-offset: -0.25px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="color: #6D7C90; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Поле ввода</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: white; box-shadow: 0px 2px 7.800000190734863px rgba(0, 0, 0, 0.25); border-radius: 5px; outline: 0.50px #6D7C90 solid; outline-offset: -0.25px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="color: #6D7C90; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Поле ввода</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; outline: 1px #3649F9 solid; outline-offset: -0.50px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Введённый текст</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: #C5CBD3; border-radius: 5px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="color: #6D7C90; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Поле ввода</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; outline: 1px #2CBE47 solid; outline-offset: -0.50px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Поле ввода</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; outline: 1px #FF383C solid; outline-offset: -0.50px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Поле ввода</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="width: 350px; padding: 25px; background: white; overflow: hidden; outline: 1px black solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+        <div style="align-self: stretch; color: black; font-size: 36px; font-family: Poppins; font-weight: 600; text-transform: uppercase; word-wrap: break-word">Выпадающий список</div>
+        <div style="align-self: stretch; padding: 10px; overflow: hidden; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+            <div style="padding: 20px; overflow: hidden; border-radius: 5px; border: 1px #8A38F5 solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: inline-flex">
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; outline: 1px #3649F9 solid; outline-offset: -0.50px; justify-content: space-between; align-items: center; display: inline-flex">
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Список</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: white; box-shadow: 0px 0px 14.399999618530273px rgba(53.87, 73.34, 248.63, 0.71); border-radius: 5px; outline: 1px #3649F9 solid; outline-offset: -0.50px; justify-content: space-between; align-items: center; display: inline-flex">
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Список</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; overflow: hidden; border-radius: 5px; outline: 1px #3649F9 solid; outline-offset: -0.50px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+                    <div style="align-self: stretch; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-bottom: 1px #3649F9 solid; justify-content: space-between; align-items: center; display: inline-flex">
+                        <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">|</div>
+                    </div>
+                    <div style="align-self: stretch; overflow: hidden; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+                        <div style="align-self: stretch; height: 28px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; overflow: hidden; justify-content: flex-start; align-items: center; display: inline-flex">
+                            <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Элемент 1</div>
+                        </div>
+                        <div style="align-self: stretch; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: rgba(53.87, 73.34, 248.63, 0.50); overflow: hidden; justify-content: flex-start; align-items: center; display: inline-flex">
+                            <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Элемент 2</div>
+                        </div>
+                        <div style="align-self: stretch; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: white; overflow: hidden; justify-content: flex-start; align-items: center; display: inline-flex">
+                            <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Элемент 3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 20px; overflow: hidden; border-radius: 5px; border: 1px #8A38F5 solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: inline-flex">
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; outline: 1px #6D7C90 solid; outline-offset: -0.50px; justify-content: space-between; align-items: center; display: inline-flex">
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Список</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: white; box-shadow: 0px 0px 14.399999618530273px rgba(53.87, 73.34, 248.63, 0.71); border-radius: 5px; outline: 1px #3649F9 solid; outline-offset: -0.50px; justify-content: space-between; align-items: center; display: inline-flex">
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Список</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; overflow: hidden; border-radius: 5px; outline: 1px #3649F9 solid; outline-offset: -0.50px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+                    <div style="align-self: stretch; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-bottom: 1px #3649F9 solid; justify-content: space-between; align-items: center; display: inline-flex">
+                        <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">|</div>
+                    </div>
+                    <div style="align-self: stretch; overflow: hidden; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+                        <div style="align-self: stretch; height: 28px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; overflow: hidden; justify-content: flex-start; align-items: center; display: inline-flex">
+                            <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Элемент 1</div>
+                        </div>
+                        <div style="align-self: stretch; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: rgba(53.87, 73.34, 248.63, 0.50); overflow: hidden; justify-content: flex-start; align-items: center; display: inline-flex">
+                            <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Элемент 2</div>
+                        </div>
+                        <div style="align-self: stretch; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: white; overflow: hidden; justify-content: flex-start; align-items: center; display: inline-flex">
+                            <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Элемент 3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="width: 350px; height: 436px; padding: 25px; background: white; overflow: hidden; outline: 1px black solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+        <div style="align-self: stretch; color: black; font-size: 36px; font-family: Poppins; font-weight: 600; text-transform: uppercase; word-wrap: break-word">Селекторы</div>
+        <div style="align-self: stretch; padding: 10px; overflow: hidden; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+            <div style="padding: 20px; overflow: hidden; border-radius: 5px; border: 1px #8A38F5 solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: inline-flex">
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="width: 12px; height: 12px; border-radius: 9999px; outline: 2px #3649F9 solid"></div>
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Элемент 1</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: white; box-shadow: 0px 0px 14.399999618530273px rgba(53.87, 73.34, 248.63, 0.71); border-radius: 5px; outline: 1px #3649F9 solid; outline-offset: -0.50px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="width: 12px; height: 12px; background: white; border-radius: 9999px; outline: 2px #3649F9 solid"></div>
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Элемент 1</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="width: 12px; height: 12px; border-radius: 9999px; outline: 2px #3649F9 solid"></div>
+                    <div style="width: 7px; height: 7px; background: #3649F9; border-radius: 9999px"></div>
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Элемент 1</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="width: 12px; height: 12px; border-radius: 9999px; outline: 2px #6D7C90 solid"></div>
+                    <div style="color: #6D7C90; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Элемент 1</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="width: 12px; height: 12px; border-radius: 9999px; outline: 2px #FF383C solid"></div>
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Элемент 1</div>
+                </div>
+            </div>
+            <div style="padding: 20px; overflow: hidden; border-radius: 5px; border: 1px #8A38F5 solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: inline-flex">
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="width: 12px; height: 12px; border-radius: 1px; outline: 2px #3649F9 solid"></div>
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Элемент 1</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; background: white; box-shadow: 0px 0px 14.399999618530273px rgba(53.87, 73.34, 248.63, 0.71); border-radius: 5px; outline: 1px #3649F9 solid; outline-offset: -0.50px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="width: 12px; height: 12px; border-radius: 1px; outline: 2px #3649F9 solid"></div>
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Элемент 1</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="width: 8px; height: 8px; background: #3649F9; border-radius: 1px"></div>
+                    <div style="width: 12px; height: 12px; border-radius: 1px; outline: 2px #3649F9 solid"></div>
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Элемент 1</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="width: 12px; height: 12px; border-radius: 1px; outline: 2px #6D7C90 solid"></div>
+                    <div style="color: #6D7C90; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Элемент 1</div>
+                </div>
+                <div style="align-self: stretch; min-width: 100px; padding-left: 10px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <div style="width: 12px; height: 12px; border-radius: 1px; outline: 2px #FF383C solid"></div>
+                    <div style="color: black; font-size: 12px; font-family: Poppins; font-weight: 400; word-wrap: break-word">Элемент 1</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="width: 350px; height: 436px; padding: 25px; background: white; overflow: hidden; outline: 1px black solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
+        <div style="align-self: stretch; color: black; font-size: 36px; font-family: Poppins; font-weight: 600; text-transform: uppercase; word-wrap: break-word">Параметры</div>
+        <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
+            <div style="align-self: stretch; padding: 10px; background: #3649F9; overflow: hidden; border-radius: 5px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
+                <div style="color: white; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">40 - Desktop Margin</div>
+            </div>
+            <div style="align-self: stretch; padding: 10px; background: #3649F9; overflow: hidden; border-radius: 5px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
+                <div style="color: white; font-size: 18px; font-family: Poppins; font-weight: 500; word-wrap: break-word">40 - Desktop Gutter</div>
+            </div>
+        </div>
+    </div>
+</div>
+

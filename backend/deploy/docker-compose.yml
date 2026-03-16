@@ -12,6 +12,10 @@ services:
     volumes:
       - ../src:/app/src:ro
       - ../src/infra/postgres/migration/versions:/app/src/infra/postgres/migration/versions:rw
+      - ../deploy/configs/config.toml:/app/deploy/configs/config.toml:ro
+    depends_on:
+      - database
+      - redis
 
   database:
     image: postgres:15.2
