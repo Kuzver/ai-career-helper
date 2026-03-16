@@ -72,16 +72,22 @@ class GetAllChatUsecase:
             chats = await self.get_chats(user_id)
             logger.info(1)
             return self.pagination(chats, data.limit, data.offset, schema_class=ChatSchemas)'''
-from src.application.schemas.chat import RawPagination
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from src.infra.postgres.tables import ChatModel
+from src.application.schemas.chat import RawChat, RawPagination
 
 class GetAllChatUsecase:
-    def __init__(self):
-        pass
+    def __init__(self, session: AsyncSession):
+        self.session = session
 
     async def __call__(self, limit: int = 50, offset: int = 0) -> RawPagination:
+        result = await self.session.execute(select(ChatModel))
+        chats = result.scalars().all()
+        items = [RawChat.model_validate(chat) for chat in chats]
         return RawPagination(
-            items=[],
-            lenItems=0,
+            items=items,
+            lenItems=len(items),
             leftLimit=None,
             leftOffset=None,
             rightLimit=None,

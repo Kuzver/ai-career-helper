@@ -70,20 +70,23 @@ const mapChatWithMessages = (chat: RawChatWithMessages): ChatWithMessages => ({
 })
 
 export async function getChats(params: { limit: number; offset: number }) {
-  const { data } = await baseClient.get<RawPagination<RawChat>>("/api/chats/all", {
-    params,
-  })
-
-  const items = normalizeItems(data.items).map(mapChat)
-
-  return {
-    items,
-    lenItems: data.lenItems,
-    leftLimit: data.leftLimit,
-    leftOffset: data.leftOffset,
-    rightLimit: data.rightLimit,
-    rightOffset: data.rightOffset,
-  } satisfies PaginatedResponse<Chat>
+  console.log("baseClient baseURL:", baseClient.defaults.baseURL);
+  try {
+    const { data } = await baseClient.get<RawPagination<RawChat>>("/api/chats/all", { params });
+    console.log("getChats response:", data);
+    const items = normalizeItems(data.items).map(mapChat);
+    return {
+      items,
+      lenItems: data.lenItems,
+      leftLimit: data.leftLimit,
+      leftOffset: data.leftOffset,
+      rightLimit: data.rightLimit,
+      rightOffset: data.rightOffset,
+    } satisfies PaginatedResponse<Chat>;
+  } catch (error) {
+    console.error("getChats error:", error);
+    throw error;
+  }
 }
 
 export async function createChat(title: string) {

@@ -1,3 +1,4 @@
+console.log("✅ AppLayout rendered");
 import { Outlet } from "react-router-dom"
 
 import { AppSidebar } from "~/shared/components/app-sidebar"

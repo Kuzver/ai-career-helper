@@ -32,7 +32,7 @@ class PostgresProvider(Provider):
         engine: AsyncEngine | None = None
         try:
             if engine is None:
-                engine = create_async_engine(config.dsn)
+                engine = create_async_engine(config.dsn, echo=True)
             yield engine
         except ConnectionRefusedError as e:
             logger.error("Error connecting to database", e)

@@ -1,3 +1,4 @@
+console.log("✅ Chat component rendered");
 import { useEffect, useMemo } from "react"
 import {
   Link,
@@ -9,7 +10,7 @@ import {
 
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router-dom";
 
-import type { Route } from "./+types/chat"
+//import type { Route } from "./+types/chat"
 import { createChat, getChatById, getChats } from "~/modules/chat/api/chats"
 import type { ChatWithMessages } from "~/modules/chat/model/types"
 import { Button } from "~/shared/components/ui/button"
@@ -20,11 +21,12 @@ import { Skeleton } from "~/shared/components/ui/skeleton"
 const CHATS_LIMIT = 50
 const MESSAGES_LIMIT = 50
 
-export function meta({}: Route.MetaArgs) {
-  return [{ title: "Чаты" }]
-}
+//export function meta({}: Route.MetaArgs) {
+//  return [{ title: "Чаты" }]
+//}
 
 export async function loader({ request }: LoaderFunctionArgs) {
+  console.log("🔥 loader called");
   const url = new URL(request.url)
   const selectedChatId = url.searchParams.get("chatId")
   const chatsData = await getChats({ limit: CHATS_LIMIT, offset: 0 })
@@ -67,6 +69,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Chat() {
   const { chats, selectedChat, selectedChatId } = useLoaderData<typeof loader>()
+  console.log('📦 Данные из useLoaderData:', { chats, selectedChat, selectedChatId })
   const [, setSearchParams] = useSearchParams()
   const fetcher = useFetcher<typeof action>()
   const navigation = useNavigation()
