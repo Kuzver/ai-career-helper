@@ -5,7 +5,7 @@ from src.usecase.chats.create import CreateChatUsecase
 from src.usecase.chats.get_all import GetAllChatUsecase
 from src.usecase.chats.get_by_id import GetChatByIdUsecase
 
-ROUTER = APIRouter(route_class=DishkaRoute, prefix="/api/chats")
+ROUTER = APIRouter(route_class=DishkaRoute)  # без prefix
 
 @ROUTER.get("/all", response_model=RawPagination)
 async def get_chats(

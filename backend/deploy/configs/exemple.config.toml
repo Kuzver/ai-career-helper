@@ -2,7 +2,7 @@
 host = 'localhost'
 port = 8000
 project_name = 'base'
-cors = ["http://localhost:5173"]
+cors = ["http://localhost:5173", "http://localhost:5174"]
 
 [database]
 host='database'

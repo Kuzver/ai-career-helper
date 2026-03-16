@@ -1,14 +1,26 @@
 import React from "react";
 import { createBrowserRouter } from "react-router-dom";
-import ChatPage from "~/pages/chat"; // алиас ~ = frontend/app
-import SignIn from "~/pages/auth/ui/sign-in";
-import SignUp from "~/pages/auth/ui/sign-up";
+import AppLayout from "~/shared/components/ui/app-layout";
+import ChatPage, { loader, action } from "../app/pages/chat";
+import SignIn from "../app/pages/auth/ui/sign-in";
+import SignUp from "../app/pages/auth/ui/sign-up";
 
-const routes = [
+const router = createBrowserRouter([
   {
     path: "/",
-    element: <ChatPage />,
-    errorElement: <div>Ошибка при загрузке чатов 😢</div>,
+    element: <AppLayout />, // ← теперь рендерится Layout с сайдбаром
+    errorElement: <div>Ошибка в корне</div>,
+    children: [
+      {
+        index: true,
+        element: <ChatPage />,
+        loader,
+        action,
+        errorElement: <div>Ошибка при загрузке чатов 😢</div>,
+      },
+      // сюда можно добавить другие маршруты, например:
+      // { path: "knowledge-base", element: <KnowledgeBase /> },
+    ],
   },
   {
     path: "/sign-in",
@@ -20,7 +32,6 @@ const routes = [
     element: <SignUp />,
     errorElement: <div>Ошибка при регистрации</div>,
   },
-];
+]);
 
-const router = createBrowserRouter(routes);
 export default router;

@@ -265,7 +265,7 @@ class FavoritesModel(BaseDBModel):
 
 class ChatModel(BaseDBModel):
     __tablename__ = 'chats'
-    __table_args__ = {'extend_existing': True}
+    __table_args__ = {'extend_existing': True, 'schema': 'db_schema'}
     id: Mapped[uuid_pk] 
     user_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey('db_schema.users.id'),

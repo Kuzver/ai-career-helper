@@ -70,7 +70,7 @@ const mapChatWithMessages = (chat: RawChatWithMessages): ChatWithMessages => ({
 })
 
 export async function getChats(params: { limit: number; offset: number }) {
-  const { data } = await baseClient.get<RawPagination<RawChat>>("/api/chats", {
+  const { data } = await baseClient.get<RawPagination<RawChat>>("/api/chats/all", {
     params,
   })
 

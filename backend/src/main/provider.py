@@ -57,7 +57,7 @@ class MainProvider(Provider):
         GetAllCardsUsecase,
         CreateCardsUsecase,
         GenerateCardsUsecase,
-        MessengerUsecase,
+        #MessengerUsecase,
         CreateChatUsecase,
         GetChatUsecase,
         Pagination,

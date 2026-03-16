@@ -7,6 +7,8 @@ import {
   useSearchParams,
 } from "react-router-dom"
 
+import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router-dom";
+
 import type { Route } from "./+types/chat"
 import { createChat, getChatById, getChats } from "~/modules/chat/api/chats"
 import type { ChatWithMessages } from "~/modules/chat/model/types"
@@ -22,7 +24,7 @@ export function meta({}: Route.MetaArgs) {
   return [{ title: "Чаты" }]
 }
 
-export async function clientLoader({ request }: Route.ClientLoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url)
   const selectedChatId = url.searchParams.get("chatId")
   const chatsData = await getChats({ limit: CHATS_LIMIT, offset: 0 })
@@ -51,7 +53,7 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
   }
 }
 
-export async function clientAction({ request }: Route.ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData()
   const title = String(formData.get("title") ?? "").trim()
 
@@ -64,9 +66,9 @@ export async function clientAction({ request }: Route.ActionArgs) {
 }
 
 export default function Chat() {
-  const { chats, selectedChat, selectedChatId } = useLoaderData<typeof clientLoader>()
+  const { chats, selectedChat, selectedChatId } = useLoaderData<typeof loader>()
   const [, setSearchParams] = useSearchParams()
-  const fetcher = useFetcher<typeof clientAction>()
+  const fetcher = useFetcher<typeof action>()
   const navigation = useNavigation()
   const isLoading = navigation.state === "loading"
 
