@@ -1,120 +1,97 @@
 import pdfplumber
-from src.infra.gigachat.chat import Gigachat
 from io import BytesIO
 from dataclasses import dataclass
 from loguru import logger
+
+from src.infra.gigachat.chat import Gigachat
 from src.usecase.message.schemas import RequestMessageSchema
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
-class CareerAgent():
+class CareerAgent:
     chat: Gigachat
-    def extract_pdf_text_tool(self, pdf_bytes: bytes) -> str:
-        """Извлекает текст из PDF файла, переданного в виде байтов"""
+
+    async def __call__(self, data: RequestMessageSchema) -> str:
+        query = data.text.lower()
+
+        if "собеседован" in query and "вопрос" in query:
+            return await self._generate_interview_questions(data.text)
+
+        if "резюм" in query:
+            if data.file:
+                return await self._analyze_resume(data.file)
+            return await self._help_compose_resume(data.text)
+
+        if "ваканси" in query:
+            if data.file:
+                return await self._analyze_vacancy(data.file)
+            return await self._discuss_vacancy(data.text)
+
+        return await self._general_career_advice(data.text)
+
+    async def _help_compose_resume(self, user_text: str) -> str:
+        prompt = (
+            "Ты — профессиональный карьерный консультант. "
+            "Помоги пользователю составить резюме. "
+            "Задай уточняющие вопросы, если информации недостаточно. "
+            "Если пользователь дал достаточно данных — составь структурированное резюме.\n\n"
+            f"Запрос пользователя: {user_text}"
+        )
+        return await self.chat(prompt)
+
+    async def _analyze_resume(self, pdf_bytes: bytes) -> str:
+        text = self._extract_pdf_text(pdf_bytes)
+        prompt = (
+            "Проанализируй это резюме и дай рекомендации по улучшению:\n\n"
+            f"{text}\n\n"
+            "Критерии: структура, конкретные достижения, "
+            "соответствие требованиям, оптимизация под ATS."
+        )
+        return await self.chat(prompt)
+
+    async def _analyze_vacancy(self, pdf_bytes: bytes) -> str:
+        text = self._extract_pdf_text(pdf_bytes)
+        prompt = (
+            "Проанализируй вакансию, выдели плюсы и красные флаги:\n\n"
+            f"{text}"
+        )
+        return await self.chat(prompt)
+
+    async def _discuss_vacancy(self, user_text: str) -> str:
+        prompt = (
+            "Ты — карьерный консультант. Помоги пользователю разобраться с вакансией. "
+            "Проанализируй и дай советы.\n\n"
+            f"Запрос: {user_text}"
+        )
+        return await self.chat(prompt)
+
+    async def _generate_interview_questions(self, user_text: str) -> str:
+        prompt = (
+            "Сгенерируй 10-15 вопросов для подготовки к собеседованию "
+            "на основе запроса пользователя. Включи технические, "
+            "поведенческие вопросы и кейсы.\n\n"
+            f"Запрос: {user_text}"
+        )
+        return await self.chat(prompt)
+
+    async def _general_career_advice(self, user_text: str) -> str:
+        prompt = (
+            "Ты — опытный карьерный консультант. "
+            "Дай полезный и конкретный совет по запросу пользователя.\n\n"
+            f"Запрос: {user_text}"
+        )
+        return await self.chat(prompt)
+
+    @staticmethod
+    def _extract_pdf_text(pdf_bytes: bytes, max_chars: int = 2000) -> str:
         try:
             text = ""
-            # Используем BytesIO для работы с байтами
-            with BytesIO(pdf_bytes) as byte_stream:
-                with pdfplumber.open(byte_stream) as pdf:
-                    for page in pdf.pages:
-                        extracted_text = page.extract_text()
-                        if extracted_text:
-                            text += extracted_text + "\n"
-
-            # Возвращаем первые 2000 символов или весь текст, если он короче
-            return text[:2000] if text else "Не удалось извлечь текст из PDF"
-
+            with pdfplumber.open(BytesIO(pdf_bytes)) as pdf:
+                for page in pdf.pages:
+                    extracted = page.extract_text()
+                    if extracted:
+                        text += extracted + "\n"
+            return text[:max_chars] if text else "Не удалось извлечь текст из PDF"
         except Exception as e:
-            return f"Ошибка при чтении PDF: {str(e)}"
-
-    async def analyze_resume_tool(self, pdf: bytes | None) -> str:
-        """Анализирует резюме из PDF файла"""
-        if pdf is None:
-            return "📂 Пришли свое резюме!!!"
-        text = self.extract_pdf_text_tool(pdf)
-        with pdfplumber.open(BytesIO(pdf)) as pdf:
-
-            for page_num, page in enumerate(pdf.pages, 1):
-                # Извлекаем текст со страницы
-                text = page.extract_text()
-        logger.info(text)
-        prompt = f"""
-        Проанализируй это резюме и дай рекомендации по улучшению:
-
-        {text}
-
-        Критерии анализа:
-        1. Структура и читаемость
-        2. Наличие конкретных достижений и метрик
-        3. Соответствие современным требованиям
-        4. Оптимизация под ATS системы
-        5. Профессиональное впечатление
-
-        Верни структурированный анализ.
-        """
-
-        response = await self.chat(prompt)
-        return response
-
-    async def analyze_vacancy_tool(self, pdf_path: bytes) -> str:
-        """Анализирует вакансию из PDF файла"""
-        text = self.extract_pdf_text_tool(pdf_path)
-        # доставать из файла
-        prompt = f"""
-        Проанализируй вакансию и определи "красные флаги":
-
-        {text}
-
-        Ищи:
-        1. Размытые обязанности
-        2. Непрозрачные условия оплаты
-        3. Завышенные требования
-        4. Признаки токсичной рабочей среды
-        5. Противоречивые условия
-
-        Верни анализ с выделением позитивных и негативных аспектов.
-        """
-
-        response = await self.chat(prompt)
-        return response
-
-    async def generate_interview_questions_tool(self, position: str, level: str = "middle") -> str:
-        """Генерирует вопросы для собеседования"""
-
-        # доставать из файла
-        prompt = f"""
-        Сгенерируй список из 10-15 вопросов для собеседования на позицию {position} уровня {level}.
-        Включи:
-        - Технические вопросы
-        - Поведенческие вопросы
-        - Вопросы о мотивации
-        - Кейсовые задания
-
-        Для каждого вопроса укажи, на что обращать внимание в ответе.
-        """
-
-        response = await self.chat(prompt)
-        return response
-
-
-    async def __call__(self, data: RequestMessageSchema):
-        q = data.text.lower()
-        if "собеседован" in q and "вопрос" in q:
-            logger.info(1)
-            resp_text = await self.generate_interview_questions_tool(position=data.tex)
-        elif "резюм" in q:
-            resp_text = await self.analyze_resume_tool(pdf=data.file)
-
-        elif "ваканси" in q and ".pdf" not in q:
-            logger.info(2)
-            prompt = (
-                f"Проанализируй эту вакансию и укажи красные и зелёные флаги.\n\n"
-                f"Текст запроса пользователя:\n{data.tex}"
-            )
-            resp_text = await self.chat(prompt)
-
-        else:
-            logger.info(3)
-            # Всё остальное по карьере — просто отдаём LLM с историей
-            resp_text = await self.chat(data.tex)
-        return resp_text
+            logger.error(f"PDF extraction error: {e}")
+            return f"Ошибка при чтении PDF: {e}"

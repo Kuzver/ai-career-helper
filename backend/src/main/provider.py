@@ -23,30 +23,30 @@ from src.usecase.cards.generate import GenerateCardsUsecase
 from src.usecase.message.create import MessengerUsecase
 from src.usecase.chats.create import CreateChatUsecase
 from src.usecase.chats.get import GetChatUsecase
-from src.usecase.chats.get_all import GetAllChatUsecase
 from src.usecase.systems.pagination import Pagination
+
 
 class MainProvider(Provider):
     scope = Scope.REQUEST
 
-    _provide_config = from_context(provides=Config, scope=Scope.APP) 
+    _provide_config = from_context(provides=Config, scope=Scope.APP)
 
     @provide(scope=Scope.APP)
     async def _get_api_config(self, config: Config) -> ApiConfig:
         return config.api
-    
+
     @provide(scope=Scope.APP)
     async def _get_database_config(self, config: Config) -> DatabaseConfig:
         return config.database
-    
+
     @provide(scope=Scope.APP)
     async def _get_redis_config(self, config: Config) -> RedisConfig | None:
         return config.redis
 
-
     @provide(scope=Scope.APP)
     async def _get_gigachat_config(self, config: Config) -> GigachatConfig | None:
         return config.gigachat
+
     _request = from_context(provides=Request, scope=Scope.REQUEST)
 
     _get_usecases = provide_all(
@@ -57,12 +57,10 @@ class MainProvider(Provider):
         GetAllCardsUsecase,
         CreateCardsUsecase,
         GenerateCardsUsecase,
-        #MessengerUsecase,
+        MessengerUsecase,
         CreateChatUsecase,
         GetChatUsecase,
         Pagination,
         GetAllChatUsecase,
-        CreateChatUsecase,
-        GetChatByIdUsecase
+        GetChatByIdUsecase,
     )
-

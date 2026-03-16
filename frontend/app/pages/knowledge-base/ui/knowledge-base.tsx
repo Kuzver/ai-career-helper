@@ -1,142 +1,39 @@
-import { Link, useLoaderData } from "react-router-dom"
+import { useState } from "react"
 
-import type { Route } from "./+types/knowledge-base"
-import { getKnowledgeBaseCards } from "~/modules/knowledge-base/api/get-cards"
-import type { KnowledgeBaseCollection } from "~/modules/knowledge-base/model/types"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/shared/components/ui/accordion"
-import { Button } from "~/shared/components/ui/button"
+type Card = { id: string; title: string; description: string }
 
-const COLLECTION_FETCH_LIMIT = 50
-const CARDS_PER_PAGE = 6
-
-type FlatCard = {
-  id: string
-  title: string
-  description: string
-  category: string
-  createdAt: string
-}
-
-const truncate = (text: string) => {
-  if (text.length <= 140) return text
-  return `${text.slice(0, 137)}...`
-}
-
-const flattenCards = (collections: KnowledgeBaseCollection[]): FlatCard[] => {
-  return collections.flatMap((collection) =>
-    collection.cards.map((card) => ({
-      id: card.id,
-      title: card.title,
-      description: card.description,
-      category: collection.title,
-      createdAt: card.createdAt,
-    })),
-  )
-}
-
-export async function clientLoader({ request }: Route.ClientLoaderArgs) {
-  const url = new URL(request.url)
-  const pageParam = Number(url.searchParams.get("page") ?? "1")
-  const rawPage = Number.isNaN(pageParam) || pageParam < 1 ? 1 : pageParam
-
-  const data = await getKnowledgeBaseCards({
-    limit: COLLECTION_FETCH_LIMIT,
-    offset: 0,
-  })
-
-  const cards = flattenCards(data.items)
-  const totalCards = cards.length
-  const totalPages = Math.max(1, Math.ceil(totalCards / CARDS_PER_PAGE))
-  const page = Math.min(rawPage, totalPages)
-  const startIndex = (page - 1) * CARDS_PER_PAGE
-  const pageCards = cards.slice(startIndex, startIndex + CARDS_PER_PAGE)
-
-  return {
-    cards: pageCards,
-    page,
-    totalCards,
-    totalPages,
-  }
-}
+const CARDS: Card[] = [
+  { id: "1", title: "Как составить резюме", description: "Резюме — это ваша визитная карточка для работодателя. Укажите контактные данные, опыт работы в обратном хронологическом порядке, ключевые навыки и образование. Используйте конкретные цифры и достижения вместо общих фраз. Адаптируйте резюме под каждую вакансию, выделяя релевантный опыт." },
+  { id: "2", title: "Подготовка к собеседованию", description: "Изучите компанию и вакансию заранее. Подготовьте ответы на типичные вопросы: расскажите о себе, почему хотите работать у нас, ваши сильные и слабые стороны. Используйте метод STAR для описания опыта (Ситуация, Задача, Действие, Результат). Подготовьте свои вопросы к работодателю." },
+  { id: "3", title: "Построение карьерного пути", description: "Определите свои долгосрочные карьерные цели и разбейте их на этапы. Регулярно оценивайте свой прогресс и корректируйте план. Развивайте как hard skills, так и soft skills. Нетворкинг и менторство могут значительно ускорить карьерный рост." },
+  { id: "4", title: "Навыки для IT-специалиста", description: "Современный IT-специалист должен владеть не только техническими навыками, но и уметь работать в команде, управлять временем и коммуницировать. Изучайте Git, основы DevOps, методологии Agile/Scrum. Постоянно обновляйте знания — технологии меняются быстро." },
+  { id: "5", title: "Как вести себя на новой работе", description: "Первые 90 дней критически важны. Слушайте больше, чем говорите. Знакомьтесь с коллегами и корпоративной культурой. Задавайте вопросы — это показывает заинтересованность. Фиксируйте свои достижения с первого дня для будущих обзоров эффективности." },
+  { id: "6", title: "Фриланс vs Офис", description: "Фриланс даёт свободу графика и выбора проектов, но требует самодисциплины и навыков самопродвижения. Офисная работа обеспечивает стабильность, социальные гарантии и командную среду. Гибридный формат сочетает преимущества обоих подходов. Выбирайте исходя из своих приоритетов." },
+]
 
 export default function KnowledgeBase() {
-  const { cards, page, totalCards, totalPages } = useLoaderData<typeof clientLoader>()
-  const from = cards.length ? (page - 1) * CARDS_PER_PAGE + 1 : 0
-  const to = cards.length ? from + cards.length - 1 : 0
-  const hasPrev = page > 1
-  const hasNext = page < totalPages
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null)
 
   return (
-    <div className="space-y-8">
-      <header className="space-y-2">
-        <p className="text-sm uppercase tracking-[0.35em] text-primary/70">Knowledge base</p>
-        <h1 className="text-3xl font-semibold tracking-tight">Полезные материалы для развития карьеры</h1>
-        <p className="text-muted-foreground">
-          Изучайте карточки с советами и практическими рекомендациями, которые мы подготовили специально для вашей
-          команды.
-        </p>
-      </header>
-
-      {cards.length === 0 ? (
-        <div className="rounded-xl border border-dashed p-10 text-center">
-          <h2 className="text-xl font-semibold">Пока что здесь пусто</h2>
-          <p className="text-muted-foreground">
-            Как только появятся карточки, вы сможете изучать материалы и сохранять заметки.
-          </p>
+    <div className="p-8">
+      {selectedCard && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4" onClick={() => setSelectedCard(null)}>
+          <div className="w-full max-w-lg rounded-3xl bg-white p-8 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h2 className="mb-3 text-xl font-semibold text-gray-900">{selectedCard.title}</h2>
+            <p className="text-sm leading-relaxed text-gray-500">{selectedCard.description}</p>
+            <button onClick={() => setSelectedCard(null)} className="mt-6 text-sm text-[#0157FF] hover:underline">Закрыть</button>
+          </div>
         </div>
-      ) : (
-        <Accordion type="multiple" className="space-y-4">
-          {cards.map((card) => (
-            <AccordionItem
-              key={card.id}
-              value={card.id}
-              className="rounded-3xl border border-border/60 bg-card shadow-sm px-4"
-            >
-              <AccordionTrigger className="py-5">
-                <div className="flex flex-col text-left">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {card.category}
-                  </span>
-                  <span className="text-base font-semibold text-foreground">{card.title}</span>
-                  <span className="text-sm text-muted-foreground">{truncate(card.description)}</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-1 pb-5 text-sm leading-relaxed text-muted-foreground">
-                {card.description}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
       )}
-
-      <footer className="flex flex-col gap-4 border-t pt-4 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
-        <span>
-          Показано {from}–{to} из {totalCards}
-        </span>
-        <div className="flex items-center gap-2">
-          {hasPrev ? (
-            <Button variant="outline" size="sm" asChild>
-              <Link to={`?page=${page - 1}`}>Назад</Link>
-            </Button>
-          ) : (
-            <Button variant="outline" size="sm" disabled>
-              Назад
-            </Button>
-          )}
-          <span>
-            Страница {page} из {totalPages}
-          </span>
-          {hasNext ? (
-            <Button variant="outline" size="sm" asChild>
-              <Link to={`?page=${page + 1}`}>Вперед</Link>
-            </Button>
-          ) : (
-            <Button variant="outline" size="sm" disabled>
-              Вперед
-            </Button>
-          )}
-        </div>
-      </footer>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {CARDS.map((card) => (
+          <button key={card.id} onClick={() => setSelectedCard(card)}
+            className="rounded-2xl border border-gray-200 bg-white p-6 text-left transition-shadow hover:shadow-md">
+            <h3 className="mb-2 text-base font-semibold text-gray-900">{card.title}</h3>
+            <p className="line-clamp-3 text-sm leading-relaxed text-[#C5CBD3]">{card.description}</p>
+          </button>
+        ))}
+      </div>
     </div>
   )
 }

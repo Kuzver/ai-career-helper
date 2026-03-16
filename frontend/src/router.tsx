@@ -1,37 +1,26 @@
-import React from "react";
-import { createBrowserRouter } from "react-router-dom";
-import AppLayout from "~/shared/components/ui/app-layout";
-import ChatPage, { loader, action } from "../app/pages/chat";
-import SignIn from "../app/pages/auth/ui/sign-in";
-import SignUp from "../app/pages/auth/ui/sign-up";
+import React from "react"
+import { createBrowserRouter } from "react-router-dom"
+import AppLayout from "~/shared/components/ui/app-layout"
+import ChatPage, { loader as chatLoader } from "../app/pages/chat"
+import SignIn from "../app/pages/auth/ui/sign-in"
+import SignUp from "../app/pages/auth/ui/sign-up"
+import KnowledgeBase from "../app/pages/knowledge-base/ui/knowledge-base"
+import Roadmap from "../app/pages/roadmap"
+import Profile from "../app/pages/profile"
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <AppLayout />, // ← теперь рендерится Layout с сайдбаром
-    errorElement: <div>Ошибка в корне</div>,
+    element: <AppLayout />,
     children: [
-      {
-        index: true,
-        element: <ChatPage />,
-        loader,
-        action,
-        errorElement: <div>Ошибка при загрузке чатов 😢</div>,
-      },
-      // сюда можно добавить другие маршруты, например:
-      // { path: "knowledge-base", element: <KnowledgeBase /> },
+      { index: true, element: <ChatPage />, loader: chatLoader },
+      { path: "knowledge-base", element: <KnowledgeBase /> },
+      { path: "roadmap", element: <Roadmap /> },
+      { path: "profile", element: <Profile /> },
     ],
   },
-  {
-    path: "/sign-in",
-    element: <SignIn />,
-    errorElement: <div>Ошибка при входе</div>,
-  },
-  {
-    path: "/sign-up",
-    element: <SignUp />,
-    errorElement: <div>Ошибка при регистрации</div>,
-  },
-]);
+  { path: "/sign-in", element: <SignIn /> },
+  { path: "/sign-up", element: <SignUp /> },
+])
 
-export default router;
+export default router

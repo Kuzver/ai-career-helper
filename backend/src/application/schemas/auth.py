@@ -1,7 +1,9 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from uuid import UUID
 
 class AuthSchema(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     id: UUID = Field(alias="sub")
 
     @field_validator('id', mode='before')

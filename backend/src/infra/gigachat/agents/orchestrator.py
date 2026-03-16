@@ -1,56 +1,57 @@
+from dataclasses import dataclass
+from loguru import logger
+
 from src.usecase.message.schemas import RequestMessageSchema
 from src.infra.gigachat.agents.career import CareerAgent
 from src.infra.gigachat.agents.learning import LearningAgent
-from dataclasses import dataclass
+
+CAREER_KEYWORDS = [
+    "резюме", "ваканси", "собеседован", "карьер", "работ", "cv",
+    "зарплат", "оффер", "увольн", "начальник", "коллег", "hr",
+    "трудоустр", "найм", "наём", "стажир", "стажёр",
+]
+
+LEARNING_KEYWORDS = [
+    "обучен", "изуч", "курс", "материал", "roadmap", "концепц",
+    "учиться", "обучаться", "книг", "туториал", "практик",
+    "объясн", "что такое", "как работает", "план обучен",
+]
+
+TECH_KEYWORDS = [
+    "программир", "python", "java", "javascript", "typescript",
+    "c++", "c#", "sql", "алгоритм", "структур данных",
+    "машинное обучен", "ml", "data", "аналитик",
+    "backend", "frontend", "devops", "react", "vue", "angular",
+    "django", "fastapi", "docker", "git", "linux", "api",
+]
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
-class OrchestratorAgent():
+class OrchestratorAgent:
     career_agent: CareerAgent
     learning_agent: LearningAgent
 
-
     async def __call__(self, data: RequestMessageSchema) -> str:
-        q = data.text.lower()
-        """Определяет, какой агент должен обработать запрос"""
+        query = data.text.lower()
 
-        career_keywords = ['резюме', 'ваканси', 'собеседован', 'карьер', 'работ', 'cv']
-        learning_keywords = ['обучен', 'изуч', 'курс', 'материал', 'roadmap', 'концепц', 'учиться', 'обучаться']
+        career_score = sum(1 for k in CAREER_KEYWORDS if k in query)
+        learning_score = sum(1 for k in LEARNING_KEYWORDS if k in query)
+        tech_score = sum(1 for k in TECH_KEYWORDS if k in query)
 
-        tech_keywords = [
-            'программир', 'python', 'java', 'c++', 'c#', 'sql',
-            'алгоритм', 'структур данных', 'машинное обучен', 'ml',
-            'data', 'аналитик', 'backend', 'frontend', 'devops',
-            'langgraph', 'лангграф', 'llm', 'агент', 'multi-agent'
-        ]
+        # Tech keywords boost learning score
+        if tech_score > 0 and career_score == 0:
+            learning_score += tech_score
 
-        base_match = any(k in q for k in career_keywords + learning_keywords)
-
-        is_explain_tech = ("объясн" in q) and any(k in q for k in tech_keywords)
-
-        is_career_or_learning = base_match or is_explain_tech
-
-        if not is_career_or_learning:
-            # нужно брать из базы ответов
-            response = ("Я специализированный ассистент по вопросам карьеры и обучения.\n\n"
-                        "Моё основное предназначение:\n"
-                        "• анализировать резюме и вакансии,\n"
-                        "• помогать с подготовкой к собеседованиям,\n"
-                        "• строить образовательные roadmap’ы и планы развития,\n"
-                        "• подбирать материалы для обучения и объяснять сложные концепции.\n\n"
-                        "Если у тебя есть вопрос про карьеру, обучение или резюме — сформулируй его, "
-                        "и я помогу максимально детально. По другим темам я, к сожалению, не отвечаю.")
-            return response
-
-        career_score = sum(1 for keyword in career_keywords if keyword in q)
-        learning_score = sum(1 for keyword in learning_keywords if keyword in q)
+        logger.info(
+            f"Orchestrator scores — career: {career_score}, "
+            f"learning: {learning_score}, tech: {tech_score}"
+        )
 
         if career_score > learning_score:
-            # тут таску надо регистирировать в редис
-            response = await  self.career_agent(data)
-            return response
-        else:
-            # тут таску надо регистирировать в редис
-            # если примерно одинаково — по умолчанию считаем, что это про обучение
-            response = await self.learning_agent(data)
-            return response
+            return await self.career_agent(data)
+
+        if learning_score > 0:
+            return await self.learning_agent(data)
+
+        # No keywords matched — route to learning agent as general helper
+        return await self.learning_agent(data)

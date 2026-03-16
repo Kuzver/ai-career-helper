@@ -70,11 +70,9 @@ const mapChatWithMessages = (chat: RawChatWithMessages): ChatWithMessages => ({
 })
 
 export async function getChats(params: { limit: number; offset: number }) {
-  console.log("baseClient baseURL:", baseClient.defaults.baseURL);
   try {
-    const { data } = await baseClient.get<RawPagination<RawChat>>("/api/chats/all", { params });
-    console.log("getChats response:", data);
-    const items = normalizeItems(data.items).map(mapChat);
+    const { data } = await baseClient.get<RawPagination<RawChat>>("/api/chats/all", { params })
+    const items = normalizeItems(data.items).map(mapChat)
     return {
       items,
       lenItems: data.lenItems,
@@ -82,10 +80,10 @@ export async function getChats(params: { limit: number; offset: number }) {
       leftOffset: data.leftOffset,
       rightLimit: data.rightLimit,
       rightOffset: data.rightOffset,
-    } satisfies PaginatedResponse<Chat>;
+    } satisfies PaginatedResponse<Chat>
   } catch (error) {
-    console.error("getChats error:", error);
-    throw error;
+    console.error("getChats error:", error)
+    throw error
   }
 }
 
@@ -118,15 +116,10 @@ export async function getChatById(params: { id: string; limit: number; offset: n
 }
 
 export async function sendMessage(chatId: string, text: string) {
-  const formData = new FormData();
-  formData.append("chat_id", chatId);
-  formData.append("text", text);
-  // Добавляем пустой файл, так как поле ожидается, но необязательно
-  // Если бэкенд требует файл, этот пустой Blob должен подойти
-  formData.append("file", new Blob([]), "");
+  const formData = new FormData()
+  formData.append("chat_id", chatId)
+  formData.append("text", text)
 
-  const { data } = await baseClient.post("/api/messages", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-  return data;
+  const { data } = await baseClient.post("/api/messages", formData)
+  return data
 }
