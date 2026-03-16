@@ -21,7 +21,7 @@ export default function KnowledgeBase() {
           <div className="w-full max-w-lg rounded-3xl bg-white p-8 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <h2 className="mb-3 text-xl font-semibold text-gray-900">{selectedCard.title}</h2>
             <p className="text-sm leading-relaxed text-gray-500">{selectedCard.description}</p>
-            <button onClick={() => setSelectedCard(null)} className="mt-6 text-sm text-[#0157FF] hover:underline">Закрыть</button>
+            <button onClick={() => setSelectedCard(null)} className="mt-6 text-sm text-[#3649F9] hover:underline">Закрыть</button>
           </div>
         </div>
       )}

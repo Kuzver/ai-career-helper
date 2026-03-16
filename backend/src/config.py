@@ -36,12 +36,17 @@ class GigachatConfig(BaseSchema):
     scope: str
     authorization_key: str
 
+class JwtConfig(BaseSchema):
+    secret: str = "ai-career-helper-jwt-secret-key-change-in-production"
+    expire_days: int = 7
+
 class Config(BaseSchema):
     model_config = ConfigDict(extra='allow', from_attributes=True)
     api: ApiConfig
     database: DatabaseConfig
     redis: RedisConfig | None = None
     gigachat: GigachatConfig
+    jwt: JwtConfig = JwtConfig()
 
 
 def get_config() -> Config:

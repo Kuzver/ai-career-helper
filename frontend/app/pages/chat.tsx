@@ -72,11 +72,11 @@ export default function ChatPage() {
   if (!user.isAuthorized) {
     return (
       <div className="flex h-full flex-col items-center justify-center">
-        <div className="mb-6 h-16 w-16 rounded-full bg-[#0157FF]" />
+        <div className="mb-6 h-16 w-16 rounded-full bg-[#3649F9]" />
         <p className="mb-2 text-lg font-medium text-gray-600">Войдите в аккаунт</p>
         <p className="mb-6 text-sm text-[#C5CBD3]">Чтобы начать общение с ИИ-помощником</p>
         <button onClick={() => navigate("/sign-in")}
-          className="rounded-lg bg-[#0157FF] px-6 py-2.5 text-sm font-medium text-white hover:bg-[#0157FF]/90">
+          className="rounded-lg bg-[#3649F9] px-6 py-2.5 text-sm font-medium text-white hover:bg-[#3649F9]/90">
           Войти
         </button>
       </div>
@@ -122,7 +122,7 @@ export default function ChatPage() {
     setOptimisticText(null)
     setSendError(null)
     // Navigate without chatId — loader won't auto-select any chat
-    navigate("/", { replace: true })
+    navigate("/chat", { replace: true })
   }
 
   const handleSelectChat = (chatId: string) => {
@@ -142,7 +142,7 @@ export default function ChatPage() {
       <div className="flex-1 overflow-y-auto px-8 py-6">
         {serverMessages.length === 0 && !showOptimistic && !isSending ? (
           <div className="flex h-full flex-col items-center justify-center">
-            <div className="mb-6 h-16 w-16 rounded-full bg-[#0157FF]" />
+            <div className="mb-6 h-16 w-16 rounded-full bg-[#3649F9]" />
             <p className="mb-2 text-lg font-medium text-gray-600">ИИ-помощник</p>
             <p className="text-sm text-[#C5CBD3]">Напишите сообщение, чтобы начать диалог</p>
           </div>
@@ -153,10 +153,10 @@ export default function ChatPage() {
             ))}
             {showOptimistic && (
               <div className="flex justify-end gap-3">
-                <div className="max-w-lg rounded-2xl bg-[#E8F0FF] px-5 py-3">
+                <div className="max-w-lg rounded-2xl bg-[#E8EAFF] px-5 py-3">
                   <p className="text-sm leading-relaxed text-gray-800">{optimisticText}</p>
                 </div>
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0157FF]">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#3649F9]">
                   <img src="/icons/icon profile.svg" alt="" className="h-4 w-4 brightness-0 invert" />
                 </div>
               </div>
@@ -164,12 +164,12 @@ export default function ChatPage() {
             {isSending && (
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 shrink-0 rounded-full bg-[#0157FF]" />
+                  <div className="h-8 w-8 shrink-0 rounded-full bg-[#3649F9]" />
                   <span className="text-sm font-semibold text-gray-800">ИИ-помощник</span>
                 </div>
-                <div className="ml-10 rounded-2xl bg-[#E8F0FF] px-5 py-3">
+                <div className="ml-10 rounded-2xl bg-[#E8EAFF] px-5 py-3">
                   <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-[#0157FF]" />
+                    <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-[#3649F9]" />
                     Думаю...
                   </div>
                 </div>
@@ -195,7 +195,7 @@ export default function ChatPage() {
                 {chats.map((chat) => (
                   <button key={chat.id} onClick={() => handleSelectChat(chat.id)}
                     className={["block w-full truncate px-3 py-2 text-left text-sm",
-                      chat.id === selectedChatId ? "bg-[#E8F0FF] text-[#0157FF]" : "text-gray-600 hover:bg-gray-50",
+                      chat.id === selectedChatId ? "bg-[#E8EAFF] text-[#3649F9]" : "text-gray-600 hover:bg-gray-50",
                     ].join(" ")}>
                     {chat.title}
                   </button>
@@ -207,7 +207,7 @@ export default function ChatPage() {
           <span className="text-xs text-[#C5CBD3]">Новый диалог</span>
         )}
         <button onClick={handleNewChat}
-          className="ml-auto rounded-md px-3 py-1 text-xs text-[#0157FF] hover:bg-[#E8F0FF]">
+          className="ml-auto rounded-md px-3 py-1 text-xs text-[#3649F9] hover:bg-[#E8EAFF]">
           + Новый чат
         </button>
       </div>
@@ -231,7 +231,7 @@ export default function ChatPage() {
             </button>
             <button onClick={handleSendMessage}
               disabled={!messageText.trim() || isSending}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0157FF] text-white hover:bg-[#0157FF]/90 disabled:opacity-40">
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-[#3649F9] text-white hover:bg-[#3649F9]/90 disabled:opacity-40">
               <img src="/icons/write.svg" alt="" className="h-4 w-4 brightness-0 invert" />
             </button>
           </div>
@@ -245,10 +245,10 @@ function MessageBubble({ msg }: { msg: Message }) {
   if (msg.senderTypeId === "user") {
     return (
       <div className="flex justify-end gap-3">
-        <div className="max-w-lg rounded-2xl bg-[#E8F0FF] px-5 py-3">
+        <div className="max-w-lg rounded-2xl bg-[#E8EAFF] px-5 py-3">
           <p className="text-sm leading-relaxed text-gray-800">{cleanUserText(msg.text)}</p>
         </div>
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0157FF]">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#3649F9]">
           <img src="/icons/icon profile.svg" alt="" className="h-4 w-4 brightness-0 invert" />
         </div>
       </div>
@@ -258,10 +258,10 @@ function MessageBubble({ msg }: { msg: Message }) {
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <div className="h-8 w-8 shrink-0 rounded-full bg-[#0157FF]" />
+        <div className="h-8 w-8 shrink-0 rounded-full bg-[#3649F9]" />
         <span className="text-sm font-semibold text-gray-800">ИИ-помощник</span>
       </div>
-      <div className="ml-10 max-w-2xl rounded-2xl bg-[#E8F0FF] px-5 py-3 text-sm leading-relaxed text-gray-800">
+      <div className="ml-10 max-w-2xl rounded-2xl bg-[#E8EAFF] px-5 py-3 text-sm leading-relaxed text-gray-800">
         <BotMessage text={msg.text} />
       </div>
     </div>

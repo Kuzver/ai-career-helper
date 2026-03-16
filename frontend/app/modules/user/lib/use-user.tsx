@@ -42,5 +42,9 @@ export const useUser = () => {
     return parts.length > 0 ? parts.join(". ") + "." : ""
   }, [getProfile])
 
-  return { user, setUser, logout, getProfile, saveProfile, getProfileContext }
+  const getToken = useCallback((): string | null => {
+    return user.token ?? null
+  }, [user.token])
+
+  return { user, setUser, logout, getProfile, saveProfile, getProfileContext, getToken }
 }

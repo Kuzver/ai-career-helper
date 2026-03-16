@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useUser } from "~/modules/user/lib/use-user"
+import { baseClient } from "~/shared/api/axios-client"
 
 export default function SignIn() {
   const navigate = useNavigate()
@@ -17,20 +18,29 @@ export default function SignIn() {
 
     setLoading(true)
     try {
-      setUser({ isAuthorized: true, email })
+      const { data } = await baseClient.post("/api/auth/login", { email, password })
+      setUser({
+        isAuthorized: true,
+        email: data.email,
+        token: data.token,
+        userId: data.user_id,
+      })
       navigate("/")
-    } catch {
-      setError("Произошла ошибка при входе")
+    } catch (err: any) {
+      const message = err?.response?.data?.detail
+      setError(typeof message === "string" ? message : "Неверный email или пароль")
     } finally {
       setLoading(false)
     }
   }
 
+  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#3649F9] focus:ring-1 focus:ring-[#3649F9]"
+
   return (
     <div className="flex min-h-screen flex-col bg-white">
       <div className="px-10 py-8">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-[#0157FF]" />
+          <div className="h-10 w-10 rounded-full bg-[#3649F9]" />
           <span className="text-xl font-semibold text-gray-900">ИИ-ассистент</span>
         </div>
       </div>
@@ -41,30 +51,27 @@ export default function SignIn() {
           <div>
             <label className="mb-2 block text-sm text-gray-600">Электронная почта</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-              placeholder="example@mail.com" autoComplete="email"
-              className="w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#0157FF] focus:ring-1 focus:ring-[#0157FF]" />
+              placeholder="example@mail.com" autoComplete="email" className={inputCls} />
           </div>
           <div>
             <label className="mb-2 block text-sm text-gray-600">Пароль</label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-              placeholder="Пароль" autoComplete="current-password"
-              className="w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#0157FF] focus:ring-1 focus:ring-[#0157FF]" />
+              placeholder="Пароль" autoComplete="current-password" className={inputCls} />
           </div>
           <div className="flex items-center justify-between">
             <label className="flex items-center gap-2 text-sm text-gray-600">
-              <input type="checkbox" className="h-4 w-4 rounded border-[#C5CBD3] accent-[#0157FF]" />
+              <input type="checkbox" className="h-4 w-4 rounded border-[#C5CBD3] accent-[#3649F9]" />
               Запомнить меня
             </label>
-            <Link to="/sign-up" className="text-sm text-[#0157FF] hover:underline">Забыли пароль?</Link>
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
           <button type="submit" disabled={loading}
-            className="w-full rounded-lg bg-[#0157FF] py-4 text-sm font-semibold text-white hover:bg-[#0157FF]/90 disabled:opacity-50">
-            Войти
+            className="w-full rounded-lg bg-[#3649F9] py-4 text-sm font-semibold text-white hover:bg-[#3649F9]/90 disabled:opacity-50">
+            {loading ? "Входим..." : "Войти"}
           </button>
           <p className="text-center text-sm text-gray-500">
             Нет аккаунта?{" "}
-            <Link to="/sign-up" className="font-medium text-[#0157FF] hover:underline">Зарегистрироваться</Link>
+            <Link to="/sign-up" className="font-medium text-[#3649F9] hover:underline">Зарегистрироваться</Link>
           </p>
         </form>
       </div>

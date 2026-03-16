@@ -37,10 +37,10 @@ export default function Profile() {
   if (!user.isAuthorized) {
     return (
       <div className="flex h-full flex-col items-center justify-center">
-        <div className="mb-4 h-16 w-16 rounded-full bg-[#0157FF]/10" />
+        <div className="mb-4 h-16 w-16 rounded-full bg-[#3649F9]/10" />
         <p className="mb-2 text-lg font-medium text-gray-600">Вы не авторизованы</p>
         <p className="mb-6 text-sm text-[#C5CBD3]">Войдите, чтобы просматривать профиль</p>
-        <Link to="/sign-in" className="rounded-lg bg-[#0157FF] px-6 py-2.5 text-sm font-medium text-white hover:bg-[#0157FF]/90">
+        <Link to="/sign-in" className="rounded-lg bg-[#3649F9] px-6 py-2.5 text-sm font-medium text-white hover:bg-[#3649F9]/90">
           Войти
         </Link>
       </div>
@@ -58,14 +58,14 @@ export default function Profile() {
     setTimeout(() => setSaved(false), 3000)
   }
 
-  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#0157FF] focus:ring-1 focus:ring-[#0157FF]"
+  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#3649F9] focus:ring-1 focus:ring-[#3649F9]"
 
   return (
     <div className="mx-auto max-w-2xl p-8">
       <h1 className="mb-8 text-2xl font-bold text-gray-900">Мой профиль</h1>
 
       <div className="mb-8 flex items-center gap-4">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#0157FF] text-xl font-bold text-white">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#3649F9] text-xl font-bold text-white">
           {(form.name?.[0] || user.email?.[0] || "U").toUpperCase()}
         </div>
         <div>
@@ -117,7 +117,7 @@ export default function Profile() {
 
         <div className="flex items-center gap-4 pt-2">
           <button onClick={handleSave}
-            className="rounded-lg bg-[#0157FF] px-8 py-3 text-sm font-medium text-white hover:bg-[#0157FF]/90">
+            className="rounded-lg bg-[#3649F9] px-8 py-3 text-sm font-medium text-white hover:bg-[#3649F9]/90">
             Сохранить
           </button>
           {saved && <span className="text-sm text-green-600">Данные сохранены</span>}

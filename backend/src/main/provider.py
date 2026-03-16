@@ -12,6 +12,7 @@ from src.config import ApiConfig
 from src.config import DatabaseConfig
 from src.config import RedisConfig
 from src.config import GigachatConfig
+from src.config import JwtConfig
 
 from src.usecase.users.create import CreateUserUsecase
 from src.usecase.cards.delete import DeleteCardUsecase
@@ -46,6 +47,10 @@ class MainProvider(Provider):
     @provide(scope=Scope.APP)
     async def _get_gigachat_config(self, config: Config) -> GigachatConfig | None:
         return config.gigachat
+
+    @provide(scope=Scope.APP)
+    async def _get_jwt_config(self, config: Config) -> JwtConfig:
+        return config.jwt
 
     _request = from_context(provides=Request, scope=Scope.REQUEST)
 

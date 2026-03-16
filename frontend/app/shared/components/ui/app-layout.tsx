@@ -3,7 +3,7 @@ import { useUser } from "~/modules/user/lib/use-user"
 
 const navItems = [
   { title: "Дорожная карта", url: "/roadmap", icon: "/icons/icon map.svg" },
-  { title: "ИИ-ассистент", url: "/", icon: "/icons/icon ai.svg" },
+  { title: "ИИ-ассистент", url: "/chat", icon: "/icons/icon ai.svg" },
   { title: "Мой профиль", url: "/profile", icon: "/icons/icon profile.svg" },
   { title: "База знаний", url: "/knowledge-base", icon: "/icons/icon info.svg" },
 ]
@@ -22,16 +22,16 @@ export default function AppLayout() {
     <div className="flex h-screen bg-white">
       <aside className="flex w-56 shrink-0 flex-col border-r border-gray-100">
         <Link to="/" className="flex items-center gap-3 px-5 py-5">
-          <div className="h-9 w-9 shrink-0 rounded-full bg-[#0157FF]" />
+          <div className="h-9 w-9 shrink-0 rounded-full bg-[#3649F9]" />
           <span className="text-lg font-semibold text-gray-900">ИИ-ассистент</span>
         </Link>
         <nav className="flex-1 space-y-1 px-3 pt-2">
           {navItems.map((item) => {
-            const isActive = item.url === "/" ? location.pathname === "/" : location.pathname.startsWith(item.url)
+            const isActive = location.pathname === item.url || location.pathname.startsWith(item.url + "/")
             return (
               <Link key={item.url} to={item.url}
                 className={["flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm transition-colors",
-                  isActive ? "bg-[#0157FF] font-medium text-white" : "text-[#C5CBD3] hover:bg-gray-50 hover:text-gray-600",
+                  isActive ? "bg-[#3649F9] font-medium text-white" : "text-[#C5CBD3] hover:bg-gray-50 hover:text-gray-600",
                 ].join(" ")}>
                 <img src={item.icon} alt="" className={["h-5 w-5", isActive ? "brightness-0 invert" : "opacity-60"].join(" ")} />
                 {item.title}
@@ -46,7 +46,7 @@ export default function AppLayout() {
               Выйти
             </button>
           ) : (
-            <Link to="/sign-in" className="flex items-center gap-2 text-sm text-[#0157FF]">
+            <Link to="/sign-in" className="flex items-center gap-2 text-sm text-[#3649F9]">
               <img src="/icons/icon exit.svg" alt="" className="h-5 w-5" />
               Войти
             </Link>

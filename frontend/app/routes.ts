@@ -2,9 +2,11 @@ import { type RouteConfig, index, layout, route } from "@react-router/dev/routes
 
 export default [
   layout("shared/components/ui/app-layout.tsx", [
-    index("pages/index.tsx"),      // 👈 новый файл
+    index("pages/index.tsx"),
     route("chat", "pages/chat.tsx"),
     route("knowledge-base", "pages/knowledge-base/ui/knowledge-base.tsx"),
+    route("profile", "pages/profile.tsx"),
+    route("roadmap", "pages/roadmap.tsx"),
   ]),
 
   layout("pages/auth/ui/auth-layout.tsx", [

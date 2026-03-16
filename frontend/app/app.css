@@ -4,11 +4,12 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --color-brand: #0157FF;
-  --color-brand-light: #E8F0FF;
+  --color-brand: #3649F9;
+  --color-brand-light: #E8EAFF;
   --color-gray-ui: #C5CBD3;
+  --color-gray-text: #6D7C90;
 }
 
 html,
@@ -49,18 +50,18 @@ body {
   --card-foreground: #111111;
   --popover: #ffffff;
   --popover-foreground: #111111;
-  --primary: #0157FF;
+  --primary: #3649F9;
   --primary-foreground: #ffffff;
   --secondary: #F5F7FA;
   --secondary-foreground: #111111;
   --muted: #F5F7FA;
-  --muted-foreground: #6B7280;
+  --muted-foreground: #6D7C90;
   --accent: #F5F7FA;
   --accent-foreground: #111111;
-  --destructive: #EF4444;
+  --destructive: #FF383C;
   --border: #E5E7EB;
   --input: #E5E7EB;
-  --ring: #0157FF;
+  --ring: #3649F9;
 }
 
 @layer base {
@@ -111,10 +112,10 @@ body {
   padding: 0;
   color: inherit;
 }
-.bot-markdown a { color: #0157FF; text-decoration: underline; }
+.bot-markdown a { color: #3649F9; text-decoration: underline; }
 .bot-markdown hr { border-color: #e5e7eb; margin: 0.75rem 0; }
 .bot-markdown blockquote {
-  border-left: 3px solid #0157FF;
+  border-left: 3px solid #3649F9;
   padding-left: 0.75rem;
   color: #6b7280;
   margin: 0.5rem 0;

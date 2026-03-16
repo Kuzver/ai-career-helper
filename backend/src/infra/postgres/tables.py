@@ -57,6 +57,10 @@ class UserModel(BaseDBModel):
         String(200),
         nullable=False
     )
+    password_hash: Mapped[str] = mapped_column(
+        String(500),
+        nullable=True
+    )
     first_name: Mapped[str] = mapped_column(
         String(255),
         nullable=True
@@ -69,7 +73,7 @@ class UserModel(BaseDBModel):
         Boolean,
         nullable=False
     )
-    
+
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
 

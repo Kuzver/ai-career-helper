@@ -1,8 +1,6 @@
 import { baseClient } from "~/shared/api/axios-client"
 import type { Chat, ChatWithMessages, Message, PaginatedResponse } from "../model/types"
 
-const USER_ID = "21dc573d-663b-419e-a1b6-c48e02b97c67"
-
 type RawChat = {
   id: string
   user_id: string
@@ -69,30 +67,35 @@ const mapChatWithMessages = (chat: RawChatWithMessages): ChatWithMessages => ({
   messages: chat.messages.map(mapMessage),
 })
 
-export async function getChats(params: { limit: number; offset: number }) {
+function getUserId(): string {
   try {
-    const { data } = await baseClient.get<RawPagination<RawChat>>("/api/chats/all", { params })
-    const items = normalizeItems(data.items).map(mapChat)
-    return {
-      items,
-      lenItems: data.lenItems,
-      leftLimit: data.leftLimit,
-      leftOffset: data.leftOffset,
-      rightLimit: data.rightLimit,
-      rightOffset: data.rightOffset,
-    } satisfies PaginatedResponse<Chat>
-  } catch (error) {
-    console.error("getChats error:", error)
-    throw error
-  }
+    const raw = localStorage.getItem("auth")
+    if (raw) {
+      const { userId } = JSON.parse(raw)
+      if (userId) return userId
+    }
+  } catch {}
+  return ""
+}
+
+export async function getChats(params: { limit: number; offset: number }) {
+  const { data } = await baseClient.get<RawPagination<RawChat>>("/api/chats/all", { params })
+  const items = normalizeItems(data.items).map(mapChat)
+  return {
+    items,
+    lenItems: data.lenItems,
+    leftLimit: data.leftLimit,
+    leftOffset: data.leftOffset,
+    rightLimit: data.rightLimit,
+    rightOffset: data.rightOffset,
+  } satisfies PaginatedResponse<Chat>
 }
 
 export async function createChat(title: string) {
   const { data } = await baseClient.post<RawChatWithMessages>("/api/chats", {
-    user_id: USER_ID,
+    user_id: getUserId(),
     title,
   })
-
   return mapChatWithMessages(data)
 }
 

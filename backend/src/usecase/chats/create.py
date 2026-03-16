@@ -23,8 +23,8 @@ class CreateChatUsecase:
         if not user_result.scalar_one_or_none():
             self.session.add(UserModel(
                 id=self.auth.id,
-                email="dev@test.com",
-                first_name="Dev",
+                email=self.auth.email or "user@local",
+                first_name=None,
                 is_active=True,
             ))
             await self.session.flush()
