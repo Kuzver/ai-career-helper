@@ -1,17 +1,16 @@
-console.log("✅ Chat component rendered");
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import {
   Link,
   useFetcher,
   useLoaderData,
   useNavigation,
   useSearchParams,
+  useRevalidator,
 } from "react-router-dom"
 
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router-dom";
 
-//import type { Route } from "./+types/chat"
-import { createChat, getChatById, getChats } from "~/modules/chat/api/chats"
+import { createChat, getChatById, getChats, sendMessage } from "~/modules/chat/api/chats"
 import type { ChatWithMessages } from "~/modules/chat/model/types"
 import { Button } from "~/shared/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/shared/components/ui/card"
@@ -21,37 +20,42 @@ import { Skeleton } from "~/shared/components/ui/skeleton"
 const CHATS_LIMIT = 50
 const MESSAGES_LIMIT = 50
 
-//export function meta({}: Route.MetaArgs) {
-//  return [{ title: "Чаты" }]
-//}
-
 export async function loader({ request }: LoaderFunctionArgs) {
-  console.log("🔥 loader called");
-  const url = new URL(request.url)
-  const selectedChatId = url.searchParams.get("chatId")
-  const chatsData = await getChats({ limit: CHATS_LIMIT, offset: 0 })
+  try {
+    const url = new URL(request.url)
+    const selectedChatId = url.searchParams.get("chatId")
+    const chatsData = await getChats({ limit: CHATS_LIMIT, offset: 0 })
 
-  const chats = chatsData.items
-  const fallbackChatId = chats[0]?.id ?? null
-  const chatId =
-    selectedChatId && chats.some((chat) => chat.id === selectedChatId)
-      ? selectedChatId
-      : fallbackChatId
+    const chats = chatsData.items
+    const fallbackChatId = chats[0]?.id ?? null
+    const chatId =
+      selectedChatId && chats.some((chat) => chat.id === selectedChatId)
+        ? selectedChatId
+        : fallbackChatId
 
-  let selectedChat: ChatWithMessages | null = null
-  if (chatId) {
-    const chatData = await getChatById({
-      id: chatId,
-      limit: MESSAGES_LIMIT,
-      offset: 0,
-    })
-    selectedChat = chatData.items[0] ?? null
-  }
+    let selectedChat: ChatWithMessages | null = null
+    if (chatId) {
+      try {
+        const chatData = await getChatById({
+          id: chatId,
+          limit: MESSAGES_LIMIT,
+          offset: 0,
+        })
+        selectedChat = chatData.items[0] ?? null
+      } catch (error) {
+        console.error("Ошибка загрузки сообщений для чата", chatId, error)
+        // Не прерываем выполнение, просто не показываем сообщения
+      }
+    }
 
-  return {
-    chats,
-    selectedChat,
-    selectedChatId: chatId,
+    return {
+      chats,
+      selectedChat,
+      selectedChatId: chatId,
+    }
+  } catch (error) {
+    console.error("Критическая ошибка загрузки:", error)
+    return { chats: [], selectedChat: null, selectedChatId: null }
   }
 }
 
@@ -69,11 +73,14 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Chat() {
   const { chats, selectedChat, selectedChatId } = useLoaderData<typeof loader>()
-  console.log('📦 Данные из useLoaderData:', { chats, selectedChat, selectedChatId })
+  const revalidator = useRevalidator()
   const [, setSearchParams] = useSearchParams()
   const fetcher = useFetcher<typeof action>()
   const navigation = useNavigation()
   const isLoading = navigation.state === "loading"
+  const [messageText, setMessageText] = useState("")
+  const [isSending, setIsSending] = useState(false)
+  const [sendError, setSendError] = useState<string | null>(null)
 
   useEffect(() => {
     if (fetcher.data?.chat) {
@@ -81,13 +88,40 @@ export default function Chat() {
     }
   }, [fetcher.data, setSearchParams])
 
+  const handleSendMessage = async () => {
+    if (!selectedChatId || !messageText.trim()) return
+    setIsSending(true)
+    setSendError(null)
+    try {
+      await sendMessage(selectedChatId, messageText)
+      // После успешной отправки обновляем данные чата
+      revalidator.revalidate()
+      setMessageText("")
+    } catch (error) {
+      console.error("Ошибка отправки сообщения:", error)
+      setSendError("Не удалось отправить сообщение")
+    } finally {
+      setIsSending(false)
+    }
+  }
+
   const selectedTitle = useMemo(() => {
     if (!selectedChatId) return "Выберите чат"
     return chats.find((chat) => chat.id === selectedChatId)?.title ?? "Чат"
   }, [chats, selectedChatId])
 
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "нет даты"
+    try {
+      return new Date(dateStr).toLocaleString("ru-RU")
+    } catch {
+      return "неверная дата"
+    }
+  }
+
   return (
     <div className="grid min-h-[calc(100vh-180px)] gap-6 lg:grid-cols-[320px_1fr]">
+      {/* Левая колонка (список чатов) без изменений */}
       <div className="flex flex-col gap-4">
         <Card>
           <CardHeader>
@@ -123,7 +157,7 @@ export default function Chat() {
                     >
                       <span className="font-medium text-foreground">{chat.title}</span>
                       <span className="text-xs text-muted-foreground">
-                        Последняя активность: {new Date(chat.lastActivityTime).toLocaleString("ru-RU")}
+                        Последняя активность: {formatDate(chat.lastActivityTime)}
                       </span>
                     </Link>
                   )
@@ -134,6 +168,7 @@ export default function Chat() {
         </Card>
       </div>
 
+      {/* Правая колонка (выбранный чат) */}
       <Card className="flex min-h-[520px] flex-col lg:min-h-full">
         <CardHeader>
           <CardTitle>{selectedTitle}</CardTitle>
@@ -170,14 +205,31 @@ export default function Chat() {
             </div>
           )}
 
+          {sendError && (
+            <p className="text-sm text-destructive">{sendError}</p>
+          )}
+
           <div className="space-y-2">
             <textarea
-              className="min-h-[120px] w-full resize-none rounded-lg border bg-muted/40 px-3 py-2 text-sm text-muted-foreground"
+              className="min-h-[120px] w-full resize-none rounded-lg border bg-muted/40 px-3 py-2 text-sm"
               placeholder="Введите сообщение..."
-              disabled
+              value={messageText}
+              onChange={(e) => setMessageText(e.target.value)}
+              disabled={!selectedChatId || isSending}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault()
+                  handleSendMessage()
+                }
+              }}
             />
-            <Button variant="outline" disabled className="w-full">
-              Отправка пока недоступна
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={handleSendMessage}
+              disabled={!selectedChatId || !messageText.trim() || isSending}
+            >
+              {isSending ? "Отправка..." : "Отправить"}
             </Button>
           </div>
         </CardContent>

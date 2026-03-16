@@ -116,3 +116,17 @@ export async function getChatById(params: { id: string; limit: number; offset: n
     rightOffset: data.rightOffset,
   } satisfies PaginatedResponse<ChatWithMessages>
 }
+
+export async function sendMessage(chatId: string, text: string) {
+  const formData = new FormData();
+  formData.append("chat_id", chatId);
+  formData.append("text", text);
+  // Добавляем пустой файл, так как поле ожидается, но необязательно
+  // Если бэкенд требует файл, этот пустой Blob должен подойти
+  formData.append("file", new Blob([]), "");
+
+  const { data } = await baseClient.post("/api/messages", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return data;
+}
