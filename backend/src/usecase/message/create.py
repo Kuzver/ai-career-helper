@@ -111,27 +111,27 @@ class MessengerUsecase(Usecase[RequestMessageSchema, MessageSchemas]):
     auto_title: AutoTitleUsecase
 
     async def __call__(self, data: RequestMessageSchema) -> MessageSchemas:
-        result = await self.session.execute(
-            select(UserCareersModel).where(UserCareersModel.user_id == self.auth.id)
-        )
-        career = result.scalar_one_or_none()
-        survey_context = await build_survey_context(self.session, self.auth.id)
-        roadmap_context = await build_roadmap_context(self.session, self.auth.id)
-        user_context = build_user_context(career, survey_context, roadmap_context)
+        async with self.session.begin():
+            result = await self.session.execute(
+                select(UserCareersModel).where(UserCareersModel.user_id == self.auth.id)
+            )
+            career = result.scalar_one_or_none()
+            survey_context = await build_survey_context(self.session, self.auth.id)
+            roadmap_context = await build_roadmap_context(self.session, self.auth.id)
+            user_context = build_user_context(career, survey_context, roadmap_context)
 
-        await self.create_message(CreateMessageSchema(
-            chat_id=data.chat_id,
-            text=data.text,
-            sender_type_id="user"
-        ))
-        answer = await self.orchestrator(data=data, user_context=user_context)
+            await self.create_message(CreateMessageSchema(
+                chat_id=data.chat_id,
+                text=data.text,
+                sender_type_id="user"
+            ))
+            answer = await self.orchestrator(data=data, user_context=user_context)
 
-        bot_message = await self.create_message(CreateMessageSchema(
-            chat_id=data.chat_id,
-            text=answer,
-            sender_type_id="chat"
-        ))
-        await self.session.commit()
+            bot_message = await self.create_message(CreateMessageSchema(
+                chat_id=data.chat_id,
+                text=answer,
+                sender_type_id="chat"
+            ))
 
         await self.auto_title(chat_id=data.chat_id)
 
