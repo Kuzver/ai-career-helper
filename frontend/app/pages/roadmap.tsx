@@ -1,6 +1,8 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { useUser } from "~/modules/user/lib/use-user"
+import { getProfile } from "~/modules/user/api/profile"
+import { getProgress, toggleProgress } from "~/modules/roadmap/api/roadmap"
 
 type RoadmapStep = {
   id: string
@@ -11,6 +13,7 @@ type RoadmapStep = {
 }
 
 type Roadmap = {
+  key: string
   title: string
   description: string
   steps: RoadmapStep[]
@@ -18,6 +21,7 @@ type Roadmap = {
 
 const ROADMAPS: Record<string, Roadmap> = {
   frontend: {
+    key: "frontend",
     title: "Frontend-разработчик",
     description: "Путь от новичка до уверенного фронтенд-разработчика",
     steps: [
@@ -29,6 +33,7 @@ const ROADMAPS: Record<string, Roadmap> = {
     ],
   },
   backend: {
+    key: "backend",
     title: "Backend-разработчик",
     description: "Путь от новичка до уверенного бэкенд-разработчика",
     steps: [
@@ -40,6 +45,7 @@ const ROADMAPS: Record<string, Roadmap> = {
     ],
   },
   fullstack: {
+    key: "fullstack",
     title: "Fullstack-разработчик",
     description: "Путь к владению и фронтендом, и бэкендом",
     steps: [
@@ -51,6 +57,7 @@ const ROADMAPS: Record<string, Roadmap> = {
     ],
   },
   data: {
+    key: "data",
     title: "Data Science / Аналитика",
     description: "Путь в мир данных и машинного обучения",
     steps: [
@@ -64,6 +71,7 @@ const ROADMAPS: Record<string, Roadmap> = {
 }
 
 const DEFAULT_ROADMAP: Roadmap = {
+  key: "default",
   title: "Общий карьерный путь в IT",
   description: "Универсальный план развития для специалиста в IT-сфере",
   steps: [
@@ -75,21 +83,51 @@ const DEFAULT_ROADMAP: Roadmap = {
   ],
 }
 
-export default function Roadmap() {
-  const { user, getProfile } = useUser()
+export default function RoadmapPage() {
+  const { user } = useUser()
   const [expandedStep, setExpandedStep] = useState<string | null>(null)
-  const [completedSteps, setCompletedSteps] = useState<Set<string>>(() => {
-    try {
-      const raw = localStorage.getItem("roadmap_progress")
-      if (raw) return new Set(JSON.parse(raw))
-    } catch {}
-    return new Set()
-  })
+  const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set())
+  const [roadmap, setRoadmap] = useState<Roadmap>(DEFAULT_ROADMAP)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!user.isAuthorized) { setLoading(false); return }
+
+    const load = async () => {
+      try {
+        const profile = await getProfile()
+        const spec = profile.specialization || ""
+        const rm = ROADMAPS[spec] || DEFAULT_ROADMAP
+        setRoadmap(rm)
+
+        const progress = await getProgress(rm.key)
+        setCompletedSteps(new Set(progress.map((p) => p.step_id)))
+
+        // Миграция из localStorage
+        const raw = localStorage.getItem("roadmap_progress")
+        if (raw) {
+          try {
+            const local: string[] = JSON.parse(raw)
+            for (const stepId of local) {
+              if (!progress.some((p) => p.step_id === stepId)) {
+                await toggleProgress(rm.key, stepId)
+              }
+            }
+            localStorage.removeItem("roadmap_progress")
+            const updated = await getProgress(rm.key)
+            setCompletedSteps(new Set(updated.map((p) => p.step_id)))
+          } catch {}
+        }
+      } catch {}
+      setLoading(false)
+    }
+    load()
+  }, [user.isAuthorized])
 
   if (!user.isAuthorized) {
     return (
       <div className="flex h-full flex-col items-center justify-center">
-        <div className="mb-4 h-16 w-16 rounded-full bg-[#3649F9]/10 flex items-center justify-center">
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#3649F9]/10">
           <img src="/icons/icon map.svg" alt="" className="h-8 w-8 opacity-60" />
         </div>
         <p className="mb-2 text-lg font-medium text-gray-600">Дорожная карта</p>
@@ -101,24 +139,19 @@ export default function Roadmap() {
     )
   }
 
-  const profile = getProfile()
-  const roadmap = ROADMAPS[profile.specialization] || DEFAULT_ROADMAP
+  if (loading) return <div className="flex h-full items-center justify-center"><p className="text-sm text-[#C5CBD3]">Загрузка...</p></div>
 
-  const toggleStep = (stepId: string) => {
-    setExpandedStep(expandedStep === stepId ? null : stepId)
-  }
+  const handleToggle = async (stepId: string) => {
+    const prev = new Set(completedSteps)
+    if (prev.has(stepId)) prev.delete(stepId)
+    else prev.add(stepId)
+    setCompletedSteps(prev)
 
-  const toggleComplete = (stepId: string) => {
-    setCompletedSteps(prev => {
-      const next = new Set(prev)
-      if (next.has(stepId)) {
-        next.delete(stepId)
-      } else {
-        next.add(stepId)
-      }
-      localStorage.setItem("roadmap_progress", JSON.stringify([...next]))
-      return next
-    })
+    try {
+      await toggleProgress(roadmap.key, stepId)
+    } catch {
+      setCompletedSteps(completedSteps)
+    }
   }
 
   const progress = roadmap.steps.length > 0
@@ -130,7 +163,7 @@ export default function Roadmap() {
       <div className="mb-8">
         <h1 className="mb-2 text-2xl font-bold text-gray-900">{roadmap.title}</h1>
         <p className="text-sm text-[#6D7C90]">{roadmap.description}</p>
-        {!profile.specialization && (
+        {roadmap.key === "default" && (
           <div className="mt-4 rounded-lg bg-[#E8EAFF] px-4 py-3">
             <p className="text-sm text-[#3649F9]">
               Укажите специализацию в{" "}
@@ -148,10 +181,7 @@ export default function Roadmap() {
           <span className="font-medium text-gray-900">{progress}%</span>
         </div>
         <div className="h-2 overflow-hidden rounded-full bg-gray-100">
-          <div
-            className="h-full rounded-full bg-[#3649F9] transition-all duration-500"
-            style={{ width: `${progress}%` }}
-          />
+          <div className="h-full rounded-full bg-[#3649F9] transition-all duration-500" style={{ width: `${progress}%` }} />
         </div>
       </div>
 
@@ -163,18 +193,12 @@ export default function Roadmap() {
 
           return (
             <div key={step.id} className="overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-sm">
-              <button
-                onClick={() => toggleStep(step.id)}
-                className="flex w-full items-center gap-4 p-5 text-left"
-              >
-                {/* Step number / check */}
+              <button onClick={() => setExpandedStep(isExpanded ? null : step.id)} className="flex w-full items-center gap-4 p-5 text-left">
                 <button
-                  onClick={(e) => { e.stopPropagation(); toggleComplete(step.id) }}
+                  onClick={(e) => { e.stopPropagation(); handleToggle(step.id) }}
                   className={[
                     "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-colors",
-                    isCompleted
-                      ? "bg-[#3649F9] text-white"
-                      : "bg-gray-100 text-[#6D7C90] hover:bg-[#E8EAFF]",
+                    isCompleted ? "bg-[#3649F9] text-white" : "bg-gray-100 text-[#6D7C90] hover:bg-[#E8EAFF]",
                   ].join(" ")}
                 >
                   {isCompleted ? (
@@ -185,18 +209,11 @@ export default function Roadmap() {
                     index + 1
                   )}
                 </button>
-
                 <div className="flex-1">
-                  <h3 className={["text-base font-semibold", isCompleted ? "text-[#3649F9]" : "text-gray-900"].join(" ")}>
-                    {step.title}
-                  </h3>
+                  <h3 className={["text-base font-semibold", isCompleted ? "text-[#3649F9]" : "text-gray-900"].join(" ")}>{step.title}</h3>
                   <p className="mt-0.5 text-xs text-[#6D7C90]">{step.duration}</p>
                 </div>
-
-                <svg
-                  className={["h-5 w-5 text-[#C5CBD3] transition-transform", isExpanded ? "rotate-180" : ""].join(" ")}
-                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-                >
+                <svg className={["h-5 w-5 text-[#C5CBD3] transition-transform", isExpanded ? "rotate-180" : ""].join(" ")} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
@@ -206,9 +223,7 @@ export default function Roadmap() {
                   <p className="mb-4 text-sm leading-relaxed text-[#6D7C90]">{step.description}</p>
                   <div className="flex flex-wrap gap-2">
                     {step.skills.map((skill) => (
-                      <span key={skill} className="rounded-full bg-[#E8EAFF] px-3 py-1 text-xs font-medium text-[#3649F9]">
-                        {skill}
-                      </span>
+                      <span key={skill} className="rounded-full bg-[#E8EAFF] px-3 py-1 text-xs font-medium text-[#3649F9]">{skill}</span>
                     ))}
                   </div>
                 </div>
