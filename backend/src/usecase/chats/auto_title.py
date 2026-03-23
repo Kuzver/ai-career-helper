@@ -22,7 +22,7 @@ class AutoTitleUsecase:
         result = await self.session.execute(
             select(MessageModel.text, MessageModel.sender_type_id)
             .where(MessageModel.chat_id == chat_id)
-            .order_by(MessageModel.created_at)
+            .order_by(MessageModel.created_at.asc(), MessageModel.id.asc())
             .limit(6)
         )
         messages = result.all()
@@ -40,15 +40,19 @@ class AutoTitleUsecase:
                 f"Верни ТОЛЬКО название, без кавычек и пояснений.\n\n{conversation}"
             )
             title = title.strip().strip('"').strip("«»")[:100]
+        except Exception as e:
+            logger.error(f"Auto-title gigachat error: {e}")
+            return None
 
-            chat_result = await self.session.execute(
-                select(ChatModel).where(ChatModel.id == chat_id)
-            )
-            chat = chat_result.scalar_one_or_none()
-            if chat:
-                chat.title = title
-                await self.session.commit()
+        try:
+            async with self.session.begin():
+                chat_result = await self.session.execute(
+                    select(ChatModel).where(ChatModel.id == chat_id)
+                )
+                chat = chat_result.scalar_one_or_none()
+                if chat:
+                    chat.title = title
             return title
         except Exception as e:
-            logger.error(f"Auto-title error: {e}")
+            logger.error(f"Auto-title db error: {e}")
             return None

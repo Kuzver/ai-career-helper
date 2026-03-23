@@ -134,7 +134,17 @@ class MessengerUsecase(Usecase[RequestMessageSchema, MessageSchemas]):
                 text=answer,
                 sender_type_id="chat"
             ))
+            await self.session.flush()
+
+            response = MessageSchemas(
+                id=bot_message.id,
+                chat_id=bot_message.chat_id,
+                text=bot_message.text,
+                sender_type_id=bot_message.sender_type_id,
+                created_at=bot_message.created_at,
+                updated_at=bot_message.updated_at,
+            )
 
         await self.auto_title(chat_id=data.chat_id)
 
-        return bot_message
+        return response

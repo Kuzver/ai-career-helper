@@ -56,6 +56,8 @@ export default function AdminSurveys() {
   const handleSave = async () => {
     if (!draft.title.trim()) { setError("Укажите название"); return }
     if (draft.questions.some((q) => !q.text.trim())) { setError("Заполните все вопросы"); return }
+    const noOptions = draft.questions.find((q) => q.question_type !== "text" && q.options.filter((o) => o.text.trim()).length === 0)
+    if (noOptions) { setError("Добавьте хотя бы один вариант ответа для каждого вопроса с выбором"); return }
 
     setSaving(true)
     setError(null)
@@ -88,6 +90,7 @@ export default function AdminSurveys() {
   }
 
   const handleDelete = async (id: string) => {
+    if (!confirm("Удалить опрос?")) return
     try {
       await deleteSurveyAdmin(id)
       setSurveys((prev) => prev.filter((s) => s.id !== id))

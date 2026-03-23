@@ -62,10 +62,10 @@ export default function ChatPage() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [serverMessages.length, isSending])
+  }, [serverMessages.length, isSending, optimisticText])
 
   useEffect(() => {
-    if (optimisticText && serverMessages.some((m) => m.senderTypeId === "user" && cleanLegacyContext(m.text) === optimisticText)) {
+    if (optimisticText && serverMessages.some((m) => m.senderTypeId === "user" && (m.text === optimisticText || cleanLegacyContext(m.text) === optimisticText || m.text.includes(optimisticText)))) {
       setOptimisticText(null)
     }
   }, [serverMessages, optimisticText])
@@ -151,7 +151,7 @@ export default function ChatPage() {
   }
 
   const showOptimistic = optimisticText && !serverMessages.some(
-    (m) => m.senderTypeId === "user" && cleanLegacyContext(m.text) === optimisticText
+    (m) => m.senderTypeId === "user" && (m.text === optimisticText || cleanLegacyContext(m.text) === optimisticText || m.text.includes(optimisticText))
   )
 
   return (

@@ -40,6 +40,8 @@ class UpdateProfileUsecase:
                 )
                 self.session.add(career)
 
+            await self.session.flush()
+
             response = ProfileResponse(
                 name=career.name,
                 specialization=data.specialization,

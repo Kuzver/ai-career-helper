@@ -15,18 +15,27 @@ class GetAllChatUsecase:
             select(MessageModel.id).where(MessageModel.chat_id == ChatModel.id)
         ).correlate(ChatModel)
 
+        base_filter = [ChatModel.user_id == self.auth.id, has_messages]
+
+        total = await self.session.scalar(
+            select(func.count()).select_from(ChatModel).where(*base_filter)
+        )
+
         result = await self.session.execute(
             select(ChatModel)
-            .where(ChatModel.user_id == self.auth.id, has_messages)
-            .order_by(ChatModel.last_activity_time.desc())
+            .where(*base_filter)
+            .order_by(ChatModel.last_activity_time.desc(), ChatModel.id.asc())
+            .limit(limit)
+            .offset(offset)
         )
         chats = result.scalars().all()
         items = [RawChat.model_validate(chat) for chat in chats]
+
         return RawPagination(
             items=items,
-            lenItems=len(items),
-            leftLimit=None,
-            leftOffset=None,
-            rightLimit=None,
-            rightOffset=None,
+            lenItems=total,
+            leftLimit=limit,
+            leftOffset=max(0, offset - limit) if offset > 0 else None,
+            rightLimit=limit,
+            rightOffset=offset + limit if offset + limit < total else None,
         )

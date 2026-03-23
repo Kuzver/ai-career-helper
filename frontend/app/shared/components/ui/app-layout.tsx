@@ -98,7 +98,7 @@ export default function AppLayout() {
           <div className="border-t border-gray-100 px-3 pt-3">
             <p className="mb-1 px-4 text-xs font-medium text-[#C5CBD3]">Управление</p>
             {adminItems.filter((a) => a.roles.includes(userRole)).map((item) => {
-              const isActive = location.pathname === item.url
+              const isActive = location.pathname === item.url || location.pathname.startsWith(item.url + "/")
               return (
                 <Link key={item.url} to={item.url} onClick={() => setSidebarOpen(false)}
                   className={["flex items-center gap-3 rounded-lg px-4 py-2 text-xs transition-colors",

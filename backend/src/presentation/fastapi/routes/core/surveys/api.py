@@ -177,15 +177,18 @@ async def submit_survey(
         response.is_validated = True
         response.validation_result = validation_result
 
-    # Подтянуть данные в профиль из обязательного опроса
-    if survey.is_mandatory:
+        is_mandatory = survey.is_mandatory
+
+        submit_response = SurveySubmitResponse(
+            response_id=response_id,
+            is_validated=True,
+            validation_result=validation_result,
+        )
+
+    if is_mandatory:
         await _sync_profile_from_survey(session, auth.id, survey_id, body)
 
-    return SurveySubmitResponse(
-        response_id=response_id,
-        is_validated=True,
-        validation_result=validation_result,
-    )
+    return submit_response
 
 
 SPEC_MAP = {

@@ -1,5 +1,5 @@
 from uuid import uuid4, UUID
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, HTTPException, status
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from sqlalchemy import select
@@ -64,19 +64,23 @@ WELCOME_CHATS = [
 async def create_welcome_chats(session: AsyncSession, user_id: UUID) -> None:
     try:
         now = datetime.now(timezone.utc)
-        for chat_data in WELCOME_CHATS:
-            chat_id = uuid4()
-            session.add(ChatModel(
-                id=chat_id, user_id=user_id, title=chat_data["title"],
-                start_time=now, last_activity_time=now,
-            ))
-            await session.flush()
-
-            for sender, text in chat_data["messages"]:
-                session.add(MessageModel(
-                    id=uuid4(), chat_id=chat_id, text=text, sender_type_id=sender,
+        msg_counter = 0
+        async with session.begin_nested():
+            for chat_data in WELCOME_CHATS:
+                chat_id = uuid4()
+                session.add(ChatModel(
+                    id=chat_id, user_id=user_id, title=chat_data["title"],
+                    start_time=now, last_activity_time=now,
                 ))
-            await session.flush()
+                await session.flush()
+
+                for sender, text in chat_data["messages"]:
+                    msg_counter += 1
+                    session.add(MessageModel(
+                        id=uuid4(), chat_id=chat_id, text=text, sender_type_id=sender,
+                        created_at=now + timedelta(seconds=msg_counter),
+                    ))
+                await session.flush()
     except Exception as e:
         logger.error(f"Welcome chats error: {e}")
 

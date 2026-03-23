@@ -5,7 +5,7 @@ from src.application.schemas.users import CreateUserSchema, UserSchemas
 from src.infra.postgres.tables import UserModel
 from dataclasses import dataclass
 from src.infra.postgres.gateways.base import GetByEmailGate
-from src.application.errors import DuplicateError
+from src.application.errors import DuplicateError, NotFoundError
 
 @dataclass(slots=True, frozen=True, kw_only=True)
 class CreateUserUsecase(Usecase[CreateUserSchema, None]):
@@ -22,5 +22,5 @@ class CreateUserUsecase(Usecase[CreateUserSchema, None]):
         # Если пользователь существует, ничего не делаем; иначе создаем
         try:
             await self.get_user(data.id)
-        except:
+        except NotFoundError:
             await self.create_user(data)

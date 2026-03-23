@@ -166,6 +166,10 @@ export default function RoadmapPage() {
     }
   }
 
+  const progress = roadmap.steps.length > 0
+    ? Math.round((completedSteps.size / roadmap.steps.length) * 100)
+    : 0
+
   const handleExportRoadmap = async (format: "md" | "html") => {
     const lines = [`# ${roadmap.title}\n`, `${roadmap.description}\n`]
     for (const [i, step] of roadmap.steps.entries()) {
@@ -185,7 +189,6 @@ export default function RoadmapPage() {
     } else {
       try {
         const { data } = await baseClient.post("/api/export", { message_id: "00000000-0000-0000-0000-000000000000", format: "html" }, { responseType: "blob" }).catch(() => ({ data: null }))
-        // Fallback: generate HTML on client
         const html = `<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><title>${roadmap.title}</title><style>body{font-family:system-ui;max-width:800px;margin:40px auto;padding:0 20px;color:#333}h1{color:#3649F9}h2{margin-top:1.5em}.done{color:#22c55e}.skills{color:#3649F9;font-size:0.9em}</style></head><body>${text.replace(/^# (.+)$/gm, '<h1>$1</h1>').replace(/^## (.+)$/gm, '<h2>$1</h2>').replace(/\*\*(.+?)\*\*/g, '<strong class="skills">$1</strong>').replace(/\n/g, '<br>')}</body></html>`
         const blob = new Blob([html], { type: "text/html" })
         const url = URL.createObjectURL(blob)
@@ -195,10 +198,6 @@ export default function RoadmapPage() {
     }
     setShowExport(false)
   }
-
-  const progress = roadmap.steps.length > 0
-    ? Math.round((completedSteps.size / roadmap.steps.length) * 100)
-    : 0
 
   return (
     <div className="relative mx-auto max-w-3xl p-8">

@@ -90,7 +90,8 @@ class CreateGate(Generic[TTable, TCreate], PostgresGateway):
         stmt = insert(self.table).values(**entity.model_dump())
         try:
             await self.session.execute(stmt)
-        except:
+        except Exception as e:
+            logger.error(f"CreateGate error [{self.table.__tablename__}]: {e}")
             raise DatabaseCreateError(self.table)
 
 @dataclass(slots=True, kw_only=True)
@@ -118,7 +119,8 @@ class UpdateGate(Generic[TTable, TUpdate, TEntityId], PostgresGateway):
         stmt = update(self.table).where(self.table.id==entity_id).values(**entity.model_dump())
         try:
             await self.session.execute(stmt)
-        except:
+        except Exception as e:
+            logger.error(f"UpdateGate error [{self.table.__tablename__}]: {e}")
             raise DatabaseUpdateError(self.table)
 
 @dataclass(slots=True, kw_only=True)
@@ -133,7 +135,8 @@ class UpdateReturningGate(Generic[TTable, TUpdate, TEntityId, TEntity], Postgres
         try:
             result = (await self.session.execute(stmt)).scalar_one().__dict__
             return self.schema_type.model_validate(result)
-        except:
+        except Exception as e:
+            logger.error(f"UpdateReturningGate error [{self.table.__tablename__}]: {e}")
             raise DatabaseUpdateError(self.table)
 
 
@@ -146,7 +149,8 @@ class DeleteGate(Generic[TTable, TEntityId], PostgresGateway):
         stmt = delete(self.table).where(self.table.id==entity_id)
         try:
             await self.session.execute(stmt)
-        except:
+        except Exception as e:
+            logger.error(f"DeleteGate error [{self.table.__tablename__}]: {e}")
             raise DatabaseDeleteError(self.table)
 
 @dataclass(slots=True, kw_only=True)
@@ -160,5 +164,6 @@ class DeleteReturningGate(Generic[TTable, TEntityId, TEntity], PostgresGateway):
         try:
             result = (await self.session.execute(stmt)).scalar_one().__dict__
             return self.schema_type.model_validate(result)
-        except:
+        except Exception as e:
+            logger.error(f"DeleteReturningGate error [{self.table.__tablename__}]: {e}")
             raise DatabaseDeleteError(self.table)

@@ -12,6 +12,7 @@ export default [
     route("survey/:id", "pages/survey/survey-page.tsx"),
     route("admin/surveys", "pages/admin/surveys.tsx"),
     route("admin/articles", "pages/admin/articles.tsx"),
+    route("admin/users", "pages/admin/users.tsx"),
   ]),
 
   layout("pages/auth/ui/auth-layout.tsx", [

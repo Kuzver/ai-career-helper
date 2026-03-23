@@ -27,7 +27,7 @@ export default function SurveyPage() {
         if (prev.length > 0) {
           const map: Record<string, SubmitAnswer> = {}
           for (const a of prev) {
-            map[a.question_id!] = a
+            map[String(a.question_id)] = a
           }
           setAnswers(map)
         }
