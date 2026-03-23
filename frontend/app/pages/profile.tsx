@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { useUser, type UserProfile } from "~/modules/user/lib/use-user"
+import { useUser } from "~/modules/user/lib/use-user"
+import { getProfile, updateProfile } from "~/modules/user/api/profile"
+
+type ProfileForm = {
+  name: string
+  specialization: string
+  experience: string
+  skills: string
+  careerGoal: string
+}
 
 const SPECIALIZATIONS = [
   { value: "frontend", label: "Frontend-разработка" },
@@ -24,15 +33,65 @@ const EXPERIENCE_LEVELS = [
 ]
 
 export default function Profile() {
-  const { user, logout, getProfile, saveProfile } = useUser()
-  const [form, setForm] = useState<UserProfile>({
+  const { user, logout } = useUser()
+  const [form, setForm] = useState<ProfileForm>({
     name: "", specialization: "", experience: "", skills: "", careerGoal: "",
   })
   const [saved, setSaved] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    setForm(getProfile())
-  }, [getProfile])
+    if (!user.isAuthorized) return
+
+    const load = async () => {
+      try {
+        const data = await getProfile()
+
+        // Одноразовая миграция из localStorage
+        if (!data.name && !data.specialization) {
+          const raw = localStorage.getItem("user_profile")
+          if (raw) {
+            try {
+              const local = JSON.parse(raw)
+              await updateProfile({
+                name: local.name || null,
+                specialization: local.specialization || null,
+                experience_level: local.experience || null,
+                skills: local.skills || null,
+                career_goal: local.careerGoal || null,
+              })
+              localStorage.removeItem("user_profile")
+              const migrated = await getProfile()
+              setForm({
+                name: migrated.name || "",
+                specialization: migrated.specialization || "",
+                experience: migrated.experience_level || "",
+                skills: migrated.skills || "",
+                careerGoal: migrated.career_goal || "",
+              })
+              setLoading(false)
+              return
+            } catch {}
+          }
+        }
+
+        setForm({
+          name: data.name || "",
+          specialization: data.specialization || "",
+          experience: data.experience_level || "",
+          skills: data.skills || "",
+          careerGoal: data.career_goal || "",
+        })
+      } catch {
+        setError("Не удалось загрузить профиль")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    load()
+  }, [user.isAuthorized])
 
   if (!user.isAuthorized) {
     return (
@@ -47,15 +106,34 @@ export default function Profile() {
     )
   }
 
-  const update = (key: keyof UserProfile, value: string) => {
-    setForm((prev) => ({ ...prev, [key]: value }))
-    setSaved(false)
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-sm text-[#C5CBD3]">Загрузка профиля...</p>
+      </div>
+    )
   }
 
-  const handleSave = () => {
-    saveProfile(form)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
+  const update = (key: keyof ProfileForm, value: string) => {
+    setForm((prev) => ({ ...prev, [key]: value }))
+    setSaved(false)
+    setError(null)
+  }
+
+  const handleSave = async () => {
+    try {
+      await updateProfile({
+        name: form.name || null,
+        specialization: form.specialization || null,
+        experience_level: form.experience || null,
+        skills: form.skills || null,
+        career_goal: form.careerGoal || null,
+      })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    } catch {
+      setError("Не удалось сохранить профиль")
+    }
   }
 
   const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#3649F9] focus:ring-1 focus:ring-[#3649F9]"
@@ -75,6 +153,8 @@ export default function Profile() {
           </p>
         </div>
       </div>
+
+      {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
       <div className="space-y-6">
         <div>
