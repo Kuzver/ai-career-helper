@@ -31,14 +31,13 @@ class OrchestratorAgent:
     career_agent: CareerAgent
     learning_agent: LearningAgent
 
-    async def __call__(self, data: RequestMessageSchema) -> str:
+    async def __call__(self, data: RequestMessageSchema, user_context: str | None = None) -> str:
         query = data.text.lower()
 
         career_score = sum(1 for k in CAREER_KEYWORDS if k in query)
         learning_score = sum(1 for k in LEARNING_KEYWORDS if k in query)
         tech_score = sum(1 for k in TECH_KEYWORDS if k in query)
 
-        # Tech keywords boost learning score
         if tech_score > 0 and career_score == 0:
             learning_score += tech_score
 
@@ -48,10 +47,9 @@ class OrchestratorAgent:
         )
 
         if career_score > learning_score:
-            return await self.career_agent(data)
+            return await self.career_agent(data, user_context=user_context)
 
         if learning_score > 0:
-            return await self.learning_agent(data)
+            return await self.learning_agent(data, user_context=user_context)
 
-        # No keywords matched — route to learning agent as general helper
-        return await self.learning_agent(data)
+        return await self.learning_agent(data, user_context=user_context)

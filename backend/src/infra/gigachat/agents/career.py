@@ -11,25 +11,25 @@ from src.usecase.message.schemas import RequestMessageSchema
 class CareerAgent:
     chat: Gigachat
 
-    async def __call__(self, data: RequestMessageSchema) -> str:
+    async def __call__(self, data: RequestMessageSchema, user_context: str | None = None) -> str:
         query = data.text.lower()
 
         if "собеседован" in query and "вопрос" in query:
-            return await self._generate_interview_questions(data.text)
+            return await self._generate_interview_questions(data.text, user_context)
 
         if "резюм" in query:
             if data.file:
-                return await self._analyze_resume(data.file)
-            return await self._help_compose_resume(data.text)
+                return await self._analyze_resume(data.file, user_context)
+            return await self._help_compose_resume(data.text, user_context)
 
         if "ваканси" in query:
             if data.file:
-                return await self._analyze_vacancy(data.file)
-            return await self._discuss_vacancy(data.text)
+                return await self._analyze_vacancy(data.file, user_context)
+            return await self._discuss_vacancy(data.text, user_context)
 
-        return await self._general_career_advice(data.text)
+        return await self._general_career_advice(data.text, user_context)
 
-    async def _help_compose_resume(self, user_text: str) -> str:
+    async def _help_compose_resume(self, user_text: str, user_context: str | None = None) -> str:
         prompt = (
             "Ты — профессиональный карьерный консультант. "
             "Помоги пользователю составить резюме. "
@@ -37,9 +37,9 @@ class CareerAgent:
             "Если пользователь дал достаточно данных — составь структурированное резюме.\n\n"
             f"Запрос пользователя: {user_text}"
         )
-        return await self.chat(prompt)
+        return await self.chat(prompt, user_context=user_context)
 
-    async def _analyze_resume(self, pdf_bytes: bytes) -> str:
+    async def _analyze_resume(self, pdf_bytes: bytes, user_context: str | None = None) -> str:
         text = self._extract_pdf_text(pdf_bytes)
         prompt = (
             "Проанализируй это резюме и дай рекомендации по улучшению:\n\n"
@@ -47,40 +47,40 @@ class CareerAgent:
             "Критерии: структура, конкретные достижения, "
             "соответствие требованиям, оптимизация под ATS."
         )
-        return await self.chat(prompt)
+        return await self.chat(prompt, user_context=user_context)
 
-    async def _analyze_vacancy(self, pdf_bytes: bytes) -> str:
+    async def _analyze_vacancy(self, pdf_bytes: bytes, user_context: str | None = None) -> str:
         text = self._extract_pdf_text(pdf_bytes)
         prompt = (
             "Проанализируй вакансию, выдели плюсы и красные флаги:\n\n"
             f"{text}"
         )
-        return await self.chat(prompt)
+        return await self.chat(prompt, user_context=user_context)
 
-    async def _discuss_vacancy(self, user_text: str) -> str:
+    async def _discuss_vacancy(self, user_text: str, user_context: str | None = None) -> str:
         prompt = (
             "Ты — карьерный консультант. Помоги пользователю разобраться с вакансией. "
             "Проанализируй и дай советы.\n\n"
             f"Запрос: {user_text}"
         )
-        return await self.chat(prompt)
+        return await self.chat(prompt, user_context=user_context)
 
-    async def _generate_interview_questions(self, user_text: str) -> str:
+    async def _generate_interview_questions(self, user_text: str, user_context: str | None = None) -> str:
         prompt = (
             "Сгенерируй 10-15 вопросов для подготовки к собеседованию "
             "на основе запроса пользователя. Включи технические, "
             "поведенческие вопросы и кейсы.\n\n"
             f"Запрос: {user_text}"
         )
-        return await self.chat(prompt)
+        return await self.chat(prompt, user_context=user_context)
 
-    async def _general_career_advice(self, user_text: str) -> str:
+    async def _general_career_advice(self, user_text: str, user_context: str | None = None) -> str:
         prompt = (
             "Ты — опытный карьерный консультант. "
             "Дай полезный и конкретный совет по запросу пользователя.\n\n"
             f"Запрос: {user_text}"
         )
-        return await self.chat(prompt)
+        return await self.chat(prompt, user_context=user_context)
 
     @staticmethod
     def _extract_pdf_text(pdf_bytes: bytes, max_chars: int = 2000) -> str:
