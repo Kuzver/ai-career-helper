@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useUser } from "~/modules/user/lib/use-user"
 import {
-  getSurveys, createSurveyAdmin, updateSurveyAdmin, deleteSurveyAdmin,
+  getSurveys, getSurvey, createSurveyAdmin, updateSurveyAdmin, deleteSurveyAdmin,
   type SurveyListItem, type SurveyCreatePayload,
 } from "~/modules/survey/api/surveys"
 
@@ -89,6 +89,27 @@ export default function AdminSurveys() {
     }
   }
 
+  const handleEdit = async (id: string) => {
+    try {
+      const detail = await getSurvey(id)
+      setDraft({
+        title: detail.title,
+        description: detail.description || "",
+        is_mandatory: detail.is_mandatory,
+        questions: detail.questions.map((q) => ({
+          text: q.text,
+          question_type: q.question_type,
+          options: q.options.length > 0 ? q.options.map((o) => ({ text: o.text })) : [{ text: "" }],
+        })),
+      })
+      setEditingId(id)
+      setShowForm(true)
+      setError(null)
+    } catch (err: any) {
+      setError(err.response?.data?.detail || "Не удалось загрузить опрос")
+    }
+  }
+
   const handleDelete = async (id: string) => {
     if (!confirm("Удалить опрос?")) return
     try {
@@ -137,13 +158,13 @@ export default function AdminSurveys() {
     })
   }
 
-  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-3 py-2 text-sm outline-none focus:border-[#3649F9]"
+  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-3 py-2 text-sm outline-none focus:border-[#3649F9] dark:border-gray-600 dark:bg-[#1e293b] dark:text-gray-200"
 
   if (showForm) {
     return (
       <div className="mx-auto max-w-3xl p-8">
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">{editingId ? "Редактирование" : "Новый опрос"}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{editingId ? "Редактирование" : "Новый опрос"}</h1>
           <button onClick={() => setShowForm(false)} className="text-sm text-[#C5CBD3] hover:text-gray-600">Отмена</button>
         </div>
 
@@ -209,7 +230,7 @@ export default function AdminSurveys() {
 
           <button onClick={handleSave} disabled={saving}
             className="rounded-lg bg-[#3649F9] px-8 py-3 text-sm font-medium text-white hover:bg-[#3649F9]/90 disabled:opacity-50">
-            {saving ? "Сохранение..." : "Сохранить"}
+            {saving ? "Сохранение..." : editingId ? "Сохранить изменения" : "Сохранить"}
           </button>
         </div>
       </div>
@@ -221,7 +242,7 @@ export default function AdminSurveys() {
   return (
     <div className="mx-auto max-w-3xl p-8">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Управление опросами</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Управление опросами</h1>
         <button onClick={handleNew}
           className="rounded-lg bg-[#3649F9] px-4 py-2 text-sm font-medium text-white hover:bg-[#3649F9]/90">
           + Создать опрос
@@ -235,15 +256,19 @@ export default function AdminSurveys() {
       ) : (
         <div className="space-y-3">
           {surveys.map((s) => (
-            <div key={s.id} className="flex items-center justify-between rounded-xl border border-gray-100 p-4">
+            <div key={s.id} className="flex items-center justify-between rounded-xl border border-gray-100 p-4 dark:border-gray-700 dark:bg-[#1e293b]">
               <div>
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium text-gray-800">{s.title}</p>
+                  <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{s.title}</p>
                   {s.is_mandatory && <span className="rounded bg-red-50 px-2 py-0.5 text-xs text-red-500">Обяз.</span>}
                 </div>
                 {s.description && <p className="mt-0.5 text-xs text-[#6D7C90]">{s.description}</p>}
               </div>
               <div className="flex items-center gap-2">
+                <button onClick={() => handleEdit(s.id)}
+                  className="rounded px-3 py-1 text-xs text-[#3649F9] hover:bg-[#E8EAFF]">
+                  Редактировать
+                </button>
                 <button onClick={() => handleDelete(s.id)}
                   className="rounded px-3 py-1 text-xs text-red-400 hover:bg-red-50 hover:text-red-500">
                   Удалить

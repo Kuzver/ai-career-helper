@@ -163,11 +163,11 @@ export default function ChatPage() {
       onDrop={handleDrop}
     >
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-8 py-6">
+      <div className="flex-1 overflow-y-auto px-8 py-6 dark:bg-[#0f172a]">
         {serverMessages.length === 0 && !showOptimistic && !isSending ? (
           <div className="flex h-full flex-col items-center justify-center">
             <div className="mb-6 h-16 w-16 rounded-full bg-[#3649F9]" />
-            <p className="mb-2 text-lg font-medium text-gray-600">ИИ-помощник</p>
+            <p className="mb-2 text-lg font-medium text-gray-600 dark:text-gray-300">ИИ-помощник</p>
             <p className="text-sm text-[#C5CBD3]">Напишите сообщение, чтобы начать диалог</p>
           </div>
         ) : (
@@ -218,10 +218,10 @@ export default function ChatPage() {
 
       {/* Input */}
       <div className="px-8 pb-6 pt-2">
-        <div className="rounded-2xl border border-[#C5CBD3]/50 px-4 pb-3 pt-4">
+        <div className="rounded-2xl border border-[#C5CBD3]/50 px-4 pb-3 pt-4 dark:border-gray-700 dark:bg-[#1e293b]">
           <textarea
             placeholder="Спросите про карьеру, резюме, обучение..."
-            className="min-h-[80px] w-full resize-none text-sm text-gray-700 placeholder-[#C5CBD3] outline-none"
+            className="min-h-[80px] w-full resize-none bg-transparent text-sm text-gray-700 placeholder-[#C5CBD3] outline-none dark:text-gray-200"
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
             disabled={isSending}
@@ -280,9 +280,9 @@ function MessageBubble({ msg, onExport }: { msg: Message; onExport: (id: string,
     <div className="group space-y-2">
       <div className="flex items-center gap-2">
         <div className="h-8 w-8 shrink-0 rounded-full bg-[#3649F9]" />
-        <span className="text-sm font-semibold text-gray-800">ИИ-помощник</span>
+        <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">ИИ-помощник</span>
       </div>
-      <div className="ml-10 max-w-2xl rounded-2xl bg-[#E8EAFF] px-5 py-3 text-sm leading-relaxed text-gray-800">
+      <div className="ml-10 max-w-2xl rounded-2xl bg-[#E8EAFF] px-5 py-3 text-sm leading-relaxed text-gray-800 dark:bg-[#3649F9]/15 dark:text-gray-200">
         <BotMessage text={msg.text} />
       </div>
       <div className="relative ml-10">
@@ -293,12 +293,12 @@ function MessageBubble({ msg, onExport }: { msg: Message; onExport: (id: string,
           Скачать
         </button>
         {showExport && (
-          <div className="absolute bottom-full left-0 z-10 mb-1 rounded-lg border bg-white py-1 shadow-lg">
+          <div className="absolute bottom-full left-0 z-10 mb-1 rounded-lg border bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-[#1e293b]">
             {(["md", "docx", "html"] as const).map((fmt) => (
               <button
                 key={fmt}
                 onClick={() => { onExport(msg.id, fmt); setShowExport(false) }}
-                className="block w-full px-4 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50"
+                className="block w-full px-4 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 {fmt.toUpperCase()}
               </button>

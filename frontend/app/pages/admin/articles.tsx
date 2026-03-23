@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useUser } from "~/modules/user/lib/use-user"
 import {
-  getArticles, getCategories, createArticleAdmin, deleteArticleAdmin, createCategoryAdmin,
+  getArticles, getArticle, getCategories, createArticleAdmin, updateArticleAdmin, deleteArticleAdmin, createCategoryAdmin,
   type ArticleListItem, type Category,
 } from "~/modules/articles/api/articles"
 
@@ -14,6 +14,7 @@ export default function AdminArticles() {
   const [showCatForm, setShowCatForm] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   const [title, setTitle] = useState("")
   const [slug, setSlug] = useState("")
@@ -38,17 +39,38 @@ export default function AdminArticles() {
     if (!title.trim() || !slug.trim() || !contentMd.trim()) { setError("Заполните обязательные поля"); return }
     setSaving(true); setError(null)
     try {
-      await createArticleAdmin({
+      const payload = {
         title, slug,
         content_md: contentMd,
         category_id: categoryId || undefined,
         specialization: specialization || undefined,
-      })
-      setShowForm(false); setTitle(""); setSlug(""); setContentMd(""); setCategoryId(""); setSpecialization("")
+      }
+      if (editingId) {
+        await updateArticleAdmin(editingId, payload)
+      } else {
+        await createArticleAdmin(payload)
+      }
+      setShowForm(false); setEditingId(null); setTitle(""); setSlug(""); setContentMd(""); setCategoryId(""); setSpecialization("")
       await load()
     } catch (err: any) {
       setError(err.response?.data?.detail || "Ошибка")
     } finally { setSaving(false) }
+  }
+
+  const handleEditArticle = async (articleSlug: string) => {
+    try {
+      const article = await getArticle(articleSlug)
+      setTitle(article.title)
+      setSlug(article.slug)
+      setContentMd(article.content_md)
+      setCategoryId(article.category?.id || "")
+      setSpecialization(article.specialization || "")
+      setEditingId(article.id)
+      setShowForm(true)
+      setError(null)
+    } catch (err: any) {
+      setError(err.response?.data?.detail || "Не удалось загрузить статью")
+    }
   }
 
   const handleSaveCategory = async () => {
@@ -65,7 +87,7 @@ export default function AdminArticles() {
     catch (err: any) { setError(err.response?.data?.detail || "Ошибка") }
   }
 
-  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-3 py-2 text-sm outline-none focus:border-[#3649F9]"
+  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-3 py-2 text-sm outline-none focus:border-[#3649F9] dark:border-gray-600 dark:bg-[#1e293b] dark:text-gray-200"
 
   if (loading) return <div className="flex h-full items-center justify-center"><p className="text-sm text-[#C5CBD3]">Загрузка...</p></div>
 
@@ -73,8 +95,8 @@ export default function AdminArticles() {
     return (
       <div className="mx-auto max-w-3xl p-8">
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Новая статья</h1>
-          <button onClick={() => setShowForm(false)} className="text-sm text-[#C5CBD3]">Отмена</button>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{editingId ? "Редактирование статьи" : "Новая статья"}</h1>
+          <button onClick={() => { setShowForm(false); setEditingId(null) }} className="text-sm text-[#C5CBD3]">Отмена</button>
         </div>
         <div className="space-y-4">
           <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Заголовок" className={inputCls} />
@@ -88,7 +110,7 @@ export default function AdminArticles() {
           {error && <p className="text-sm text-red-500">{error}</p>}
           <button onClick={handleSaveArticle} disabled={saving}
             className="rounded-lg bg-[#3649F9] px-8 py-3 text-sm font-medium text-white hover:bg-[#3649F9]/90 disabled:opacity-50">
-            {saving ? "Сохранение..." : "Опубликовать"}
+            {saving ? "Сохранение..." : editingId ? "Сохранить изменения" : "Опубликовать"}
           </button>
         </div>
       </div>
@@ -98,10 +120,10 @@ export default function AdminArticles() {
   return (
     <div className="mx-auto max-w-3xl p-8">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Управление статьями</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Управление статьями</h1>
         <div className="flex gap-2">
           <button onClick={() => setShowCatForm(true)} className="rounded-lg border border-[#3649F9] px-4 py-2 text-xs text-[#3649F9]">+ Категория</button>
-          <button onClick={() => { setShowForm(true); setError(null) }} className="rounded-lg bg-[#3649F9] px-4 py-2 text-xs text-white">+ Статья</button>
+          <button onClick={() => { setEditingId(null); setTitle(""); setSlug(""); setContentMd(""); setCategoryId(""); setSpecialization(""); setShowForm(true); setError(null) }} className="rounded-lg bg-[#3649F9] px-4 py-2 text-xs text-white">+ Статья</button>
         </div>
       </div>
 
@@ -121,16 +143,19 @@ export default function AdminArticles() {
       ) : (
         <div className="space-y-3">
           {articles.map((a) => (
-            <div key={a.id} className="flex items-center justify-between rounded-xl border border-gray-100 p-4">
+            <div key={a.id} className="flex items-center justify-between rounded-xl border border-gray-100 p-4 dark:border-gray-700 dark:bg-[#1e293b]">
               <div>
-                <p className="text-sm font-medium text-gray-800">{a.title}</p>
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{a.title}</p>
                 <div className="mt-0.5 flex gap-2 text-xs text-[#C5CBD3]">
                   {a.category && <span>{a.category.name}</span>}
                   {a.specialization && <span>{a.specialization}</span>}
                   <span>/{a.slug}</span>
                 </div>
               </div>
-              <button onClick={() => handleDelete(a.id)} className="text-xs text-red-400 hover:text-red-500">Удалить</button>
+              <div className="flex items-center gap-2">
+                <button onClick={() => handleEditArticle(a.slug)} className="text-xs text-[#3649F9] hover:underline">Редактировать</button>
+                <button onClick={() => handleDelete(a.id)} className="text-xs text-red-400 hover:text-red-500">Удалить</button>
+              </div>
             </div>
           ))}
         </div>

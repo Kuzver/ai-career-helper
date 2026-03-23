@@ -90,3 +90,26 @@ async def export_article(
         media_type=content_type,
         headers={"Content-Disposition": f'attachment; filename="{safe_slug}{extension}"'},
     )
+
+
+class ExportRoadmapRequest(BaseModel):
+    markdown: str
+    format: str
+
+
+@ROUTER.post("/roadmap")
+async def export_roadmap(
+    body: ExportRoadmapRequest,
+    auth: FromDishka[AuthSchema],
+):
+    if body.format not in FORMATS:
+        raise HTTPException(status_code=400, detail="Формат не поддерживается")
+
+    content_type, extension, exporter = FORMATS[body.format]
+    file_bytes = exporter(body.markdown)
+
+    return Response(
+        content=file_bytes,
+        media_type=content_type,
+        headers={"Content-Disposition": f'attachment; filename="roadmap{extension}"'},
+    )

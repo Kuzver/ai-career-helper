@@ -55,12 +55,12 @@ export default function KnowledgeBase() {
   return (
     <div className="p-8">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">База знаний</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">База знаний</h1>
         <div className="flex items-center gap-3">
           {userSpec && (
             <button
               onClick={() => setShowAll((v) => !v)}
-              className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-[#6D7C90] hover:border-[#3649F9] hover:text-[#3649F9]"
+              className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-[#6D7C90] hover:border-[#3649F9] hover:text-[#3649F9] dark:border-gray-700"
             >
               {showAll ? "По моей специализации" : "Показать все"}
             </button>
@@ -84,7 +84,7 @@ export default function KnowledgeBase() {
               key={cat.id}
               onClick={() => setSelectedCategory(cat.slug === selectedCategory ? null : cat.slug)}
               className={["rounded-full px-4 py-1.5 text-xs font-medium transition-colors",
-                selectedCategory === cat.slug ? "bg-[#3649F9] text-white" : "bg-gray-100 text-[#6D7C90] hover:bg-[#E8EAFF]",
+                selectedCategory === cat.slug ? "bg-[#3649F9] text-white" : "bg-gray-100 text-[#6D7C90] hover:bg-[#E8EAFF] dark:bg-gray-700",
               ].join(" ")}
             >
               {cat.name}
@@ -101,14 +101,14 @@ export default function KnowledgeBase() {
             <button
               key={article.id}
               onClick={() => navigate(`/knowledge-base/${article.slug}`)}
-              className="rounded-2xl border border-gray-200 bg-white p-6 text-left transition-shadow hover:shadow-md"
+              className="rounded-2xl border border-gray-200 bg-white p-6 text-left transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-[#1e293b]"
             >
               {article.category && (
                 <span className="mb-2 inline-block rounded bg-[#E8EAFF] px-2 py-0.5 text-xs text-[#3649F9]">
                   {article.category.name}
                 </span>
               )}
-              <h3 className="mb-2 text-base font-semibold text-gray-900">{article.title}</h3>
+              <h3 className="mb-2 text-base font-semibold text-gray-900 dark:text-gray-100">{article.title}</h3>
               {article.specialization && (
                 <p className="text-xs text-[#C5CBD3]">{article.specialization}</p>
               )}

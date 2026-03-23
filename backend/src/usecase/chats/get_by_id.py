@@ -17,7 +17,7 @@ class GetChatByIdUsecase:
             raise ValueError("Chat not found")
         
         # Получаем сообщения с пагинацией
-        messages_query = select(MessageModel).where(MessageModel.chat_id == chat_id).order_by(MessageModel.created_at.asc(), MessageModel.id.asc())
+        messages_query = select(MessageModel).where(MessageModel.chat_id == chat_id).order_by(MessageModel.created_at.asc())
         total = await self.session.scalar(select(func.count()).select_from(messages_query.subquery()))
         
         messages_result = await self.session.execute(

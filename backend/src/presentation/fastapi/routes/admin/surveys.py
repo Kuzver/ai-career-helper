@@ -1,7 +1,8 @@
 from uuid import UUID, uuid4
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, HTTPException, status
-from sqlalchemy import select, delete
+from loguru import logger
+from sqlalchemy import select, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.schemas.auth import AuthSchema
@@ -24,46 +25,64 @@ async def create_survey(
 ):
     await require_editor(session, auth)
 
-    survey_id = uuid4()
-    session.add(SurveyModel(
-        id=survey_id,
-        title=body.title,
-        description=body.description,
-        is_mandatory=body.is_mandatory,
-        is_active=True,
-        created_by=auth.id,
-    ))
+    if not body.questions:
+        raise HTTPException(status_code=400, detail="Добавьте хотя бы один вопрос")
 
-    questions_out = []
-    for q in body.questions:
-        q_id = uuid4()
-        session.add(SurveyQuestionModel(
-            id=q_id,
-            survey_id=survey_id,
-            text=q.text,
-            question_type=q.question_type,
-            order=q.order,
-        ))
+    try:
+        async with session.begin():
+            survey_id = uuid4()
 
-        options_out = []
-        for o in q.options:
-            o_id = uuid4()
-            session.add(SurveyOptionModel(
-                id=o_id, question_id=q_id, text=o.text, order=o.order,
+            if body.is_mandatory:
+                await session.execute(
+                    update(SurveyModel)
+                    .where(SurveyModel.is_mandatory == True, SurveyModel.id != survey_id)
+                    .values(is_mandatory=False)
+                )
+
+            session.add(SurveyModel(
+                id=survey_id,
+                title=body.title,
+                description=body.description,
+                is_mandatory=body.is_mandatory,
+                is_active=True,
+                created_by=auth.id,
             ))
-            options_out.append(SurveyOptionOut(id=o_id, text=o.text, order=o.order))
+            await session.flush()
 
-        questions_out.append(SurveyQuestionOut(
-            id=q_id, text=q.text, question_type=q.question_type,
-            order=q.order, options=options_out,
-        ))
+            questions_out = []
+            for q in body.questions:
+                q_id = uuid4()
+                session.add(SurveyQuestionModel(
+                    id=q_id,
+                    survey_id=survey_id,
+                    text=q.text,
+                    question_type=q.question_type,
+                    order=q.order,
+                ))
+                await session.flush()
 
-    await session.commit()
+                options_out = []
+                for o in q.options:
+                    o_id = uuid4()
+                    session.add(SurveyOptionModel(
+                        id=o_id, question_id=q_id, text=o.text, order=o.order,
+                    ))
+                    options_out.append(SurveyOptionOut(id=o_id, text=o.text, order=o.order))
 
-    return SurveyDetail(
-        id=survey_id, title=body.title, description=body.description,
-        is_mandatory=body.is_mandatory, questions=questions_out,
-    )
+                questions_out.append(SurveyQuestionOut(
+                    id=q_id, text=q.text, question_type=q.question_type,
+                    order=q.order, options=options_out,
+                ))
+
+        return SurveyDetail(
+            id=survey_id, title=body.title, description=body.description,
+            is_mandatory=body.is_mandatory, questions=questions_out,
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Survey creation error: {e}")
+        raise HTTPException(status_code=500, detail="Ошибка при создании опроса")
 
 
 @ROUTER.put("/{survey_id}", response_model=SurveyDetail)
@@ -87,6 +106,12 @@ async def update_survey(
     if body.description is not None:
         survey.description = body.description
     if body.is_mandatory is not None:
+        if body.is_mandatory:
+            await session.execute(
+                update(SurveyModel)
+                .where(SurveyModel.is_mandatory == True, SurveyModel.id != survey_id)
+                .values(is_mandatory=False)
+            )
         survey.is_mandatory = body.is_mandatory
     if body.is_active is not None:
         survey.is_active = body.is_active

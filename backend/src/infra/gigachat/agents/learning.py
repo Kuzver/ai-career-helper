@@ -1,7 +1,4 @@
-import pdfplumber
-from io import BytesIO
 from dataclasses import dataclass
-from loguru import logger
 
 from src.infra.gigachat.chat import Gigachat
 from src.usecase.message.schemas import RequestMessageSchema
@@ -57,17 +54,3 @@ class LearningAgent:
             f"Запрос: {user_text}"
         )
         return await self.chat(prompt, user_context=user_context)
-
-    @staticmethod
-    def _extract_pdf_text(pdf_bytes: bytes, max_chars: int = 2000) -> str:
-        try:
-            text = ""
-            with pdfplumber.open(BytesIO(pdf_bytes)) as pdf:
-                for page in pdf.pages:
-                    extracted = page.extract_text()
-                    if extracted:
-                        text += extracted + "\n"
-            return text[:max_chars] if text else "Не удалось извлечь текст из PDF"
-        except Exception as e:
-            logger.error(f"PDF extraction error: {e}")
-            return f"Ошибка при чтении PDF: {e}"

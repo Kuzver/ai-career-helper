@@ -79,7 +79,7 @@ export function ChatSidebar() {
   }
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden border-t border-gray-100 pt-3">
+    <div className="flex flex-1 flex-col overflow-hidden border-t border-gray-100 pt-3 dark:border-gray-700">
       <div className="flex items-center justify-between px-4 pb-2">
         <span className="text-xs font-medium text-[#6D7C90]">Чаты</span>
         <button onClick={handleNewChat}
@@ -111,7 +111,7 @@ export function ChatSidebar() {
                   "w-full truncate rounded-md px-3 py-1.5 text-left text-xs transition-colors",
                   chat.id === selectedChatId
                     ? "bg-[#E8EAFF] font-medium text-[#3649F9]"
-                    : "text-[#6D7C90] hover:bg-gray-50",
+                    : "text-[#6D7C90] hover:bg-gray-50 dark:hover:bg-gray-700",
                 ].join(" ")}
                 title={chat.title}
               >
@@ -128,7 +128,7 @@ export function ChatSidebar() {
 
       {contextMenu && (
         <div
-          className="fixed z-50 rounded-lg border bg-white py-1 shadow-lg"
+          className="fixed z-50 rounded-lg border bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-[#1e293b]"
           style={{ left: contextMenu.x, top: contextMenu.y }}
         >
           <button
@@ -136,7 +136,7 @@ export function ChatSidebar() {
               const chat = chats.find((c) => c.id === contextMenu.id)
               if (chat) handleStartRename(chat)
             }}
-            className="block w-full px-4 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50"
+            className="block w-full px-4 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
           >
             Переименовать
           </button>

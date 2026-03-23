@@ -32,6 +32,24 @@ export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [userRole, setUserRole] = useState<string>("user")
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("theme") as "light" | "dark") || "light"
+    }
+    return "light"
+  })
+
+  useEffect(() => {
+    const root = document.documentElement
+    if (theme === "dark") {
+      root.classList.add("dark")
+    } else {
+      root.classList.remove("dark")
+    }
+    localStorage.setItem("theme", theme)
+  }, [theme])
+
+  const toggleTheme = () => setTheme((prev) => prev === "dark" ? "light" : "dark")
 
   useEffect(() => {
     if (!user.isAuthorized) return
@@ -63,20 +81,20 @@ export default function AppLayout() {
   useEffect(() => { setShowResults(false); setSearchQuery("") }, [location.pathname])
 
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen bg-white dark:bg-[#0f172a]">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 bg-black/30 md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       <aside className={[
-        "flex w-56 shrink-0 flex-col border-r border-gray-100 bg-white",
+        "flex w-56 shrink-0 flex-col border-r border-gray-100 bg-white dark:border-gray-700 dark:bg-[#1e293b]",
         "fixed inset-y-0 left-0 z-50 transition-transform md:relative md:translate-x-0",
         sidebarOpen ? "translate-x-0" : "-translate-x-full",
       ].join(" ")}>
         <Link to="/" className="flex items-center gap-3 px-5 py-5">
           <div className="h-9 w-9 shrink-0 rounded-full bg-[#3649F9]" />
-          <span className="text-lg font-semibold text-gray-900">ИИ-ассистент</span>
+          <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">ИИ-ассистент</span>
         </Link>
         <nav className="space-y-1 px-3 pt-2">
           {navItems.map((item) => {
@@ -84,7 +102,7 @@ export default function AppLayout() {
             return (
               <Link key={item.url} to={item.url} onClick={() => setSidebarOpen(false)}
                 className={["flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm transition-colors",
-                  isActive ? "bg-[#3649F9] font-medium text-white" : "text-[#C5CBD3] hover:bg-gray-50 hover:text-gray-600",
+                  isActive ? "bg-[#3649F9] font-medium text-white" : "text-[#C5CBD3] hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300",
                 ].join(" ")}>
                 <img src={item.icon} alt="" className={["h-5 w-5", isActive ? "brightness-0 invert" : "opacity-60"].join(" ")} />
                 {item.title}
@@ -95,14 +113,14 @@ export default function AppLayout() {
 
         {/* Admin section */}
         {user.isAuthorized && adminItems.some((a) => a.roles.includes(userRole)) && (
-          <div className="border-t border-gray-100 px-3 pt-3">
+          <div className="border-t border-gray-100 px-3 pt-3 dark:border-gray-700">
             <p className="mb-1 px-4 text-xs font-medium text-[#C5CBD3]">Управление</p>
             {adminItems.filter((a) => a.roles.includes(userRole)).map((item) => {
               const isActive = location.pathname === item.url || location.pathname.startsWith(item.url + "/")
               return (
                 <Link key={item.url} to={item.url} onClick={() => setSidebarOpen(false)}
                   className={["flex items-center gap-3 rounded-lg px-4 py-2 text-xs transition-colors",
-                    isActive ? "bg-[#3649F9] font-medium text-white" : "text-[#C5CBD3] hover:bg-gray-50 hover:text-gray-600",
+                    isActive ? "bg-[#3649F9] font-medium text-white" : "text-[#C5CBD3] hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300",
                   ].join(" ")}>
                   <img src="/icons/icon settings.svg" alt="" className={["h-4 w-4", isActive ? "brightness-0 invert" : "opacity-60"].join(" ")} />
                   {item.title}
@@ -130,7 +148,7 @@ export default function AppLayout() {
       </aside>
 
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex items-center gap-4 border-b border-gray-100 px-4 py-3 md:px-6">
+        <header className="flex items-center gap-4 border-b border-gray-100 px-4 py-3 md:px-6 dark:border-gray-700">
           {/* Mobile hamburger */}
           <button onClick={() => setSidebarOpen(true)} className="shrink-0 md:hidden" aria-label="Открыть меню">
             <svg className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -150,16 +168,16 @@ export default function AppLayout() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => searchResults.length > 0 && setShowResults(true)}
                   onBlur={() => setTimeout(() => setShowResults(false), 200)}
-                  className="w-full bg-transparent text-sm text-gray-600 placeholder-[#C5CBD3] outline-none"
+                  className="w-full bg-transparent text-sm text-gray-600 placeholder-[#C5CBD3] outline-none dark:text-gray-300"
                 />
               </div>
               {showResults && searchResults.length > 0 && (
-                <div className="absolute left-0 right-0 top-full z-20 mt-2 rounded-lg border bg-white py-1 shadow-lg">
+                <div className="absolute left-0 right-0 top-full z-20 mt-2 rounded-lg border bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-[#1e293b]">
                   {searchResults.map((r) => (
                     <button
                       key={`${r.type}-${r.id}`}
                       onMouseDown={() => { navigate(r.url); setShowResults(false); setSearchQuery("") }}
-                      className="flex w-full items-center gap-3 px-4 py-2 text-left text-sm text-gray-600 hover:bg-gray-50"
+                      className="flex w-full items-center gap-3 px-4 py-2 text-left text-sm text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
                     >
                       <span className={["rounded px-1.5 py-0.5 text-xs",
                         r.type === "chat" ? "bg-[#E8EAFF] text-[#3649F9]" : "bg-green-50 text-green-600",
@@ -174,7 +192,18 @@ export default function AppLayout() {
             </div>
           )}
 
-          <Link to="/profile" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200" aria-label="Мой профиль">
+          <button onClick={toggleTheme} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600" aria-label="Переключить тему">
+            {theme === "dark" ? (
+              <svg className="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            ) : (
+              <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            )}
+          </button>
+          <Link to="/profile" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600" aria-label="Мой профиль">
             <img src="/icons/icon profile.svg" alt="" className="h-5 w-5 opacity-50" />
           </Link>
         </header>

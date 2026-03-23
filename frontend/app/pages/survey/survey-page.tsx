@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import Markdown from "react-markdown"
-import remarkGfm from "remark-gfm"
 import { getSurvey, submitSurvey, getMyAnswers, type SurveyDetail, type SubmitAnswer } from "~/modules/survey/api/surveys"
 import { useUser } from "~/modules/user/lib/use-user"
 
@@ -102,20 +100,16 @@ export default function SurveyPage() {
     }
   }
 
-  if (validationResult) {
+  if (validationResult !== null) {
     return (
       <div className="mx-auto max-w-2xl p-8">
-        <div className="rounded-2xl border border-green-200 bg-green-50 p-8">
-          <div className="mb-4 text-center text-3xl">&#10003;</div>
-          <h2 className="mb-6 text-center text-xl font-bold text-gray-900">Опрос пройден</h2>
-          <div className="bot-markdown mb-6 rounded-xl bg-white p-6 text-sm text-gray-700">
-            <Markdown remarkPlugins={[remarkGfm]}>{validationResult}</Markdown>
-          </div>
-          <div className="text-center">
-          <button onClick={() => navigate("/chat")}
-            className="rounded-lg bg-[#3649F9] px-6 py-2.5 text-sm font-medium text-white hover:bg-[#3649F9]/90">
-            Перейти к чату
-          </button>
+        <div className="rounded-2xl border border-green-200 bg-green-50 p-8 text-center dark:border-green-800 dark:bg-green-950">
+          <div className="mb-4 text-4xl">&#10003;</div>
+          <h2 className="mb-3 text-xl font-bold text-gray-900 dark:text-gray-100">Спасибо за прохождение опроса!</h2>
+          <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">Ваши ответы сохранены и будут учитываться при рекомендациях. Перейдите в чат — ИИ-ассистент поможет вам достичь вашей цели.</p>
+          <div className="flex justify-center gap-3">
+            <button onClick={() => navigate("/chat")} className="rounded-lg bg-[#3649F9] px-6 py-2.5 text-sm font-medium text-white hover:bg-[#3649F9]/90">Перейти в чат</button>
+            <button onClick={() => navigate("/surveys")} className="rounded-lg border border-gray-200 px-6 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">К опросам</button>
           </div>
         </div>
       </div>
@@ -124,7 +118,7 @@ export default function SurveyPage() {
 
   return (
     <div className="mx-auto max-w-2xl p-8">
-      <h1 className="mb-2 text-2xl font-bold text-gray-900">{survey.title}</h1>
+      <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">{survey.title}</h1>
       {survey.description && <p className="mb-8 text-sm text-[#6D7C90]">{survey.description}</p>}
 
       <div className="space-y-8">
@@ -136,10 +130,10 @@ export default function SurveyPage() {
               ref={(el) => { questionRefs.current[q.id] = el }}
               className={[
                 "rounded-xl border p-6 transition-colors",
-                isUnanswered ? "border-red-300 bg-red-50/30" : "border-gray-100",
+                isUnanswered ? "border-red-300 bg-red-50/30 dark:border-red-700 dark:bg-red-900/20" : "border-gray-100 dark:border-gray-700",
               ].join(" ")}
             >
-              <p className="mb-4 text-sm font-medium text-gray-800">
+              <p className="mb-4 text-sm font-medium text-gray-800 dark:text-gray-200">
                 <span className="mr-2 text-[#3649F9]">{idx + 1}.</span>
                 {q.text}
                 {q.question_type === "text" && <span className="ml-2 text-xs text-[#C5CBD3]">(необязательно)</span>}
@@ -150,7 +144,7 @@ export default function SurveyPage() {
                   value={answers[q.id]?.free_text || ""}
                   onChange={(e) => handleTextAnswer(q.id, e.target.value)}
                   placeholder="Ваш ответ..."
-                  className="w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#3649F9] min-h-[80px] resize-none"
+                  className="w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#3649F9] min-h-[80px] resize-none dark:border-gray-600 dark:bg-[#1e293b] dark:text-gray-200"
                 />
               ) : (
                 <div className="space-y-2">
@@ -163,8 +157,8 @@ export default function SurveyPage() {
                         className={[
                           "block w-full rounded-lg border px-4 py-3 text-left text-sm transition-colors",
                           selected
-                            ? "border-[#3649F9] bg-[#E8EAFF] text-[#3649F9]"
-                            : "border-gray-100 text-gray-600 hover:border-[#C5CBD3]",
+                            ? "border-[#3649F9] bg-[#E8EAFF] text-[#3649F9] dark:bg-[#3649F9]/20"
+                            : "border-gray-100 text-gray-600 hover:border-[#C5CBD3] dark:border-gray-700 dark:text-gray-300",
                         ].join(" ")}
                       >
                         {o.text}

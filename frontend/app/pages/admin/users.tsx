@@ -30,12 +30,16 @@ export default function AdminUsers() {
   useEffect(() => { if (user.isAuthorized) loadUsers() }, [user.isAuthorized])
 
   const handleRoleChange = async (userId: string, role: string) => {
+    if (role === "admin" && !confirm("Назначить роль admin?")) return
     try {
       await baseClient.patch(`/api/admin/users/${userId}/role`, { role })
-      setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, role } : u))
+      const { data } = await baseClient.get<User[]>("/api/admin/users")
+      setUsers(data)
     } catch (err: any) {
-      setError(err.response?.data?.detail || "Ошибка")
-      setTimeout(() => setError(null), 3000)
+      const detail = err.response?.data?.detail
+      const msg = typeof detail === "string" ? detail : typeof detail === "object" ? JSON.stringify(detail) : "Ошибка"
+      setError(msg)
+      setTimeout(() => setError(null), 5000)
     }
   }
 
@@ -50,16 +54,16 @@ export default function AdminUsers() {
 
   return (
     <div className="mx-auto max-w-3xl p-8">
-      <h1 className="mb-8 text-2xl font-bold text-gray-900">Управление пользователями</h1>
+      <h1 className="mb-8 text-2xl font-bold text-gray-900 dark:text-gray-100">Управление пользователями</h1>
 
       {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
       <div className="space-y-3">
         {users.map((u) => (
-          <div key={u.id} className="flex items-center justify-between rounded-xl border border-gray-100 p-4">
+          <div key={u.id} className="flex items-center justify-between rounded-xl border border-gray-100 p-4 dark:border-gray-700 dark:bg-[#1e293b]">
             <div>
               <div className="flex items-center gap-2">
-                <p className="text-sm font-medium text-gray-800">{u.email}</p>
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{u.email}</p>
                 <span className={`rounded px-2 py-0.5 text-xs font-medium ${roleColor(u.role)}`}>
                   {u.role}
                 </span>
@@ -70,7 +74,7 @@ export default function AdminUsers() {
               value={u.role}
               onChange={(e) => handleRoleChange(u.id, e.target.value)}
               disabled={u.id === user.userId}
-              className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs outline-none disabled:opacity-40"
+              className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs outline-none disabled:opacity-40 dark:border-gray-600 dark:bg-[#1e293b] dark:text-gray-200"
             >
               {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
             </select>

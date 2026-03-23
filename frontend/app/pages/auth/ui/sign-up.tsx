@@ -14,7 +14,7 @@ export default function SignUp() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#3649F9] focus:ring-1 focus:ring-[#3649F9]"
+  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#3649F9] focus:ring-1 focus:ring-[#3649F9] dark:border-gray-600 dark:bg-[#1e293b] dark:text-gray-200 dark:placeholder-gray-500"
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -51,33 +51,33 @@ export default function SignUp() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-white dark:bg-[#0f172a]">
       <div className="px-10 py-8">
         <Link to="/" className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-full bg-[#3649F9]" />
-          <span className="text-xl font-semibold text-gray-900">ИИ-ассистент</span>
+          <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">ИИ-ассистент</span>
         </Link>
       </div>
       <div className="mx-auto w-full max-w-md px-10 py-8">
-        <h1 className="mb-2 text-3xl font-bold uppercase tracking-tight text-gray-900">Создать аккаунт</h1>
+        <h1 className="mb-2 text-3xl font-bold uppercase tracking-tight text-gray-900 dark:text-gray-100">Создать аккаунт</h1>
         <p className="mb-12 text-[#C5CBD3]">Зарегистрируйтесь, чтобы начать работу</p>
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label className="mb-2 block text-sm text-gray-600">Электронная почта</label>
+            <label className="mb-2 block text-sm text-gray-600 dark:text-gray-400">Электронная почта</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
               placeholder="example@mail.com" autoComplete="email" className={inputCls} />
           </div>
           <div>
-            <label className="mb-2 block text-sm text-gray-600">Пароль</label>
+            <label className="mb-2 block text-sm text-gray-600 dark:text-gray-400">Пароль</label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
               placeholder="Минимум 8 символов" autoComplete="new-password" className={inputCls} />
           </div>
           <div>
-            <label className="mb-2 block text-sm text-gray-600">Подтвердите пароль</label>
+            <label className="mb-2 block text-sm text-gray-600 dark:text-gray-400">Подтвердите пароль</label>
             <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Повторите пароль" autoComplete="new-password" className={inputCls} />
           </div>
-          <label className="flex items-start gap-2 text-sm text-gray-600">
+          <label className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
             <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)}
               className="mt-0.5 h-4 w-4 rounded border-[#C5CBD3] accent-[#3649F9]" />
             <span>Я согласен с <span className="text-[#3649F9]">условиями использования</span> и <span className="text-[#3649F9]">политикой конфиденциальности</span></span>

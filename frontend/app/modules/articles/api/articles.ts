@@ -47,6 +47,13 @@ export async function createArticleAdmin(payload: {
   return data
 }
 
+export async function updateArticleAdmin(id: string, payload: {
+  title: string; slug: string; content_md: string; category_id?: string; specialization?: string
+}): Promise<ArticleDetail> {
+  const { data } = await baseClient.put<ArticleDetail>(`/api/admin/articles/${id}`, payload)
+  return data
+}
+
 export async function deleteArticleAdmin(id: string): Promise<void> {
   await baseClient.delete(`/api/admin/articles/${id}`)
 }

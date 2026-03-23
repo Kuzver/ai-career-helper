@@ -17,6 +17,35 @@ body {
   @apply bg-white;
 }
 
+.dark html,
+.dark body,
+html.dark,
+html.dark body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+:root.dark {
+  --background: #0f172a;
+  --foreground: #e2e8f0;
+  --card: #1e293b;
+  --card-foreground: #e2e8f0;
+  --popover: #1e293b;
+  --popover-foreground: #e2e8f0;
+  --primary: #3649F9;
+  --primary-foreground: #ffffff;
+  --secondary: #1e293b;
+  --secondary-foreground: #e2e8f0;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #1e293b;
+  --accent-foreground: #e2e8f0;
+  --destructive: #FF383C;
+  --border: #334155;
+  --input: #334155;
+  --ring: #3649F9;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -80,6 +109,18 @@ body {
   margin-top: 0.75rem;
   margin-bottom: 0.25rem;
 }
+.dark .bot-markdown h1, .dark .bot-markdown h2, .dark .bot-markdown h3, .dark .bot-markdown h4 {
+  color: #e2e8f0;
+}
+.dark .bot-markdown strong { color: #e2e8f0; }
+.dark .bot-markdown code { background: rgba(255,255,255,0.1); color: #93c5fd; }
+.dark .bot-markdown blockquote { background: #1e293b; border-left-color: #3649F9; color: #94a3b8; }
+.dark .bot-markdown td { border-bottom-color: #334155; }
+.dark .bot-markdown tr:nth-child(even) td { background: #1e293b; }
+.dark .bot-markdown tr:hover td { background: #334155; }
+.dark .bot-markdown a { color: #818cf8; }
+.dark .bot-markdown hr { border-color: #334155; }
+.dark .bot-markdown li code, .dark .bot-markdown p code { background: rgba(54, 73, 249, 0.2); color: #818cf8; }
 .bot-markdown h1 { font-size: 1.125rem; }
 .bot-markdown h2 { font-size: 1rem; }
 .bot-markdown h3 { font-size: 0.9375rem; }
@@ -157,14 +198,6 @@ body {
   font-weight: 600;
 }
 
-/* Firework animation */
-@keyframes firework {
-  0% { opacity: 1; transform: rotate(var(--angle, 0deg)) translateY(0); }
-  100% { opacity: 0; transform: rotate(var(--angle, 0deg)) translateY(-120px) scale(0.5); }
-}
-.firework-particle {
-  animation: firework 1.2s ease-out forwards;
-}
 
 /* Inline code highlight */
 .bot-markdown li code, .bot-markdown p code {

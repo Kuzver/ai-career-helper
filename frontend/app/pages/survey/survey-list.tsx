@@ -29,17 +29,17 @@ export default function SurveyList() {
 
   return (
     <div className="mx-auto max-w-2xl p-8">
-      <h1 className="mb-8 text-2xl font-bold text-gray-900">Опросы</h1>
+      <h1 className="mb-8 text-2xl font-bold text-gray-900 dark:text-gray-100">Опросы</h1>
 
       {surveys.length === 0 ? (
         <p className="text-sm text-[#C5CBD3]">Опросов пока нет</p>
       ) : (
         <div className="space-y-4">
           {surveys.map((s) => (
-            <div key={s.id} className="flex items-center justify-between rounded-xl border border-gray-100 p-5">
+            <div key={s.id} className="flex items-center justify-between rounded-xl border border-gray-100 p-5 dark:border-gray-700 dark:bg-[#1e293b]">
               <div>
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium text-gray-800">{s.title}</p>
+                  <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{s.title}</p>
                   {s.is_mandatory && (
                     <span className="rounded bg-red-50 px-2 py-0.5 text-xs text-red-500">Обязательный</span>
                   )}

@@ -132,18 +132,18 @@ export default function Profile() {
     }
   }
 
-  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#3649F9] focus:ring-1 focus:ring-[#3649F9]"
+  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#3649F9] focus:ring-1 focus:ring-[#3649F9] dark:border-gray-600 dark:bg-[#1e293b] dark:text-gray-200 dark:placeholder-gray-500"
 
   return (
     <div className="mx-auto max-w-2xl p-8">
-      <h1 className="mb-8 text-2xl font-bold text-gray-900">Мой профиль</h1>
+      <h1 className="mb-8 text-2xl font-bold text-gray-900 dark:text-gray-100">Мой профиль</h1>
 
       <div className="mb-8 flex items-center gap-4">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#3649F9] text-xl font-bold text-white">
           {(form.name?.[0] || user.email?.[0] || "U").toUpperCase()}
         </div>
         <div>
-          <p className="text-lg font-medium text-gray-900">{form.name || user.email}</p>
+          <p className="text-lg font-medium text-gray-900 dark:text-gray-100">{form.name || user.email}</p>
           <p className="text-sm text-[#C5CBD3]">
             {SPECIALIZATIONS.find((s) => s.value === form.specialization)?.label || "Специализация не указана"}
           </p>
@@ -154,14 +154,14 @@ export default function Profile() {
 
       <div className="space-y-6">
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-600">Имя</label>
+          <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-400">Имя</label>
           <input type="text" value={form.name} onChange={(e) => update("name", e.target.value)}
             placeholder="Ваше имя" className={inputCls} />
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-600">Специализация</label>
+            <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-400">Специализация</label>
             <select value={form.specialization} onChange={(e) => update("specialization", e.target.value)}
               className={inputCls + " text-gray-600"}>
               <option value="">Выберите специализацию</option>
@@ -169,7 +169,7 @@ export default function Profile() {
             </select>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-600">Уровень опыта</label>
+            <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-400">Уровень опыта</label>
             <select value={form.experience} onChange={(e) => update("experience", e.target.value)}
               className={inputCls + " text-gray-600"}>
               <option value="">Выберите уровень</option>
@@ -179,13 +179,13 @@ export default function Profile() {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-600">Ключевые навыки</label>
+          <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-400">Ключевые навыки</label>
           <input type="text" value={form.skills} onChange={(e) => update("skills", e.target.value)}
             placeholder="Python, React, SQL, Docker..." className={inputCls} />
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-600">Карьерная цель</label>
+          <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-400">Карьерная цель</label>
           <textarea value={form.careerGoal} onChange={(e) => update("careerGoal", e.target.value)}
             placeholder="Например: стать senior backend разработчиком через 2 года"
             className={inputCls + " min-h-[80px] resize-none"} />
@@ -199,11 +199,11 @@ export default function Profile() {
           {saved && <span className="text-sm text-green-600">Данные сохранены</span>}
         </div>
 
-        <hr className="border-gray-100" />
+        <hr className="border-gray-100 dark:border-gray-700" />
 
         <ChangePassword />
 
-        <hr className="border-gray-100" />
+        <hr className="border-gray-100 dark:border-gray-700" />
         <button onClick={logout} className="text-sm text-red-400 hover:text-red-500">Выйти из аккаунта</button>
       </div>
     </div>
@@ -218,7 +218,7 @@ function ChangePassword() {
   const [pwSuccess, setPwSuccess] = useState(false)
   const [pwLoading, setPwLoading] = useState(false)
 
-  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#3649F9] focus:ring-1 focus:ring-[#3649F9]"
+  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#3649F9] focus:ring-1 focus:ring-[#3649F9] dark:border-gray-600 dark:bg-[#1e293b] dark:text-gray-200 dark:placeholder-gray-500"
 
   const handleChangePassword = async () => {
     setPwError(null)
@@ -245,7 +245,7 @@ function ChangePassword() {
 
   return (
     <div>
-      <h2 className="mb-4 text-lg font-semibold text-gray-900">Безопасность</h2>
+      <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Безопасность</h2>
       <div className="space-y-4">
         <input type="password" value={currentPw} onChange={(e) => setCurrentPw(e.target.value)}
           placeholder="Текущий пароль" className={inputCls} />
