@@ -119,19 +119,19 @@ class MessengerUsecase(Usecase[RequestMessageSchema, MessageSchemas]):
         roadmap_context = await build_roadmap_context(self.session, self.auth.id)
         user_context = build_user_context(career, survey_context, roadmap_context)
 
-        async with self.session.begin():
-            await self.create_message(CreateMessageSchema(
-                chat_id=data.chat_id,
-                text=data.text,
-                sender_type_id="user"
-            ))
-            answer = await self.orchestrator(data=data, user_context=user_context)
+        await self.create_message(CreateMessageSchema(
+            chat_id=data.chat_id,
+            text=data.text,
+            sender_type_id="user"
+        ))
+        answer = await self.orchestrator(data=data, user_context=user_context)
 
-            bot_message = await self.create_message(CreateMessageSchema(
-                chat_id=data.chat_id,
-                text=answer,
-                sender_type_id="chat"
-            ))
+        bot_message = await self.create_message(CreateMessageSchema(
+            chat_id=data.chat_id,
+            text=answer,
+            sender_type_id="chat"
+        ))
+        await self.session.commit()
 
         await self.auto_title(chat_id=data.chat_id)
 
