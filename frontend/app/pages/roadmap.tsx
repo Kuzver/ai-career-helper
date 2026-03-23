@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useUser } from "~/modules/user/lib/use-user"
 import { getProfile } from "~/modules/user/api/profile"
 import { getProgress, toggleProgress } from "~/modules/roadmap/api/roadmap"
+import { getPendingMandatory } from "~/modules/survey/api/surveys"
+import { baseClient } from "~/shared/api/axios-client"
 
 type RoadmapStep = {
   id: string
@@ -85,17 +87,23 @@ const DEFAULT_ROADMAP: Roadmap = {
 
 export default function RoadmapPage() {
   const { user } = useUser()
+  const navigate = useNavigate()
   const [expandedStep, setExpandedStep] = useState<string | null>(null)
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set())
   const [roadmap, setRoadmap] = useState<Roadmap>(DEFAULT_ROADMAP)
   const [loading, setLoading] = useState(true)
+  const [showFirework, setShowFirework] = useState(false)
+  const [showExport, setShowExport] = useState(false)
+  const [needsSurvey, setNeedsSurvey] = useState(false)
 
   useEffect(() => {
     if (!user.isAuthorized) { setLoading(false); return }
 
     const load = async () => {
       try {
-        const profile = await getProfile()
+        const [profile, pending] = await Promise.all([getProfile(), getPendingMandatory()])
+        setNeedsSurvey(pending.length > 0)
+
         const spec = profile.specialization || ""
         const rm = ROADMAPS[spec] || DEFAULT_ROADMAP
         setRoadmap(rm)
@@ -103,7 +111,6 @@ export default function RoadmapPage() {
         const progress = await getProgress(rm.key)
         setCompletedSteps(new Set(progress.map((p) => p.step_id)))
 
-        // Миграция из localStorage
         const raw = localStorage.getItem("roadmap_progress")
         if (raw) {
           try {
@@ -147,6 +154,11 @@ export default function RoadmapPage() {
     else prev.add(stepId)
     setCompletedSteps(prev)
 
+    if (prev.size === roadmap.steps.length && roadmap.steps.length > 0) {
+      setShowFirework(true)
+      setTimeout(() => setShowFirework(false), 3000)
+    }
+
     try {
       await toggleProgress(roadmap.key, stepId)
     } catch {
@@ -154,22 +166,99 @@ export default function RoadmapPage() {
     }
   }
 
+  const handleExportRoadmap = async (format: "md" | "html") => {
+    const lines = [`# ${roadmap.title}\n`, `${roadmap.description}\n`]
+    for (const [i, step] of roadmap.steps.entries()) {
+      const done = completedSteps.has(step.id) ? " [x]" : " [ ]"
+      lines.push(`## ${i + 1}.${done} ${step.title} (${step.duration})`)
+      lines.push(step.description)
+      lines.push(`**Навыки:** ${step.skills.join(", ")}\n`)
+    }
+    lines.push(`\n---\nПрогресс: ${progress}%`)
+    const text = lines.join("\n")
+
+    if (format === "md") {
+      const blob = new Blob([text], { type: "text/markdown" })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a"); a.href = url; a.download = `roadmap-${roadmap.key}.md`; a.click()
+      URL.revokeObjectURL(url)
+    } else {
+      try {
+        const { data } = await baseClient.post("/api/export", { message_id: "00000000-0000-0000-0000-000000000000", format: "html" }, { responseType: "blob" }).catch(() => ({ data: null }))
+        // Fallback: generate HTML on client
+        const html = `<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><title>${roadmap.title}</title><style>body{font-family:system-ui;max-width:800px;margin:40px auto;padding:0 20px;color:#333}h1{color:#3649F9}h2{margin-top:1.5em}.done{color:#22c55e}.skills{color:#3649F9;font-size:0.9em}</style></head><body>${text.replace(/^# (.+)$/gm, '<h1>$1</h1>').replace(/^## (.+)$/gm, '<h2>$1</h2>').replace(/\*\*(.+?)\*\*/g, '<strong class="skills">$1</strong>').replace(/\n/g, '<br>')}</body></html>`
+        const blob = new Blob([html], { type: "text/html" })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a"); a.href = url; a.download = `roadmap-${roadmap.key}.html`; a.click()
+        URL.revokeObjectURL(url)
+      } catch {}
+    }
+    setShowExport(false)
+  }
+
   const progress = roadmap.steps.length > 0
     ? Math.round((completedSteps.size / roadmap.steps.length) * 100)
     : 0
 
   return (
-    <div className="mx-auto max-w-3xl p-8">
+    <div className="relative mx-auto max-w-3xl p-8">
+      {/* Firework animation */}
+      {showFirework && (
+        <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center">
+          <div className="relative">
+            {[...Array(12)].map((_, i) => (
+              <div key={i} className="firework-particle" style={{
+                position: "absolute",
+                width: 8, height: 8,
+                borderRadius: "50%",
+                background: ["#3649F9", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"][i % 6],
+                animation: `firework 1s ease-out ${i * 0.05}s forwards`,
+                transform: `rotate(${i * 30}deg) translateY(-20px)`,
+              }} />
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="mb-8">
-        <h1 className="mb-2 text-2xl font-bold text-gray-900">{roadmap.title}</h1>
-        <p className="text-sm text-[#6D7C90]">{roadmap.description}</p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="mb-2 text-2xl font-bold text-gray-900">{roadmap.title}</h1>
+            <p className="text-sm text-[#6D7C90]">{roadmap.description}</p>
+          </div>
+          <div className="relative shrink-0">
+            <button onClick={() => setShowExport((v) => !v)}
+              className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-[#6D7C90] hover:border-[#3649F9] hover:text-[#3649F9]">
+              Скачать
+            </button>
+            {showExport && (
+              <div className="absolute right-0 top-full z-10 mt-1 rounded-lg border bg-white py-1 shadow-lg">
+                <button onClick={() => handleExportRoadmap("md")} className="block w-full px-4 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50">Markdown</button>
+                <button onClick={() => handleExportRoadmap("html")} className="block w-full px-4 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50">HTML</button>
+              </div>
+            )}
+          </div>
+        </div>
+
         {roadmap.key === "default" && (
           <div className="mt-4 rounded-lg bg-[#E8EAFF] px-4 py-3">
-            <p className="text-sm text-[#3649F9]">
-              Укажите специализацию в{" "}
-              <Link to="/profile" className="font-medium underline">профиле</Link>
-              {" "}для персонализированной дорожной карты
-            </p>
+            {needsSurvey ? (
+              <div>
+                <p className="mb-2 text-sm text-[#3649F9]">Для персонализированного roadmap пройдите обязательный опрос</p>
+                <button onClick={() => navigate("/surveys")}
+                  className="rounded-lg bg-[#3649F9] px-4 py-2 text-xs font-medium text-white">
+                  Пройти опрос
+                </button>
+              </div>
+            ) : (
+              <p className="text-sm text-[#3649F9]">
+                Укажите специализацию в{" "}
+                <Link to="/profile" className="font-medium underline">профиле</Link>
+                {", "}а затем{" "}
+                <Link to="/chat" className="font-medium underline">пообщайтесь с ботом</Link>
+                {" "}для персонализированной дорожной карты
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -178,10 +267,10 @@ export default function RoadmapPage() {
       <div className="mb-8">
         <div className="mb-2 flex items-center justify-between text-sm">
           <span className="text-[#6D7C90]">Прогресс</span>
-          <span className="font-medium text-gray-900">{progress}%</span>
+          <span className={["font-medium", progress === 100 ? "text-green-600" : "text-gray-900"].join(" ")}>{progress}%{progress === 100 && " — Завершено!"}</span>
         </div>
         <div className="h-2 overflow-hidden rounded-full bg-gray-100">
-          <div className="h-full rounded-full bg-[#3649F9] transition-all duration-500" style={{ width: `${progress}%` }} />
+          <div className={["h-full rounded-full transition-all duration-500", progress === 100 ? "bg-green-500" : "bg-[#3649F9]"].join(" ")} style={{ width: `${progress}%` }} />
         </div>
       </div>
 

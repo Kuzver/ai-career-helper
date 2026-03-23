@@ -7,7 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.schemas.auth import AuthSchema
-from src.infra.postgres.tables import MessageModel, ChatModel
+from src.infra.postgres.tables import MessageModel, ChatModel, ArticleModel
 from src.infra.files.exporter import export_markdown, export_docx, export_html
 
 ROUTER = APIRouter(route_class=DishkaRoute)
@@ -56,4 +56,37 @@ async def export_message(
         content=file_bytes,
         media_type=content_type,
         headers={"Content-Disposition": f'attachment; filename="response{extension}"'},
+    )
+
+
+class ExportArticleRequest(BaseModel):
+    slug: str
+    format: str
+
+
+@ROUTER.post("/article")
+async def export_article(
+    body: ExportArticleRequest,
+    session: FromDishka[AsyncSession],
+    auth: FromDishka[AuthSchema],
+):
+    if body.format not in FORMATS:
+        raise HTTPException(status_code=400, detail="Формат не поддерживается")
+
+    result = await session.execute(
+        select(ArticleModel).where(ArticleModel.slug == body.slug)
+    )
+    article = result.scalar_one_or_none()
+    if not article:
+        raise HTTPException(status_code=404, detail="Статья не найдена")
+
+    text = f"# {article.title}\n\n{article.content_md}"
+    content_type, extension, exporter = FORMATS[body.format]
+    file_bytes = exporter(text)
+
+    safe_slug = article.slug.replace("/", "_")
+    return Response(
+        content=file_bytes,
+        media_type=content_type,
+        headers={"Content-Disposition": f'attachment; filename="{safe_slug}{extension}"'},
     )

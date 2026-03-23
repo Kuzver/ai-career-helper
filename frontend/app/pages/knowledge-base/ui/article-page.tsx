@@ -4,12 +4,14 @@ import Markdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeSanitize from "rehype-sanitize"
 import { getArticle, type ArticleDetail } from "~/modules/articles/api/articles"
+import { baseClient } from "~/shared/api/axios-client"
 
 export default function ArticlePage() {
   const { slug } = useParams<{ slug: string }>()
   const [article, setArticle] = useState<ArticleDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [showExport, setShowExport] = useState(false)
 
   useEffect(() => {
     if (!slug) return
@@ -19,17 +21,49 @@ export default function ArticlePage() {
       .finally(() => setLoading(false))
   }, [slug])
 
+  const handleExport = async (format: "md" | "docx" | "html") => {
+    if (!slug) return
+    try {
+      const { data } = await baseClient.post("/api/export/article", { slug, format }, { responseType: "blob" })
+      const url = URL.createObjectURL(data)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `${slug}.${format}`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {}
+    setShowExport(false)
+  }
+
   if (loading) return <div className="flex h-full items-center justify-center"><p className="text-sm text-[#C5CBD3]">Загрузка...</p></div>
   if (error) return <div className="flex h-full items-center justify-center"><p className="text-sm text-red-500">{error}</p></div>
   if (!article) return null
 
   return (
     <div className="mx-auto max-w-3xl p-8">
-      <Link to="/knowledge-base" className="mb-6 inline-block text-sm text-[#3649F9] hover:underline">
-        &larr; Назад к статьям
-      </Link>
+      <div className="mb-6 flex items-center justify-between">
+        <Link to="/knowledge-base" className="text-sm text-[#3649F9] hover:underline">
+          &larr; Назад к статьям
+        </Link>
+        <div className="relative">
+          <button onClick={() => setShowExport((v) => !v)}
+            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-[#6D7C90] hover:border-[#3649F9] hover:text-[#3649F9]">
+            Скачать
+          </button>
+          {showExport && (
+            <div className="absolute right-0 top-full z-10 mt-1 rounded-lg border bg-white py-1 shadow-lg">
+              {(["md", "docx", "html"] as const).map((fmt) => (
+                <button key={fmt} onClick={() => handleExport(fmt)}
+                  className="block w-full px-4 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50">
+                  {fmt.toUpperCase()}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
       {article.category && (
-        <span className="mb-3 ml-4 inline-block rounded bg-[#E8EAFF] px-2 py-0.5 text-xs text-[#3649F9]">
+        <span className="mb-3 inline-block rounded bg-[#E8EAFF] px-2 py-0.5 text-xs text-[#3649F9]">
           {article.category.name}
         </span>
       )}

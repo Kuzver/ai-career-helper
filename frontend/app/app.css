@@ -157,6 +157,15 @@ body {
   font-weight: 600;
 }
 
+/* Firework animation */
+@keyframes firework {
+  0% { opacity: 1; transform: rotate(var(--angle, 0deg)) translateY(0); }
+  100% { opacity: 0; transform: rotate(var(--angle, 0deg)) translateY(-120px) scale(0.5); }
+}
+.firework-particle {
+  animation: firework 1.2s ease-out forwards;
+}
+
 /* Inline code highlight */
 .bot-markdown li code, .bot-markdown p code {
   background: #E8EAFF;

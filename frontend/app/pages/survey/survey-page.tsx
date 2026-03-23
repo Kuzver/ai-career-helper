@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { getSurvey, submitSurvey, type SurveyDetail, type SubmitAnswer } from "~/modules/survey/api/surveys"
+import { getSurvey, submitSurvey, getMyAnswers, type SurveyDetail, type SubmitAnswer } from "~/modules/survey/api/surveys"
 import { useUser } from "~/modules/user/lib/use-user"
 
 export default function SurveyPage() {
@@ -19,10 +19,24 @@ export default function SurveyPage() {
 
   useEffect(() => {
     if (!id) return
-    getSurvey(id)
-      .then(setSurvey)
-      .catch(() => setLoadError("Опрос не найден"))
-      .finally(() => setLoading(false))
+    const load = async () => {
+      try {
+        const s = await getSurvey(id)
+        setSurvey(s)
+        const prev = await getMyAnswers(id)
+        if (prev.length > 0) {
+          const map: Record<string, SubmitAnswer> = {}
+          for (const a of prev) {
+            map[a.question_id!] = a
+          }
+          setAnswers(map)
+        }
+      } catch {
+        setLoadError("Опрос не найден")
+      }
+      setLoading(false)
+    }
+    load()
   }, [id])
 
   if (!user.isAuthorized) {

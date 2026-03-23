@@ -62,6 +62,11 @@ export async function submitSurvey(id: string, answers: SubmitAnswer[]): Promise
   return data
 }
 
+export async function getMyAnswers(id: string): Promise<SubmitAnswer[]> {
+  const { data } = await baseClient.get<SubmitAnswer[]>(`/api/surveys/${id}/my-answers`)
+  return data
+}
+
 // Admin API
 export type SurveyCreatePayload = {
   title: string

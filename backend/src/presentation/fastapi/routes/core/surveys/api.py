@@ -2,7 +2,8 @@ from uuid import UUID, uuid4
 from datetime import datetime, timezone
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, HTTPException, status
-from sqlalchemy import select, and_
+from pydantic import BaseModel
+from sqlalchemy import select, and_, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from loguru import logger
 
@@ -141,8 +142,15 @@ async def submit_survey(
                 SurveyResponseModel.survey_id == survey_id,
             )
         )
-        if existing.scalar_one_or_none():
-            raise HTTPException(status_code=409, detail="Вы уже прошли этот опрос")
+        old_response = existing.scalar_one_or_none()
+        if old_response:
+            await session.execute(
+                delete(SurveyAnswerModel).where(SurveyAnswerModel.response_id == old_response.id)
+            )
+            await session.execute(
+                delete(SurveyResponseModel).where(SurveyResponseModel.id == old_response.id)
+            )
+            await session.flush()
 
         response_id = uuid4()
         response = SurveyResponseModel(
@@ -152,6 +160,7 @@ async def submit_survey(
             is_validated=False,
         )
         session.add(response)
+        await session.flush()
 
         for answer in body.answers:
             session.add(SurveyAnswerModel(
@@ -173,6 +182,37 @@ async def submit_survey(
         is_validated=True,
         validation_result=validation_result,
     )
+
+
+class UserAnswer(BaseModel):
+    question_id: UUID
+    option_id: UUID | None = None
+    free_text: str | None = None
+
+
+@ROUTER.get("/{survey_id}/my-answers", response_model=list[UserAnswer])
+async def get_my_answers(
+    survey_id: UUID,
+    session: FromDishka[AsyncSession],
+    auth: FromDishka[AuthSchema],
+):
+    resp = await session.execute(
+        select(SurveyResponseModel).where(
+            SurveyResponseModel.user_id == auth.id,
+            SurveyResponseModel.survey_id == survey_id,
+        )
+    )
+    response = resp.scalar_one_or_none()
+    if not response:
+        return []
+
+    ans = await session.execute(
+        select(SurveyAnswerModel).where(SurveyAnswerModel.response_id == response.id)
+    )
+    return [
+        UserAnswer(question_id=a.question_id, option_id=a.option_id, free_text=a.free_text)
+        for a in ans.scalars().all()
+    ]
 
 
 async def _validate_answers(
