@@ -34,6 +34,7 @@ async def register_user(
         password_hash=hash_password(body.password),
         first_name=body.first_name,
         is_active=True,
+        role="user",
     )
     session.add(user)
     await session.commit()
