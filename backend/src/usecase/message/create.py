@@ -24,6 +24,8 @@ def build_user_context(career, survey_context: str | None = None, roadmap_contex
     if career:
         if career.name:
             parts.append(f"Имя: {career.name}")
+        if getattr(career, 'specialization', None):
+            parts.append(f"Специализация: {career.specialization}")
         if career.experience_level:
             parts.append(f"Опыт: {career.experience_level}")
         if career.skills:

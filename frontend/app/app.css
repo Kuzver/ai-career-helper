@@ -117,6 +117,52 @@ body {
 .bot-markdown blockquote {
   border-left: 3px solid #3649F9;
   padding-left: 0.75rem;
-  color: #6b7280;
+  background: #f0f2ff;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+  color: #4b5563;
   margin: 0.5rem 0;
+}
+
+/* Tables */
+.bot-markdown table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.75rem 0;
+  font-size: 0.8125rem;
+}
+.bot-markdown th {
+  background: #3649F9;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.bot-markdown th:first-child { border-radius: 0.5rem 0 0 0; }
+.bot-markdown th:last-child { border-radius: 0 0.5rem 0 0; }
+.bot-markdown td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+.bot-markdown tr:nth-child(even) td {
+  background: #f8f9ff;
+}
+.bot-markdown tr:hover td {
+  background: #E8EAFF;
+}
+
+/* Highlighted text (bold in blockquote = accent) */
+.bot-markdown blockquote strong {
+  color: #3649F9;
+  font-weight: 600;
+}
+
+/* Inline code highlight */
+.bot-markdown li code, .bot-markdown p code {
+  background: #E8EAFF;
+  color: #3649F9;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
 }

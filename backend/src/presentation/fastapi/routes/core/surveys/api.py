@@ -127,48 +127,46 @@ async def submit_survey(
     auth: FromDishka[AuthSchema],
     gigachat: FromDishka[Gigachat],
 ):
-    result = await session.execute(
-        select(SurveyModel).where(SurveyModel.id == survey_id, SurveyModel.is_active == True)
-    )
-    survey = result.scalar_one_or_none()
-    if not survey:
-        raise HTTPException(status_code=404, detail="Опрос не найден")
-
-    existing = await session.execute(
-        select(SurveyResponseModel).where(
-            SurveyResponseModel.user_id == auth.id,
-            SurveyResponseModel.survey_id == survey_id,
+    async with session.begin():
+        result = await session.execute(
+            select(SurveyModel).where(SurveyModel.id == survey_id, SurveyModel.is_active == True)
         )
-    )
-    if existing.scalar_one_or_none():
-        raise HTTPException(status_code=409, detail="Вы уже прошли этот опрос")
+        survey = result.scalar_one_or_none()
+        if not survey:
+            raise HTTPException(status_code=404, detail="Опрос не найден")
 
-    response_id = uuid4()
-    response = SurveyResponseModel(
-        id=response_id,
-        user_id=auth.id,
-        survey_id=survey_id,
-        is_validated=False,
-    )
-    session.add(response)
+        existing = await session.execute(
+            select(SurveyResponseModel).where(
+                SurveyResponseModel.user_id == auth.id,
+                SurveyResponseModel.survey_id == survey_id,
+            )
+        )
+        if existing.scalar_one_or_none():
+            raise HTTPException(status_code=409, detail="Вы уже прошли этот опрос")
 
-    for answer in body.answers:
-        session.add(SurveyAnswerModel(
-            id=uuid4(),
-            response_id=response_id,
-            question_id=answer.question_id,
-            option_id=answer.option_id,
-            free_text=answer.free_text,
-        ))
+        response_id = uuid4()
+        response = SurveyResponseModel(
+            id=response_id,
+            user_id=auth.id,
+            survey_id=survey_id,
+            is_validated=False,
+        )
+        session.add(response)
 
-    await session.flush()
+        for answer in body.answers:
+            session.add(SurveyAnswerModel(
+                id=uuid4(),
+                response_id=response_id,
+                question_id=answer.question_id,
+                option_id=answer.option_id,
+                free_text=answer.free_text,
+            ))
 
-    # Валидация через GigaChat
-    validation_result = await _validate_answers(session, survey_id, body, gigachat)
-    response.is_validated = True
-    response.validation_result = validation_result
+        await session.flush()
 
-    await session.commit()
+        validation_result = await _validate_answers(session, survey_id, body, gigachat)
+        response.is_validated = True
+        response.validation_result = validation_result
 
     return SurveySubmitResponse(
         response_id=response_id,

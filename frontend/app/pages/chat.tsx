@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { useLoaderData, useNavigate, useRevalidator, useSearchParams } from "react-router-dom"
 import Markdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import rehypeSanitize from "rehype-sanitize"
 import { createChat, getChatById, getChats, sendMessage, exportMessage } from "~/modules/chat/api/chats"
 import { useUser } from "~/modules/user/lib/use-user"
@@ -37,7 +38,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 function BotMessage({ text }: { text: string }) {
-  return <div className="bot-markdown"><Markdown rehypePlugins={[rehypeSanitize]}>{text}</Markdown></div>
+  return <div className="bot-markdown"><Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>{text}</Markdown></div>
 }
 
 export default function ChatPage() {

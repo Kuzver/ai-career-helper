@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import Markdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import rehypeSanitize from "rehype-sanitize"
 import { getArticle, type ArticleDetail } from "~/modules/articles/api/articles"
 
@@ -34,7 +35,7 @@ export default function ArticlePage() {
       )}
       <h1 className="mb-6 text-2xl font-bold text-gray-900">{article.title}</h1>
       <div className="bot-markdown prose max-w-none text-sm leading-relaxed text-gray-700">
-        <Markdown rehypePlugins={[rehypeSanitize]}>{article.content_md}</Markdown>
+        <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>{article.content_md}</Markdown>
       </div>
     </div>
   )

@@ -96,7 +96,11 @@ class UserCareersModel(BaseDBModel):
     )
     specialization_id: Mapped[uuid.UUID] = mapped_column(
         UUID,
-        nullable=False
+        nullable=True
+    )
+    specialization: Mapped[str] = mapped_column(
+        String(100),
+        nullable=True,
     )
     experience_level: Mapped[str] = mapped_column(
         String(255),

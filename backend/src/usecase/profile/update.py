@@ -20,6 +20,8 @@ class UpdateProfileUsecase:
             if career:
                 if data.name is not None:
                     career.name = data.name
+                if data.specialization is not None:
+                    career.specialization = data.specialization
                 if data.experience_level is not None:
                     career.experience_level = data.experience_level
                 if data.skills is not None:
@@ -31,7 +33,7 @@ class UpdateProfileUsecase:
                     id=uuid4(),
                     user_id=user_id,
                     name=data.name,
-                    specialization_id=uuid4(),
+                    specialization=data.specialization,
                     experience_level=data.experience_level or "",
                     skills=data.skills,
                     career_goal=data.career_goal,

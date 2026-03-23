@@ -21,7 +21,7 @@ class GetProfileUsecase:
 
         return ProfileResponse(
             name=career.name,
-            specialization=career.experience_level,
+            specialization=career.specialization,
             experience_level=career.experience_level,
             skills=career.skills,
             career_goal=career.career_goal,
