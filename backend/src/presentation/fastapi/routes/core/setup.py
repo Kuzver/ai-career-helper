@@ -11,6 +11,7 @@ from src.presentation.fastapi.routes.core.export.api import ROUTER as EXPORT_ROU
 from src.presentation.fastapi.routes.core.surveys.api import ROUTER as SURVEY_ROUTER
 from src.presentation.fastapi.routes.core.articles.api import ROUTER as ARTICLE_ROUTER
 from src.presentation.fastapi.routes.core.roadmap.api import ROUTER as ROADMAP_ROUTER
+from src.presentation.fastapi.routes.core.search.api import ROUTER as SEARCH_ROUTER
 
 def setup_core_router() -> APIRouter:
     router = APIRouter(route_class=DishkaRoute)
@@ -25,4 +26,5 @@ def setup_core_router() -> APIRouter:
     router.include_router(prefix='/surveys', router=SURVEY_ROUTER, tags=["Surveys"])
     router.include_router(prefix='/articles', router=ARTICLE_ROUTER, tags=["Articles"])
     router.include_router(prefix='/roadmap', router=ROADMAP_ROUTER, tags=["Roadmap"])
+    router.include_router(prefix='/search', router=SEARCH_ROUTER, tags=["Search"])
     return router
