@@ -73,6 +73,12 @@ class UserModel(BaseDBModel):
         Boolean,
         nullable=False
     )
+    role: Mapped[str] = mapped_column(
+        String(50),
+        nullable=False,
+        default='user',
+        server_default='user',
+    )
 
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
@@ -83,6 +89,10 @@ class UserCareersModel(BaseDBModel):
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID,
         nullable=False,
+    )
+    name: Mapped[str] = mapped_column(
+        String(255),
+        nullable=True,
     )
     specialization_id: Mapped[uuid.UUID] = mapped_column(
         UUID,
