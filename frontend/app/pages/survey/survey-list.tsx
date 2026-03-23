@@ -49,12 +49,20 @@ export default function SurveyList() {
                 </div>
                 {s.description && <p className="mt-1 text-xs text-[#6D7C90]">{s.description}</p>}
               </div>
-              {!s.is_completed && (
-                <button onClick={() => navigate(`/survey/${s.id}`)}
-                  className="rounded-lg bg-[#3649F9] px-4 py-2 text-xs font-medium text-white hover:bg-[#3649F9]/90">
-                  Пройти
-                </button>
-              )}
+              <div className="flex items-center gap-2">
+                {s.is_completed && (
+                  <button onClick={() => navigate(`/survey/${s.id}`)}
+                    className="rounded-lg border border-[#3649F9] px-4 py-2 text-xs font-medium text-[#3649F9] hover:bg-[#E8EAFF]">
+                    Просмотреть
+                  </button>
+                )}
+                {!s.is_completed && (
+                  <button onClick={() => navigate(`/survey/${s.id}`)}
+                    className="rounded-lg bg-[#3649F9] px-4 py-2 text-xs font-medium text-white hover:bg-[#3649F9]/90">
+                    Пройти
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>

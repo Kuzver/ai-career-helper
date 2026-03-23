@@ -15,6 +15,7 @@ export default function SurveyPage() {
   const [error, setError] = useState<string | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isEdit, setIsEdit] = useState(false)
   const questionRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export default function SurveyPage() {
             map[String(a.question_id)] = a
           }
           setAnswers(map)
+          setIsEdit(true)
         }
       } catch {
         setLoadError("Опрос не найден")
@@ -172,11 +174,14 @@ export default function SurveyPage() {
 
       {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
 
-      <div className="mt-8 pb-8">
+      <div className="mt-8 flex items-center gap-4 pb-8">
         <button onClick={handleSubmit} disabled={submitting}
           className="rounded-lg bg-[#3649F9] px-8 py-3 text-sm font-medium text-white hover:bg-[#3649F9]/90 disabled:opacity-50">
-          {submitting ? "Отправка..." : "Отправить ответы"}
+          {submitting ? "Отправка..." : isEdit ? "Обновить ответы" : "Отправить ответы"}
         </button>
+        {isEdit && (
+          <span className="text-xs text-[#6D7C90]">Вы можете изменить ответы и отправить заново</span>
+        )}
       </div>
     </div>
   )

@@ -8,8 +8,11 @@ from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 
 from src.main.config import config
+from src.infra.auth.jwt import hash_password
 
 ADMIN_ID = UUID("00000000-0000-0000-0000-000000000001")
+ADMIN_EMAIL = "admin@career-helper.ru"
+ADMIN_PASSWORD = "Admin123!"
 
 CATEGORIES = [
     ("resume", "Резюме и поиск работы", 1),
@@ -523,15 +526,19 @@ async def seed():
                     text("INSERT INTO db_schema.sender_types (name) VALUES (:n)"), {"n": name}
                 )
 
-        # Ensure admin user exists for created_by FK
+        # Admin account
         admin_exists = await session.execute(
-            text("SELECT 1 FROM db_schema.users WHERE id = :id"), {"id": str(ADMIN_ID)}
+            text("SELECT 1 FROM db_schema.users WHERE email = :e"), {"e": ADMIN_EMAIL}
         )
         if not admin_exists.scalar():
             await session.execute(text(
                 "INSERT INTO db_schema.users (id, email, password_hash, first_name, is_active, role, created_at, updated_at) "
-                "VALUES (:id, 'admin@system', '', 'System', true, 'admin', now(), now())"
-            ), {"id": str(ADMIN_ID)})
+                "VALUES (:id, :email, :pw, 'Admin', true, 'admin', now(), now())"
+            ), {"id": str(ADMIN_ID), "email": ADMIN_EMAIL, "pw": hash_password(ADMIN_PASSWORD)})
+        else:
+            await session.execute(text(
+                "UPDATE db_schema.users SET role='admin' WHERE email = :e"
+            ), {"e": ADMIN_EMAIL})
 
         # Categories
         cat_ids = {}

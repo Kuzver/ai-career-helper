@@ -242,10 +242,16 @@ async def _sync_profile_from_survey(
                     if key in answer_text:
                         experience = val
                         break
-            elif "цель" in q_text:
+            elif "цель" in q_text or "ближайш" in q_text:
                 goal = options.get(a.option_id, a.free_text or "") if a.option_id else a.free_text
-            elif "технологи" in q_text:
+            elif "технологи" in q_text or "знаете" in q_text:
                 skills_text = a.free_text
+            elif "сложн" in q_text:
+                challenge = options.get(a.option_id, a.free_text or "") if a.option_id else a.free_text
+                if challenge and goal:
+                    goal = f"{goal}. Основная сложность: {challenge}"
+                elif challenge:
+                    goal = f"Основная сложность: {challenge}"
 
         if not any([specialization, experience, goal, skills_text]):
             return

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { useUser } from "~/modules/user/lib/use-user"
 import { getProfile, updateProfile } from "~/modules/user/api/profile"
+import { baseClient } from "~/shared/api/axios-client"
 import { PageSkeleton } from "~/shared/components/ui/skeletons"
 
 type ProfileForm = {
@@ -199,7 +200,65 @@ export default function Profile() {
         </div>
 
         <hr className="border-gray-100" />
+
+        <ChangePassword />
+
+        <hr className="border-gray-100" />
         <button onClick={logout} className="text-sm text-red-400 hover:text-red-500">Выйти из аккаунта</button>
+      </div>
+    </div>
+  )
+}
+
+function ChangePassword() {
+  const [currentPw, setCurrentPw] = useState("")
+  const [newPw, setNewPw] = useState("")
+  const [confirmPw, setConfirmPw] = useState("")
+  const [pwError, setPwError] = useState<string | null>(null)
+  const [pwSuccess, setPwSuccess] = useState(false)
+  const [pwLoading, setPwLoading] = useState(false)
+
+  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#3649F9] focus:ring-1 focus:ring-[#3649F9]"
+
+  const handleChangePassword = async () => {
+    setPwError(null)
+    setPwSuccess(false)
+    if (!currentPw || !newPw) { setPwError("Заполните все поля"); return }
+    if (newPw.length < 8) { setPwError("Новый пароль должен быть не менее 8 символов"); return }
+    if (newPw !== confirmPw) { setPwError("Пароли не совпадают"); return }
+
+    setPwLoading(true)
+    try {
+      await baseClient.post("/api/profile/change-password", {
+        current_password: currentPw,
+        new_password: newPw,
+      })
+      setPwSuccess(true)
+      setCurrentPw(""); setNewPw(""); setConfirmPw("")
+      setTimeout(() => setPwSuccess(false), 3000)
+    } catch (err: any) {
+      setPwError(err.response?.data?.detail || "Ошибка смены пароля")
+    } finally {
+      setPwLoading(false)
+    }
+  }
+
+  return (
+    <div>
+      <h2 className="mb-4 text-lg font-semibold text-gray-900">Безопасность</h2>
+      <div className="space-y-4">
+        <input type="password" value={currentPw} onChange={(e) => setCurrentPw(e.target.value)}
+          placeholder="Текущий пароль" className={inputCls} />
+        <input type="password" value={newPw} onChange={(e) => setNewPw(e.target.value)}
+          placeholder="Новый пароль (мин. 8 символов)" className={inputCls} />
+        <input type="password" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)}
+          placeholder="Подтвердите новый пароль" className={inputCls} />
+        {pwError && <p className="text-sm text-red-500">{pwError}</p>}
+        {pwSuccess && <p className="text-sm text-green-600">Пароль изменён</p>}
+        <button onClick={handleChangePassword} disabled={pwLoading}
+          className="rounded-lg bg-gray-800 px-6 py-2.5 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-50">
+          {pwLoading ? "Сохранение..." : "Изменить пароль"}
+        </button>
       </div>
     </div>
   )
