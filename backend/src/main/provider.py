@@ -16,6 +16,9 @@ from src.config import JwtConfig
 
 from src.usecase.profile.get import GetProfileUsecase
 from src.usecase.profile.update import UpdateProfileUsecase
+from src.usecase.chats.rename import RenameChatUsecase
+from src.usecase.chats.delete import DeleteChatUsecase
+from src.usecase.chats.auto_title import AutoTitleUsecase
 from src.usecase.users.create import CreateUserUsecase
 from src.usecase.cards.delete import DeleteCardUsecase
 from src.usecase.cards.update import UpdateCardUsecase
@@ -72,4 +75,7 @@ class MainProvider(Provider):
         GetChatByIdUsecase,
         GetProfileUsecase,
         UpdateProfileUsecase,
+        RenameChatUsecase,
+        DeleteChatUsecase,
+        AutoTitleUsecase,
     )

@@ -9,6 +9,7 @@ from src.application.schemas.messages import MessageSchemas, CreateMessageSchema
 from src.application.schemas.auth import AuthSchema
 from src.usecase.message.schemas import RequestMessageSchema
 from src.infra.gigachat.agents.orchestrator import OrchestratorAgent
+from src.usecase.chats.auto_title import AutoTitleUsecase
 
 
 def build_user_context(career) -> str | None:
@@ -34,6 +35,7 @@ class MessengerUsecase(Usecase[RequestMessageSchema, MessageSchemas]):
     auth: AuthSchema
     create_message: CreateReturningGate[MessageModel, CreateMessageSchema, MessageSchemas]
     orchestrator: OrchestratorAgent
+    auto_title: AutoTitleUsecase
 
     async def __call__(self, data: RequestMessageSchema) -> MessageSchemas:
         result = await self.session.execute(
@@ -50,8 +52,12 @@ class MessengerUsecase(Usecase[RequestMessageSchema, MessageSchemas]):
             ))
             answer = await self.orchestrator(data=data, user_context=user_context)
 
-            return await self.create_message(CreateMessageSchema(
+            bot_message = await self.create_message(CreateMessageSchema(
                 chat_id=data.chat_id,
                 text=answer,
                 sender_type_id="chat"
             ))
+
+        await self.auto_title(chat_id=data.chat_id)
+
+        return bot_message
