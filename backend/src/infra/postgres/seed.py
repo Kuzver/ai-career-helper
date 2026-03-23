@@ -526,19 +526,27 @@ async def seed():
                     text("INSERT INTO db_schema.sender_types (name) VALUES (:n)"), {"n": name}
                 )
 
-        # Admin account
+        # Admin account — update existing system user or create new
         admin_exists = await session.execute(
-            text("SELECT 1 FROM db_schema.users WHERE email = :e"), {"e": ADMIN_EMAIL}
+            text("SELECT id FROM db_schema.users WHERE id = :id"), {"id": str(ADMIN_ID)}
         )
-        if not admin_exists.scalar():
+        if admin_exists.scalar():
             await session.execute(text(
-                "INSERT INTO db_schema.users (id, email, password_hash, first_name, is_active, role, created_at, updated_at) "
-                "VALUES (:id, :email, :pw, 'Admin', true, 'admin', now(), now())"
+                "UPDATE db_schema.users SET email=:email, password_hash=:pw, role='admin', first_name='Admin' WHERE id=:id"
             ), {"id": str(ADMIN_ID), "email": ADMIN_EMAIL, "pw": hash_password(ADMIN_PASSWORD)})
         else:
-            await session.execute(text(
-                "UPDATE db_schema.users SET role='admin' WHERE email = :e"
-            ), {"e": ADMIN_EMAIL})
+            email_exists = await session.execute(
+                text("SELECT 1 FROM db_schema.users WHERE email = :e"), {"e": ADMIN_EMAIL}
+            )
+            if email_exists.scalar():
+                await session.execute(text(
+                    "UPDATE db_schema.users SET role='admin' WHERE email = :e"
+                ), {"e": ADMIN_EMAIL})
+            else:
+                await session.execute(text(
+                    "INSERT INTO db_schema.users (id, email, password_hash, first_name, is_active, role, created_at, updated_at) "
+                    "VALUES (:id, :email, :pw, 'Admin', true, 'admin', now(), now())"
+                ), {"id": str(ADMIN_ID), "email": ADMIN_EMAIL, "pw": hash_password(ADMIN_PASSWORD)})
 
         # Categories
         cat_ids = {}
