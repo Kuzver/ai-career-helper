@@ -24,6 +24,12 @@ export function ChatSidebar() {
   useEffect(() => { loadChats() }, [selectedChatId])
 
   useEffect(() => {
+    const handler = () => loadChats()
+    window.addEventListener("chats-updated", handler)
+    return () => window.removeEventListener("chats-updated", handler)
+  }, [])
+
+  useEffect(() => {
     if (editingId && editRef.current) editRef.current.focus()
   }, [editingId])
 

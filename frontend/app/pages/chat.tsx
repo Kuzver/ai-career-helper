@@ -107,6 +107,7 @@ export default function ChatPage() {
       setOptimisticText(null)
       setAttachedFile(null)
       revalidator.revalidate()
+      window.dispatchEvent(new Event("chats-updated"))
     } catch (err) {
       console.error("Send error:", err)
       setSendError("Не удалось отправить. Попробуйте ещё раз.")

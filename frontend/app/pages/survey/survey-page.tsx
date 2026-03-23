@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import Markdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import { getSurvey, submitSurvey, getMyAnswers, type SurveyDetail, type SubmitAnswer } from "~/modules/survey/api/surveys"
 import { useUser } from "~/modules/user/lib/use-user"
 
@@ -103,14 +105,18 @@ export default function SurveyPage() {
   if (validationResult) {
     return (
       <div className="mx-auto max-w-2xl p-8">
-        <div className="rounded-2xl border border-green-200 bg-green-50 p-8 text-center">
-          <div className="mb-4 text-3xl">&#10003;</div>
-          <h2 className="mb-4 text-xl font-bold text-gray-900">Опрос пройден</h2>
-          <p className="mb-6 text-sm text-gray-600">{validationResult}</p>
+        <div className="rounded-2xl border border-green-200 bg-green-50 p-8">
+          <div className="mb-4 text-center text-3xl">&#10003;</div>
+          <h2 className="mb-6 text-center text-xl font-bold text-gray-900">Опрос пройден</h2>
+          <div className="bot-markdown mb-6 rounded-xl bg-white p-6 text-sm text-gray-700">
+            <Markdown remarkPlugins={[remarkGfm]}>{validationResult}</Markdown>
+          </div>
+          <div className="text-center">
           <button onClick={() => navigate("/chat")}
             className="rounded-lg bg-[#3649F9] px-6 py-2.5 text-sm font-medium text-white hover:bg-[#3649F9]/90">
             Перейти к чату
           </button>
+          </div>
         </div>
       </div>
     )
