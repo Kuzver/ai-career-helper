@@ -386,3 +386,36 @@ class SurveyAnswerModel(BaseDBModel):
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
 
+
+class ArticleCategoryModel(BaseDBModel):
+    __tablename__ = 'article_categories'
+    id: Mapped[uuid_pk]
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    slug: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    created_at: Mapped[created_at]
+    updated_at: Mapped[updated_at]
+
+
+class ArticleModel(BaseDBModel):
+    __tablename__ = 'articles'
+    id: Mapped[uuid_pk]
+    title: Mapped[str] = mapped_column(String(500), nullable=False)
+    slug: Mapped[str] = mapped_column(String(500), nullable=False, unique=True)
+    content_md: Mapped[str] = mapped_column(Text, nullable=False)
+    category_id: Mapped[uuid.UUID] = mapped_column(UUID, ForeignKey('db_schema.article_categories.id', ondelete='SET NULL'), nullable=True)
+    specialization: Mapped[str] = mapped_column(String(100), nullable=True)
+    created_at: Mapped[created_at]
+    updated_at: Mapped[updated_at]
+
+
+class UserRoadmapProgressModel(BaseDBModel):
+    __tablename__ = 'user_roadmap_progress'
+    id: Mapped[uuid_pk]
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID, ForeignKey('db_schema.users.id'), nullable=False)
+    roadmap_key: Mapped[str] = mapped_column(String(100), nullable=False)
+    step_id: Mapped[str] = mapped_column(String(100), nullable=False)
+    completed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=func.now())
+    created_at: Mapped[created_at]
+    updated_at: Mapped[updated_at]
+

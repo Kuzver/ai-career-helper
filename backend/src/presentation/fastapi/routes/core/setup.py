@@ -9,6 +9,7 @@ from src.presentation.fastapi.routes.core.chats.api import ROUTER as CHAT_ROUTER
 from src.presentation.fastapi.routes.core.profile.api import ROUTER as PROFILE_ROUTER
 from src.presentation.fastapi.routes.core.export.api import ROUTER as EXPORT_ROUTER
 from src.presentation.fastapi.routes.core.surveys.api import ROUTER as SURVEY_ROUTER
+from src.presentation.fastapi.routes.core.articles.api import ROUTER as ARTICLE_ROUTER
 
 def setup_core_router() -> APIRouter:
     router = APIRouter(route_class=DishkaRoute)
@@ -21,4 +22,5 @@ def setup_core_router() -> APIRouter:
     router.include_router(prefix='/profile', router=PROFILE_ROUTER, tags=["Profile"])
     router.include_router(prefix='/export', router=EXPORT_ROUTER, tags=["Export"])
     router.include_router(prefix='/surveys', router=SURVEY_ROUTER, tags=["Surveys"])
+    router.include_router(prefix='/articles', router=ARTICLE_ROUTER, tags=["Articles"])
     return router
