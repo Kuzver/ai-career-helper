@@ -8,7 +8,7 @@ from src.application.schemas.auth import AuthSchema
 from src.application.schemas.survey import (
     SurveyCreate, SurveyUpdate, SurveyDetail, SurveyQuestionOut, SurveyOptionOut,
 )
-from src.infra.auth.admin import require_admin
+from src.infra.auth.admin import require_editor
 from src.infra.postgres.tables import (
     SurveyModel, SurveyQuestionModel, SurveyOptionModel,
 )
@@ -22,7 +22,7 @@ async def create_survey(
     session: FromDishka[AsyncSession],
     auth: FromDishka[AuthSchema],
 ):
-    await require_admin(session, auth)
+    await require_editor(session, auth)
 
     survey_id = uuid4()
     session.add(SurveyModel(
@@ -73,7 +73,7 @@ async def update_survey(
     session: FromDishka[AsyncSession],
     auth: FromDishka[AuthSchema],
 ):
-    await require_admin(session, auth)
+    await require_editor(session, auth)
 
     result = await session.execute(
         select(SurveyModel).where(SurveyModel.id == survey_id)
@@ -135,7 +135,7 @@ async def delete_survey(
     session: FromDishka[AsyncSession],
     auth: FromDishka[AuthSchema],
 ):
-    await require_admin(session, auth)
+    await require_editor(session, auth)
 
     result = await session.execute(
         select(SurveyModel).where(SurveyModel.id == survey_id)

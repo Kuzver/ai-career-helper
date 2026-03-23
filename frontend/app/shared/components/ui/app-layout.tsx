@@ -14,6 +14,12 @@ const navItems = [
   { title: "База знаний", url: "/knowledge-base", icon: "/icons/icon info.svg" },
 ]
 
+const adminItems = [
+  { title: "Статьи", url: "/admin/articles", roles: ["editor", "admin"] },
+  { title: "Опросы", url: "/admin/surveys", roles: ["editor", "admin"] },
+  { title: "Пользователи", url: "/admin/users", roles: ["admin"] },
+]
+
 export default function AppLayout() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -24,7 +30,15 @@ export default function AppLayout() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [showResults, setShowResults] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [userRole, setUserRole] = useState<string>("user")
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    if (!user.isAuthorized) return
+    baseClient.get<{ role: string }>("/api/profile/role")
+      .then(({ data }) => setUserRole(data.role))
+      .catch(() => {})
+  }, [user.isAuthorized])
 
   const handleLogout = () => {
     logout()
@@ -78,6 +92,25 @@ export default function AppLayout() {
             )
           })}
         </nav>
+
+        {/* Admin section */}
+        {user.isAuthorized && adminItems.some((a) => a.roles.includes(userRole)) && (
+          <div className="border-t border-gray-100 px-3 pt-3">
+            <p className="mb-1 px-4 text-xs font-medium text-[#C5CBD3]">Управление</p>
+            {adminItems.filter((a) => a.roles.includes(userRole)).map((item) => {
+              const isActive = location.pathname === item.url
+              return (
+                <Link key={item.url} to={item.url} onClick={() => setSidebarOpen(false)}
+                  className={["flex items-center gap-3 rounded-lg px-4 py-2 text-xs transition-colors",
+                    isActive ? "bg-[#3649F9] font-medium text-white" : "text-[#C5CBD3] hover:bg-gray-50 hover:text-gray-600",
+                  ].join(" ")}>
+                  <img src="/icons/icon settings.svg" alt="" className={["h-4 w-4", isActive ? "brightness-0 invert" : "opacity-60"].join(" ")} />
+                  {item.title}
+                </Link>
+              )
+            })}
+          </div>
+        )}
 
         {isChatPage && user.isAuthorized && <ChatSidebar />}
 

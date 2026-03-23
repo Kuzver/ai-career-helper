@@ -8,7 +8,7 @@ from src.application.schemas.auth import AuthSchema
 from src.application.schemas.article import (
     ArticleCreate, ArticleUpdate, ArticleDetail, CategoryOut, CategoryCreate,
 )
-from src.infra.auth.admin import require_admin
+from src.infra.auth.admin import require_editor
 from src.infra.postgres.tables import ArticleModel, ArticleCategoryModel
 
 ROUTER = APIRouter(route_class=DishkaRoute)
@@ -22,7 +22,7 @@ async def create_category(
     session: FromDishka[AsyncSession],
     auth: FromDishka[AuthSchema],
 ):
-    await require_admin(session, auth)
+    await require_editor(session, auth)
     cat_id = uuid4()
     session.add(ArticleCategoryModel(id=cat_id, name=body.name, slug=body.slug, order=body.order))
     await session.commit()
@@ -31,7 +31,7 @@ async def create_category(
 
 @ROUTER.delete("/categories/{cat_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_category(cat_id: UUID, session: FromDishka[AsyncSession], auth: FromDishka[AuthSchema]):
-    await require_admin(session, auth)
+    await require_editor(session, auth)
     await session.execute(delete(ArticleCategoryModel).where(ArticleCategoryModel.id == cat_id))
     await session.commit()
 
@@ -44,7 +44,7 @@ async def create_article(
     session: FromDishka[AsyncSession],
     auth: FromDishka[AuthSchema],
 ):
-    await require_admin(session, auth)
+    await require_editor(session, auth)
     article_id = uuid4()
     session.add(ArticleModel(
         id=article_id, title=body.title, slug=body.slug,
@@ -75,7 +75,7 @@ async def update_article(
     session: FromDishka[AsyncSession],
     auth: FromDishka[AuthSchema],
 ):
-    await require_admin(session, auth)
+    await require_editor(session, auth)
     result = await session.execute(select(ArticleModel).where(ArticleModel.id == article_id))
     article = result.scalar_one_or_none()
     if not article:
@@ -105,6 +105,6 @@ async def update_article(
 
 @ROUTER.delete("/{article_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_article(article_id: UUID, session: FromDishka[AsyncSession], auth: FromDishka[AuthSchema]):
-    await require_admin(session, auth)
+    await require_editor(session, auth)
     await session.execute(delete(ArticleModel).where(ArticleModel.id == article_id))
     await session.commit()

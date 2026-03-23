@@ -13,6 +13,7 @@ import SurveyList from "../app/pages/survey/survey-list"
 import SurveyPage from "../app/pages/survey/survey-page"
 import AdminSurveys from "../app/pages/admin/surveys"
 import AdminArticles from "../app/pages/admin/articles"
+import AdminUsers from "../app/pages/admin/users"
 import NotFoundPage from "../app/pages/not-found"
 
 const router = createBrowserRouter([
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
       { path: "survey/:id", element: <SurveyPage /> },
       { path: "admin/surveys", element: <AdminSurveys /> },
       { path: "admin/articles", element: <AdminArticles /> },
+      { path: "admin/users", element: <AdminUsers /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },

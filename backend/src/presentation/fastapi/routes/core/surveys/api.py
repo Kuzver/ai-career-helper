@@ -14,7 +14,7 @@ from src.application.schemas.survey import (
 )
 from src.infra.postgres.tables import (
     SurveyModel, SurveyQuestionModel, SurveyOptionModel,
-    SurveyResponseModel, SurveyAnswerModel,
+    SurveyResponseModel, SurveyAnswerModel, UserCareersModel,
 )
 from src.infra.gigachat.chat import Gigachat
 
@@ -177,11 +177,102 @@ async def submit_survey(
         response.is_validated = True
         response.validation_result = validation_result
 
+    # Подтянуть данные в профиль из обязательного опроса
+    if survey.is_mandatory:
+        await _sync_profile_from_survey(session, auth.id, survey_id, body)
+
     return SurveySubmitResponse(
         response_id=response_id,
         is_validated=True,
         validation_result=validation_result,
     )
+
+
+SPEC_MAP = {
+    "frontend": "frontend", "backend": "backend", "fullstack": "fullstack",
+    "мобильная": "mobile", "data": "data", "devops": "devops",
+    "тестирование": "qa", "управление": "pm",
+}
+
+EXP_MAP = {
+    "новичок": "student", "полный новичок": "student",
+    "3-6 месяцев": "student", "пет-проект": "junior",
+    "junior": "junior", "менее года": "junior",
+    "middle": "middle", "1-3 года": "middle",
+    "senior": "senior", "3+": "senior",
+}
+
+
+async def _sync_profile_from_survey(
+    session: AsyncSession, user_id: UUID, survey_id: UUID, body: SurveySubmitRequest,
+) -> None:
+    try:
+        q_result = await session.execute(
+            select(SurveyQuestionModel).where(SurveyQuestionModel.survey_id == survey_id)
+        )
+        questions = {q.id: q.text.lower() for q in q_result.scalars().all()}
+
+        o_ids = [a.option_id for a in body.answers if a.option_id]
+        options = {}
+        if o_ids:
+            o_result = await session.execute(
+                select(SurveyOptionModel).where(SurveyOptionModel.id.in_(o_ids))
+            )
+            options = {o.id: o.text for o in o_result.scalars().all()}
+
+        specialization = None
+        experience = None
+        goal = None
+        skills_text = None
+
+        for a in body.answers:
+            q_text = questions.get(a.question_id, "")
+            answer_text = options.get(a.option_id, a.free_text or "").lower() if a.option_id else (a.free_text or "").lower()
+
+            if "сфера" in q_text or "направлен" in q_text:
+                for key, val in SPEC_MAP.items():
+                    if key in answer_text:
+                        specialization = val
+                        break
+            elif "уровень" in q_text or "опыт" in q_text:
+                for key, val in EXP_MAP.items():
+                    if key in answer_text:
+                        experience = val
+                        break
+            elif "цель" in q_text:
+                goal = options.get(a.option_id, a.free_text or "") if a.option_id else a.free_text
+            elif "технологи" in q_text:
+                skills_text = a.free_text
+
+        if not any([specialization, experience, goal, skills_text]):
+            return
+
+        async with session.begin_nested():
+            result = await session.execute(
+                select(UserCareersModel).where(UserCareersModel.user_id == user_id)
+            )
+            career = result.scalar_one_or_none()
+
+            if career:
+                if specialization and not career.specialization:
+                    career.specialization = specialization
+                if experience and not career.experience_level:
+                    career.experience_level = experience
+                if goal and not career.career_goal:
+                    career.career_goal = goal
+                if skills_text and not career.skills:
+                    career.skills = skills_text
+            else:
+                from uuid import uuid4 as _uuid4
+                session.add(UserCareersModel(
+                    id=_uuid4(), user_id=user_id,
+                    specialization=specialization,
+                    experience_level=experience or "",
+                    career_goal=goal,
+                    skills=skills_text,
+                ))
+    except Exception as e:
+        logger.error(f"Profile sync from survey error: {e}")
 
 
 class UserAnswer(BaseModel):
