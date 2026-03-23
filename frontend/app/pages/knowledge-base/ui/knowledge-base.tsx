@@ -1,39 +1,120 @@
-import { useState } from "react"
-
-type Card = { id: string; title: string; description: string }
-
-const CARDS: Card[] = [
-  { id: "1", title: "Как составить резюме", description: "Резюме — это ваша визитная карточка для работодателя. Укажите контактные данные, опыт работы в обратном хронологическом порядке, ключевые навыки и образование. Используйте конкретные цифры и достижения вместо общих фраз. Адаптируйте резюме под каждую вакансию, выделяя релевантный опыт." },
-  { id: "2", title: "Подготовка к собеседованию", description: "Изучите компанию и вакансию заранее. Подготовьте ответы на типичные вопросы: расскажите о себе, почему хотите работать у нас, ваши сильные и слабые стороны. Используйте метод STAR для описания опыта (Ситуация, Задача, Действие, Результат). Подготовьте свои вопросы к работодателю." },
-  { id: "3", title: "Построение карьерного пути", description: "Определите свои долгосрочные карьерные цели и разбейте их на этапы. Регулярно оценивайте свой прогресс и корректируйте план. Развивайте как hard skills, так и soft skills. Нетворкинг и менторство могут значительно ускорить карьерный рост." },
-  { id: "4", title: "Навыки для IT-специалиста", description: "Современный IT-специалист должен владеть не только техническими навыками, но и уметь работать в команде, управлять временем и коммуницировать. Изучайте Git, основы DevOps, методологии Agile/Scrum. Постоянно обновляйте знания — технологии меняются быстро." },
-  { id: "5", title: "Как вести себя на новой работе", description: "Первые 90 дней критически важны. Слушайте больше, чем говорите. Знакомьтесь с коллегами и корпоративной культурой. Задавайте вопросы — это показывает заинтересованность. Фиксируйте свои достижения с первого дня для будущих обзоров эффективности." },
-  { id: "6", title: "Фриланс vs Офис", description: "Фриланс даёт свободу графика и выбора проектов, но требует самодисциплины и навыков самопродвижения. Офисная работа обеспечивает стабильность, социальные гарантии и командную среду. Гибридный формат сочетает преимущества обоих подходов. Выбирайте исходя из своих приоритетов." },
-]
+import { useEffect, useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { getArticles, getCategories, type ArticleListItem, type Category } from "~/modules/articles/api/articles"
+import { useUser } from "~/modules/user/lib/use-user"
+import { getProfile } from "~/modules/user/api/profile"
 
 export default function KnowledgeBase() {
-  const [selectedCard, setSelectedCard] = useState<Card | null>(null)
+  const { user } = useUser()
+  const navigate = useNavigate()
+  const [articles, setArticles] = useState<ArticleListItem[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [showAll, setShowAll] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [userSpec, setUserSpec] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!user.isAuthorized) { setLoading(false); return }
+
+    const load = async () => {
+      try {
+        const [cats, profile] = await Promise.all([getCategories(), getProfile()])
+        setCategories(cats)
+        setUserSpec(profile.specialization || null)
+
+        const params: Record<string, string> = {}
+        if (profile.specialization && !showAll) {
+          params.specialization = profile.specialization
+        }
+        const items = await getArticles(params)
+        setArticles(items)
+      } catch {}
+      setLoading(false)
+    }
+    load()
+  }, [user.isAuthorized, showAll])
+
+  if (!user.isAuthorized) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center">
+        <p className="mb-2 text-lg font-medium text-gray-600">База знаний</p>
+        <p className="mb-6 text-sm text-[#C5CBD3]">Войдите, чтобы читать статьи</p>
+        <Link to="/sign-in" className="rounded-lg bg-[#3649F9] px-6 py-2.5 text-sm font-medium text-white">Войти</Link>
+      </div>
+    )
+  }
+
+  if (loading) return <div className="flex h-full items-center justify-center"><p className="text-sm text-[#C5CBD3]">Загрузка...</p></div>
+
+  const filtered = selectedCategory
+    ? articles.filter((a) => a.category?.slug === selectedCategory)
+    : articles
 
   return (
     <div className="p-8">
-      {selectedCard && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4" onClick={() => setSelectedCard(null)}>
-          <div className="w-full max-w-lg rounded-3xl bg-white p-8 shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <h2 className="mb-3 text-xl font-semibold text-gray-900">{selectedCard.title}</h2>
-            <p className="text-sm leading-relaxed text-gray-500">{selectedCard.description}</p>
-            <button onClick={() => setSelectedCard(null)} className="mt-6 text-sm text-[#3649F9] hover:underline">Закрыть</button>
-          </div>
+      <div className="mb-8 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-900">База знаний</h1>
+        <div className="flex items-center gap-3">
+          {userSpec && (
+            <button
+              onClick={() => setShowAll((v) => !v)}
+              className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-[#6D7C90] hover:border-[#3649F9] hover:text-[#3649F9]"
+            >
+              {showAll ? "По моей специализации" : "Показать все"}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Категории */}
+      {categories.length > 0 && (
+        <div className="mb-6 flex flex-wrap gap-2">
+          <button
+            onClick={() => setSelectedCategory(null)}
+            className={["rounded-full px-4 py-1.5 text-xs font-medium transition-colors",
+              !selectedCategory ? "bg-[#3649F9] text-white" : "bg-gray-100 text-[#6D7C90] hover:bg-[#E8EAFF]",
+            ].join(" ")}
+          >
+            Все
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.slug === selectedCategory ? null : cat.slug)}
+              className={["rounded-full px-4 py-1.5 text-xs font-medium transition-colors",
+                selectedCategory === cat.slug ? "bg-[#3649F9] text-white" : "bg-gray-100 text-[#6D7C90] hover:bg-[#E8EAFF]",
+              ].join(" ")}
+            >
+              {cat.name}
+            </button>
+          ))}
         </div>
       )}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {CARDS.map((card) => (
-          <button key={card.id} onClick={() => setSelectedCard(card)}
-            className="rounded-2xl border border-gray-200 bg-white p-6 text-left transition-shadow hover:shadow-md">
-            <h3 className="mb-2 text-base font-semibold text-gray-900">{card.title}</h3>
-            <p className="line-clamp-3 text-sm leading-relaxed text-[#C5CBD3]">{card.description}</p>
-          </button>
-        ))}
-      </div>
+
+      {filtered.length === 0 ? (
+        <p className="text-sm text-[#C5CBD3]">Статей пока нет</p>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((article) => (
+            <button
+              key={article.id}
+              onClick={() => navigate(`/knowledge-base/${article.slug}`)}
+              className="rounded-2xl border border-gray-200 bg-white p-6 text-left transition-shadow hover:shadow-md"
+            >
+              {article.category && (
+                <span className="mb-2 inline-block rounded bg-[#E8EAFF] px-2 py-0.5 text-xs text-[#3649F9]">
+                  {article.category.name}
+                </span>
+              )}
+              <h3 className="mb-2 text-base font-semibold text-gray-900">{article.title}</h3>
+              {article.specialization && (
+                <p className="text-xs text-[#C5CBD3]">{article.specialization}</p>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
