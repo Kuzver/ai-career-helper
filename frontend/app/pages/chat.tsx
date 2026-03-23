@@ -2,11 +2,10 @@ import { useEffect, useRef, useState } from "react"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { useLoaderData, useNavigate, useRevalidator, useSearchParams } from "react-router-dom"
 import Markdown from "react-markdown"
-import { createChat, getChatById, getChats, sendMessage } from "~/modules/chat/api/chats"
+import { createChat, getChatById, getChats, sendMessage, exportMessage } from "~/modules/chat/api/chats"
 import { useUser } from "~/modules/user/lib/use-user"
 import type { Chat, ChatWithMessages, Message } from "~/modules/chat/model/types"
 
-// Очищает старые сообщения с вклеенным контекстом (для обратной совместимости)
 function cleanLegacyContext(text: string): string {
   return text.replace(/^\[Контекст пользователя:[^\]]*\]\n?/i, "")
 }
@@ -22,7 +21,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const chatsData = await getChats({ limit: CHATS_LIMIT, offset: 0 })
     const chats = chatsData.items
 
-    // Only load chat if explicitly requested via URL
     let selectedChat: ChatWithMessages | null = null
     if (chatId) {
       try {
@@ -52,10 +50,11 @@ export default function ChatPage() {
   const [isSending, setIsSending] = useState(false)
   const [optimisticText, setOptimisticText] = useState<string | null>(null)
   const [sendError, setSendError] = useState<string | null>(null)
-  const [showChatList, setShowChatList] = useState(false)
+  const [attachedFile, setAttachedFile] = useState<File | null>(null)
+  const [dragOver, setDragOver] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const chats = data.chats
   const selectedChatId = data.selectedChatId
   const serverMessages = data.selectedChat?.messages ?? []
 
@@ -85,25 +84,26 @@ export default function ChatPage() {
 
   const handleSendMessage = async () => {
     const text = messageText.trim()
-    if (!text || isSending) return
+    if ((!text && !attachedFile) || isSending) return
 
     setIsSending(true)
     setSendError(null)
     setMessageText("")
-    setOptimisticText(text)
+    setOptimisticText(text || (attachedFile ? `[${attachedFile.name}]` : ""))
 
     try {
       let chatId = selectedChatId
 
       if (!chatId) {
-        const title = text.length > 50 ? text.slice(0, 50) + "..." : text
+        const title = text.length > 50 ? text.slice(0, 50) + "..." : (text || "Новый чат")
         const newChat = await createChat(title)
         chatId = newChat.id
         setSearchParams({ chatId }, { replace: true })
       }
 
-      await sendMessage(chatId, text)
+      await sendMessage(chatId, text || "Проанализируй файл", attachedFile || undefined)
       setOptimisticText(null)
+      setAttachedFile(null)
       revalidator.revalidate()
     } catch (err) {
       console.error("Send error:", err)
@@ -114,27 +114,51 @@ export default function ChatPage() {
     }
   }
 
-  const handleNewChat = () => {
-    setShowChatList(false)
-    setOptimisticText(null)
-    setSendError(null)
-    // Navigate without chatId — loader won't auto-select any chat
-    navigate("/chat", { replace: true })
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) setAttachedFile(file)
+    e.target.value = ""
   }
 
-  const handleSelectChat = (chatId: string) => {
-    setShowChatList(false)
-    setOptimisticText(null)
-    setSearchParams({ chatId }, { replace: true })
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragOver(false)
+    const file = e.dataTransfer.files[0]
+    if (file) {
+      const ext = file.name.split(".").pop()?.toLowerCase()
+      if (["pdf", "docx", "md"].includes(ext || "")) {
+        setAttachedFile(file)
+      } else {
+        setSendError("Допустимые форматы: PDF, DOCX, MD")
+      }
+    }
   }
 
-  // Show optimistic user message if server hasn't returned it yet
+  const handleExport = async (messageId: string, format: "md" | "docx" | "html") => {
+    try {
+      const blob = await exportMessage(messageId, format)
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `response.${format}`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      setSendError("Не удалось экспортировать")
+    }
+  }
+
   const showOptimistic = optimisticText && !serverMessages.some(
     (m) => m.senderTypeId === "user" && cleanLegacyContext(m.text) === optimisticText
   )
 
   return (
-    <div className="flex h-full flex-col">
+    <div
+      className={["flex h-full flex-col", dragOver ? "ring-2 ring-inset ring-[#3649F9]/30" : ""].join(" ")}
+      onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+      onDragLeave={() => setDragOver(false)}
+      onDrop={handleDrop}
+    >
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-8 py-6">
         {serverMessages.length === 0 && !showOptimistic && !isSending ? (
@@ -146,7 +170,7 @@ export default function ChatPage() {
         ) : (
           <div className="space-y-6">
             {serverMessages.map((msg) => (
-              <MessageBubble key={msg.id} msg={msg} />
+              <MessageBubble key={msg.id} msg={msg} onExport={handleExport} />
             ))}
             {showOptimistic && (
               <div className="flex justify-end gap-3">
@@ -179,35 +203,15 @@ export default function ChatPage() {
 
       {sendError && <div className="px-8 pb-2"><p className="text-sm text-red-500">{sendError}</p></div>}
 
-      {/* Chat controls */}
-      <div className="flex items-center gap-2 border-t border-gray-100 px-8 py-2">
-        {selectedChatId && data.selectedChat ? (
-          <div className="relative">
-            <button onClick={() => setShowChatList((v) => !v)}
-              className="max-w-[200px] truncate text-xs text-[#C5CBD3] hover:text-gray-600">
-              {data.selectedChat.title} ▾
-            </button>
-            {showChatList && chats.length > 0 && (
-              <div className="absolute bottom-full left-0 z-10 mb-1 max-h-60 w-72 overflow-y-auto rounded-lg border bg-white py-1 shadow-lg">
-                {chats.map((chat) => (
-                  <button key={chat.id} onClick={() => handleSelectChat(chat.id)}
-                    className={["block w-full truncate px-3 py-2 text-left text-sm",
-                      chat.id === selectedChatId ? "bg-[#E8EAFF] text-[#3649F9]" : "text-gray-600 hover:bg-gray-50",
-                    ].join(" ")}>
-                    {chat.title}
-                  </button>
-                ))}
-              </div>
-            )}
+      {/* Attached file preview */}
+      {attachedFile && (
+        <div className="flex items-center gap-2 px-8 pb-2">
+          <div className="flex items-center gap-2 rounded-lg bg-[#E8EAFF] px-3 py-1.5 text-xs text-[#3649F9]">
+            <span>{attachedFile.name}</span>
+            <button onClick={() => setAttachedFile(null)} className="ml-1 text-gray-400 hover:text-red-500">&times;</button>
           </div>
-        ) : (
-          <span className="text-xs text-[#C5CBD3]">Новый диалог</span>
-        )}
-        <button onClick={handleNewChat}
-          className="ml-auto rounded-md px-3 py-1 text-xs text-[#3649F9] hover:bg-[#E8EAFF]">
-          + Новый чат
-        </button>
-      </div>
+        </div>
+      )}
 
       {/* Input */}
       <div className="px-8 pb-6 pt-2">
@@ -223,11 +227,24 @@ export default function ChatPage() {
             }}
           />
           <div className="flex items-center justify-between pt-1">
-            <button className="rounded-full p-1.5 hover:bg-gray-100">
-              <img src="/icons/upload.svg" alt="" className="h-5 w-5 opacity-40" />
-            </button>
+            <div className="flex items-center gap-1">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.docx,.md"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="rounded-full p-1.5 hover:bg-gray-100"
+                title="Прикрепить файл (PDF, DOCX, MD)"
+              >
+                <img src="/icons/upload.svg" alt="" className="h-5 w-5 opacity-40" />
+              </button>
+            </div>
             <button onClick={handleSendMessage}
-              disabled={!messageText.trim() || isSending}
+              disabled={(!messageText.trim() && !attachedFile) || isSending}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-[#3649F9] text-white hover:bg-[#3649F9]/90 disabled:opacity-40">
               <img src="/icons/write.svg" alt="" className="h-4 w-4 brightness-0 invert" />
             </button>
@@ -238,7 +255,9 @@ export default function ChatPage() {
   )
 }
 
-function MessageBubble({ msg }: { msg: Message }) {
+function MessageBubble({ msg, onExport }: { msg: Message; onExport: (id: string, fmt: "md" | "docx" | "html") => void }) {
+  const [showExport, setShowExport] = useState(false)
+
   if (msg.senderTypeId === "user") {
     return (
       <div className="flex justify-end gap-3">
@@ -253,13 +272,34 @@ function MessageBubble({ msg }: { msg: Message }) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="group space-y-2">
       <div className="flex items-center gap-2">
         <div className="h-8 w-8 shrink-0 rounded-full bg-[#3649F9]" />
         <span className="text-sm font-semibold text-gray-800">ИИ-помощник</span>
       </div>
       <div className="ml-10 max-w-2xl rounded-2xl bg-[#E8EAFF] px-5 py-3 text-sm leading-relaxed text-gray-800">
         <BotMessage text={msg.text} />
+      </div>
+      <div className="relative ml-10">
+        <button
+          onClick={() => setShowExport((v) => !v)}
+          className="rounded px-2 py-0.5 text-xs text-[#C5CBD3] opacity-0 transition-opacity hover:text-[#3649F9] group-hover:opacity-100"
+        >
+          Скачать
+        </button>
+        {showExport && (
+          <div className="absolute bottom-full left-0 z-10 mb-1 rounded-lg border bg-white py-1 shadow-lg">
+            {(["md", "docx", "html"] as const).map((fmt) => (
+              <button
+                key={fmt}
+                onClick={() => { onExport(msg.id, fmt); setShowExport(false) }}
+                className="block w-full px-4 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50"
+              >
+                {fmt.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

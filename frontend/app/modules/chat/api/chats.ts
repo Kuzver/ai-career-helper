@@ -118,11 +118,30 @@ export async function getChatById(params: { id: string; limit: number; offset: n
   } satisfies PaginatedResponse<ChatWithMessages>
 }
 
-export async function sendMessage(chatId: string, text: string) {
+export async function sendMessage(chatId: string, text: string, file?: File) {
   const formData = new FormData()
   formData.append("chat_id", chatId)
   formData.append("text", text)
+  if (file) {
+    formData.append("file", file)
+  }
 
   const { data } = await baseClient.post("/api/messages", formData)
   return data
+}
+
+export async function renameChat(chatId: string, title: string) {
+  const { data } = await baseClient.patch(`/api/chats/${chatId}`, { title })
+  return data
+}
+
+export async function deleteChat(chatId: string) {
+  await baseClient.delete(`/api/chats/${chatId}`)
+}
+
+export async function exportMessage(messageId: string, format: "md" | "docx" | "html") {
+  const { data } = await baseClient.post("/api/export", { message_id: messageId, format }, {
+    responseType: "blob",
+  })
+  return data as Blob
 }

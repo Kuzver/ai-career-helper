@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom"
 import { useUser } from "~/modules/user/lib/use-user"
+import { ChatSidebar } from "~/modules/chat/ui/chat-sidebar"
 
 const navItems = [
   { title: "Дорожная карта", url: "/roadmap", icon: "/icons/icon map.svg" },
@@ -12,6 +13,7 @@ export default function AppLayout() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, logout } = useUser()
+  const isChatPage = location.pathname === "/chat"
 
   const handleLogout = () => {
     logout()
@@ -25,7 +27,7 @@ export default function AppLayout() {
           <div className="h-9 w-9 shrink-0 rounded-full bg-[#3649F9]" />
           <span className="text-lg font-semibold text-gray-900">ИИ-ассистент</span>
         </Link>
-        <nav className="flex-1 space-y-1 px-3 pt-2">
+        <nav className="space-y-1 px-3 pt-2">
           {navItems.map((item) => {
             const isActive = location.pathname === item.url || location.pathname.startsWith(item.url + "/")
             return (
@@ -39,7 +41,12 @@ export default function AppLayout() {
             )
           })}
         </nav>
-        <div className="px-5 py-4">
+
+        {isChatPage && user.isAuthorized && (
+          <ChatSidebar />
+        )}
+
+        <div className="mt-auto px-5 py-4">
           {user.isAuthorized ? (
             <button onClick={handleLogout} className="flex items-center gap-2 text-sm text-red-400 hover:text-red-500">
               <img src="/icons/icon exit.svg" alt="" className="h-5 w-5" />
