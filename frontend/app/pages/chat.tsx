@@ -240,12 +240,14 @@ export default function ChatPage() {
                 onClick={() => fileInputRef.current?.click()}
                 className="rounded-full p-1.5 hover:bg-gray-100"
                 title="Прикрепить файл (PDF, DOCX, MD)"
+                aria-label="Прикрепить файл"
               >
                 <img src="/icons/upload.svg" alt="" className="h-5 w-5 opacity-40" />
               </button>
             </div>
             <button onClick={handleSendMessage}
               disabled={(!messageText.trim() && !attachedFile) || isSending}
+              aria-label="Отправить сообщение"
               className="flex h-9 w-9 items-center justify-center rounded-full bg-[#3649F9] text-white hover:bg-[#3649F9]/90 disabled:opacity-40">
               <img src="/icons/write.svg" alt="" className="h-4 w-4 brightness-0 invert" />
             </button>

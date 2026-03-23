@@ -99,7 +99,7 @@ export default function AppLayout() {
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="flex items-center gap-4 border-b border-gray-100 px-4 py-3 md:px-6">
           {/* Mobile hamburger */}
-          <button onClick={() => setSidebarOpen(true)} className="shrink-0 md:hidden">
+          <button onClick={() => setSidebarOpen(true)} className="shrink-0 md:hidden" aria-label="Открыть меню">
             <svg className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
@@ -141,7 +141,7 @@ export default function AppLayout() {
             </div>
           )}
 
-          <Link to="/profile" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200">
+          <Link to="/profile" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200" aria-label="Мой профиль">
             <img src="/icons/icon profile.svg" alt="" className="h-5 w-5 opacity-50" />
           </Link>
         </header>
