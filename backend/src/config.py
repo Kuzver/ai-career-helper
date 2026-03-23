@@ -36,8 +36,11 @@ class GigachatConfig(BaseSchema):
     scope: str
     authorization_key: str
 
+_DEFAULT_JWT_SECRET = "ai-career-helper-jwt-secret-key-change-in-production"
+
+
 class JwtConfig(BaseSchema):
-    secret: str = "ai-career-helper-jwt-secret-key-change-in-production"
+    secret: str = _DEFAULT_JWT_SECRET
     expire_days: int = 7
 
 class Config(BaseSchema):
@@ -58,4 +61,12 @@ def get_config() -> Config:
         load_dotenv=True,
     )
     logger.info(dynaconf.api)
-    return Config.model_validate(dynaconf)
+    cfg = Config.model_validate(dynaconf)
+
+    if cfg.jwt.secret == _DEFAULT_JWT_SECRET:
+        logger.warning(
+            "JWT secret не настроен! Используется дефолтное значение. "
+            "Задайте jwt.secret в config.toml или переменной окружения LIZA_JWT__SECRET"
+        )
+
+    return cfg

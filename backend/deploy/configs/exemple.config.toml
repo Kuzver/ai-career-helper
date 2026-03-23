@@ -15,3 +15,7 @@ database='postgres'
 client_id="019b12fa-ff03-708b-839a-e560fd465e41"
 scope="GIGACHAT_API_PERS"
 authorization_key="MDE5YjEyZmEtZmYwMy03MDhiLTgzOWEtZTU2MGZkNDY1ZTQxOjNjYjExMDUzLTM3MmYtNGVjMi1iYmNlLWFmZTUzMDRlN2I1Nw=="
+
+[jwt]
+secret = "CHANGE-ME-use-openssl-rand-hex-32"
+expire_days = 7
