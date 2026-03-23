@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from uuid import UUID, uuid4
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,9 +6,9 @@ from src.application.schemas.profile import ProfileUpdateRequest, ProfileRespons
 from src.infra.postgres.tables import UserCareersModel
 
 
-@dataclass(slots=True, frozen=True, kw_only=True)
 class UpdateProfileUsecase:
-    session: AsyncSession
+    def __init__(self, session: AsyncSession):
+        self.session = session
 
     async def __call__(self, user_id: UUID, data: ProfileUpdateRequest) -> ProfileResponse:
         result = await self.session.execute(
@@ -38,6 +37,7 @@ class UpdateProfileUsecase:
             )
             self.session.add(career)
 
+        await self.session.flush()
         await self.session.commit()
 
         return ProfileResponse(

@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,9 +6,9 @@ from src.application.schemas.profile import ProfileResponse
 from src.infra.postgres.tables import UserCareersModel
 
 
-@dataclass(slots=True, frozen=True, kw_only=True)
 class GetProfileUsecase:
-    session: AsyncSession
+    def __init__(self, session: AsyncSession):
+        self.session = session
 
     async def __call__(self, user_id: UUID) -> ProfileResponse:
         result = await self.session.execute(

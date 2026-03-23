@@ -193,9 +193,10 @@ export default function RoadmapPage() {
 
           return (
             <div key={step.id} className="overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-sm">
-              <button onClick={() => setExpandedStep(isExpanded ? null : step.id)} className="flex w-full items-center gap-4 p-5 text-left">
+              <div className="flex w-full items-center gap-4 p-5">
                 <button
-                  onClick={(e) => { e.stopPropagation(); handleToggle(step.id) }}
+                  onClick={() => handleToggle(step.id)}
+                  aria-label={isCompleted ? `Снять отметку: ${step.title}` : `Отметить: ${step.title}`}
                   className={[
                     "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-colors",
                     isCompleted ? "bg-[#3649F9] text-white" : "bg-gray-100 text-[#6D7C90] hover:bg-[#E8EAFF]",
@@ -209,14 +210,16 @@ export default function RoadmapPage() {
                     index + 1
                   )}
                 </button>
-                <div className="flex-1">
-                  <h3 className={["text-base font-semibold", isCompleted ? "text-[#3649F9]" : "text-gray-900"].join(" ")}>{step.title}</h3>
-                  <p className="mt-0.5 text-xs text-[#6D7C90]">{step.duration}</p>
-                </div>
-                <svg className={["h-5 w-5 text-[#C5CBD3] transition-transform", isExpanded ? "rotate-180" : ""].join(" ")} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+                <button onClick={() => setExpandedStep(isExpanded ? null : step.id)} className="flex flex-1 items-center gap-4 text-left">
+                  <div className="flex-1">
+                    <h3 className={["text-base font-semibold", isCompleted ? "text-[#3649F9]" : "text-gray-900"].join(" ")}>{step.title}</h3>
+                    <p className="mt-0.5 text-xs text-[#6D7C90]">{step.duration}</p>
+                  </div>
+                  <svg className={["h-5 w-5 text-[#C5CBD3] transition-transform", isExpanded ? "rotate-180" : ""].join(" ")} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
 
               {isExpanded && (
                 <div className="border-t border-gray-100 px-5 pb-5 pt-4">
