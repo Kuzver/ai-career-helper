@@ -6,6 +6,11 @@ import { createChat, getChatById, getChats, sendMessage } from "~/modules/chat/a
 import { useUser } from "~/modules/user/lib/use-user"
 import type { Chat, ChatWithMessages, Message } from "~/modules/chat/model/types"
 
+// Очищает старые сообщения с вклеенным контекстом (для обратной совместимости)
+function cleanLegacyContext(text: string): string {
+  return text.replace(/^\[Контекст пользователя:[^\]]*\]\n?/i, "")
+}
+
 const CHATS_LIMIT = 50
 const MESSAGES_LIMIT = 100
 
@@ -36,16 +41,12 @@ function BotMessage({ text }: { text: string }) {
   return <div className="bot-markdown"><Markdown>{text}</Markdown></div>
 }
 
-function cleanUserText(text: string): string {
-  return text.replace(/^\[Контекст пользователя:[^\]]*\]\n?/i, "")
-}
-
 export default function ChatPage() {
   const data = useLoaderData<typeof loader>()
   const revalidator = useRevalidator()
   const [, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { user, getProfileContext } = useUser()
+  const { user } = useUser()
 
   const [messageText, setMessageText] = useState("")
   const [isSending, setIsSending] = useState(false)
@@ -62,9 +63,8 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [serverMessages.length, isSending])
 
-  // Clear optimistic text when server catches up
   useEffect(() => {
-    if (optimisticText && serverMessages.some((m) => m.senderTypeId === "user" && cleanUserText(m.text) === optimisticText)) {
+    if (optimisticText && serverMessages.some((m) => m.senderTypeId === "user" && cleanLegacyContext(m.text) === optimisticText)) {
       setOptimisticText(null)
     }
   }, [serverMessages, optimisticText])
@@ -92,9 +92,6 @@ export default function ChatPage() {
     setMessageText("")
     setOptimisticText(text)
 
-    const profileCtx = getProfileContext()
-    const enrichedText = profileCtx ? `[Контекст пользователя: ${profileCtx}]\n${text}` : text
-
     try {
       let chatId = selectedChatId
 
@@ -105,7 +102,7 @@ export default function ChatPage() {
         setSearchParams({ chatId }, { replace: true })
       }
 
-      await sendMessage(chatId, enrichedText)
+      await sendMessage(chatId, text)
       setOptimisticText(null)
       revalidator.revalidate()
     } catch (err) {
@@ -133,7 +130,7 @@ export default function ChatPage() {
 
   // Show optimistic user message if server hasn't returned it yet
   const showOptimistic = optimisticText && !serverMessages.some(
-    (m) => m.senderTypeId === "user" && cleanUserText(m.text) === optimisticText
+    (m) => m.senderTypeId === "user" && cleanLegacyContext(m.text) === optimisticText
   )
 
   return (
@@ -216,7 +213,7 @@ export default function ChatPage() {
       <div className="px-8 pb-6 pt-2">
         <div className="rounded-2xl border border-[#C5CBD3]/50 px-4 pb-3 pt-4">
           <textarea
-            placeholder="Спроси меня о чём угодно..."
+            placeholder="Спросите про карьеру, резюме, обучение..."
             className="min-h-[80px] w-full resize-none text-sm text-gray-700 placeholder-[#C5CBD3] outline-none"
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
@@ -246,7 +243,7 @@ function MessageBubble({ msg }: { msg: Message }) {
     return (
       <div className="flex justify-end gap-3">
         <div className="max-w-lg rounded-2xl bg-[#E8EAFF] px-5 py-3">
-          <p className="text-sm leading-relaxed text-gray-800">{cleanUserText(msg.text)}</p>
+          <p className="text-sm leading-relaxed text-gray-800">{cleanLegacyContext(msg.text)}</p>
         </div>
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#3649F9]">
           <img src="/icons/icon profile.svg" alt="" className="h-4 w-4 brightness-0 invert" />
