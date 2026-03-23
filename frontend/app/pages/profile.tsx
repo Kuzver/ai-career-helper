@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { useUser } from "~/modules/user/lib/use-user"
 import { getProfile, updateProfile } from "~/modules/user/api/profile"
+import { PageSkeleton } from "~/shared/components/ui/skeletons"
 
 type ProfileForm = {
   name: string
@@ -106,13 +107,7 @@ export default function Profile() {
     )
   }
 
-  if (loading) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <p className="text-sm text-[#C5CBD3]">Загрузка профиля...</p>
-      </div>
-    )
-  }
+  if (loading) return <PageSkeleton />
 
   const update = (key: keyof ProfileForm, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }))

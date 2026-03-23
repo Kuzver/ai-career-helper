@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { getArticles, getCategories, type ArticleListItem, type Category } from "~/modules/articles/api/articles"
 import { useUser } from "~/modules/user/lib/use-user"
 import { getProfile } from "~/modules/user/api/profile"
+import { GridSkeleton } from "~/shared/components/ui/skeletons"
 
 export default function KnowledgeBase() {
   const { user } = useUser()
@@ -45,7 +46,7 @@ export default function KnowledgeBase() {
     )
   }
 
-  if (loading) return <div className="flex h-full items-center justify-center"><p className="text-sm text-[#C5CBD3]">Загрузка...</p></div>
+  if (loading) return <div className="p-8"><GridSkeleton /></div>
 
   const filtered = selectedCategory
     ? articles.filter((a) => a.category?.slug === selectedCategory)
