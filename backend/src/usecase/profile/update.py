@@ -38,10 +38,12 @@ class UpdateProfileUsecase:
                 )
                 self.session.add(career)
 
-        return ProfileResponse(
-            name=career.name,
-            specialization=data.specialization,
-            experience_level=career.experience_level,
-            skills=career.skills,
-            career_goal=career.career_goal,
-        )
+            response = ProfileResponse(
+                name=career.name,
+                specialization=data.specialization,
+                experience_level=career.experience_level,
+                skills=career.skills,
+                career_goal=career.career_goal,
+            )
+
+        return response
