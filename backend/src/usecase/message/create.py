@@ -9,6 +9,7 @@ from src.infra.postgres.tables import (
     MessageModel, UserCareersModel,
     SurveyResponseModel, SurveyAnswerModel,
     SurveyQuestionModel, SurveyOptionModel,
+    UserRoadmapProgressModel,
 )
 from src.application.schemas.messages import MessageSchemas, CreateMessageSchema
 from src.application.schemas.auth import AuthSchema
@@ -17,7 +18,7 @@ from src.infra.gigachat.agents.orchestrator import OrchestratorAgent
 from src.usecase.chats.auto_title import AutoTitleUsecase
 
 
-def build_user_context(career, survey_context: str | None = None) -> str | None:
+def build_user_context(career, survey_context: str | None = None, roadmap_context: str | None = None) -> str | None:
     parts = []
 
     if career:
@@ -33,7 +34,29 @@ def build_user_context(career, survey_context: str | None = None) -> str | None:
     if survey_context:
         parts.append(f"\nРезультаты опросов:\n{survey_context}")
 
+    if roadmap_context:
+        parts.append(f"\nПрогресс по дорожной карте:\n{roadmap_context}")
+
     return "\n".join(parts) if parts else None
+
+
+async def build_roadmap_context(session: AsyncSession, user_id: UUID) -> str | None:
+    result = await session.execute(
+        select(UserRoadmapProgressModel).where(UserRoadmapProgressModel.user_id == user_id)
+    )
+    items = result.scalars().all()
+    if not items:
+        return None
+
+    by_roadmap: dict[str, list[str]] = {}
+    for p in items:
+        by_roadmap.setdefault(p.roadmap_key, []).append(p.step_id)
+
+    lines = []
+    for key, steps in by_roadmap.items():
+        lines.append(f"- {key}: завершены шаги {', '.join(sorted(steps))}")
+
+    return "\n".join(lines)
 
 
 async def build_survey_context(session: AsyncSession, user_id: UUID) -> str | None:
@@ -93,7 +116,8 @@ class MessengerUsecase(Usecase[RequestMessageSchema, MessageSchemas]):
         )
         career = result.scalar_one_or_none()
         survey_context = await build_survey_context(self.session, self.auth.id)
-        user_context = build_user_context(career, survey_context)
+        roadmap_context = await build_roadmap_context(self.session, self.auth.id)
+        user_context = build_user_context(career, survey_context, roadmap_context)
 
         async with self.session.begin():
             await self.create_message(CreateMessageSchema(
