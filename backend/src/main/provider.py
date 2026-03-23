@@ -14,6 +14,8 @@ from src.config import RedisConfig
 from src.config import GigachatConfig
 from src.config import JwtConfig
 
+from src.usecase.profile.get import GetProfileUsecase
+from src.usecase.profile.update import UpdateProfileUsecase
 from src.usecase.users.create import CreateUserUsecase
 from src.usecase.cards.delete import DeleteCardUsecase
 from src.usecase.cards.update import UpdateCardUsecase
@@ -68,4 +70,6 @@ class MainProvider(Provider):
         Pagination,
         GetAllChatUsecase,
         GetChatByIdUsecase,
+        GetProfileUsecase,
+        UpdateProfileUsecase,
     )
