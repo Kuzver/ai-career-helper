@@ -7,7 +7,6 @@ export const baseClient = axios.create({
   baseURL: apiBaseUrl,
 })
 
-// Add JWT token to every request
 baseClient.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     try {
@@ -22,3 +21,14 @@ baseClient.interceptors.request.use((config) => {
   }
   return config
 })
+
+baseClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 && typeof window !== "undefined") {
+      localStorage.removeItem("auth")
+      window.location.href = "/sign-in"
+    }
+    return Promise.reject(error)
+  }
+)

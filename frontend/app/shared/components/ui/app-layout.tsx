@@ -54,15 +54,7 @@ export default function AppLayout() {
         </div>
       </aside>
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex items-center gap-4 border-b border-gray-100 px-6 py-3">
-          <div className="flex flex-1 items-center gap-2">
-            <img src="/icons/search.svg" alt="" className="h-5 w-5 opacity-40" />
-            <input type="text" placeholder="Введите запрос..." autoComplete="off" name="app-search"
-              spellCheck={false} className="w-full bg-transparent text-sm text-gray-600 placeholder-[#C5CBD3] outline-none" />
-          </div>
-          <button className="shrink-0">
-            <img src="/icons/notification.svg" alt="" className="h-5 w-5 opacity-40" />
-          </button>
+        <header className="flex items-center justify-end gap-4 border-b border-gray-100 px-6 py-3">
           <Link to="/profile" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200">
             <img src="/icons/icon profile.svg" alt="" className="h-5 w-5 opacity-50" />
           </Link>
