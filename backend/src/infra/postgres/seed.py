@@ -347,7 +347,8 @@ jsonb_agg(...)              -- агрегация в JSON
     },
 ]
 
-SURVEY = {
+SURVEYS = [
+  {
     "title": "Определение вашего профессионального профиля",
     "description": "Этот опрос поможет ИИ-ассистенту лучше понять ваши цели и давать более точные рекомендации. Займёт 2-3 минуты.",
     "is_mandatory": True,
@@ -419,7 +420,93 @@ SURVEY = {
             ],
         },
     ],
-}
+  },
+  {
+    "title": "Оценка soft skills",
+    "description": "Поможет определить ваши сильные и слабые стороны в коммуникации и работе в команде.",
+    "is_mandatory": False,
+    "questions": [
+        {
+            "text": "Как вы обычно реагируете на критику вашего кода на code review?",
+            "type": "single",
+            "options": [
+                "Принимаю спокойно, анализирую замечания",
+                "Иногда воспринимаю лично, но стараюсь быть объективным",
+                "Часто чувствую раздражение, но не показываю",
+                "Сразу соглашаюсь со всем, даже если не согласен",
+            ],
+        },
+        {
+            "text": "Как часто вы просите помощь у коллег, когда застреваете на задаче?",
+            "type": "single",
+            "options": [
+                "Сразу — не трачу время на то, что можно узнать быстрее",
+                "После 30-60 минут самостоятельных попыток",
+                "Стараюсь решить сам, спрашиваю только в крайнем случае",
+                "Почти никогда — боюсь показаться некомпетентным",
+            ],
+        },
+        {
+            "text": "Как вы оцениваете задачи по времени?",
+            "type": "single",
+            "options": [
+                "Обычно попадаю в оценку (±20%)",
+                "Часто недооцениваю — задачи занимают больше времени",
+                "Часто переоцениваю — заканчиваю раньше",
+                "Не умею оценивать, называю случайные числа",
+            ],
+        },
+        {
+            "text": "Что бы вы хотели улучшить в коммуникации?",
+            "type": "text",
+            "options": [],
+        },
+    ],
+  },
+  {
+    "title": "Стиль обучения",
+    "description": "Определим, как вам эффективнее всего учиться, чтобы рекомендации были максимально полезными.",
+    "is_mandatory": False,
+    "questions": [
+        {
+            "text": "Какой формат обучения вам подходит лучше всего?",
+            "type": "single",
+            "options": [
+                "Видеокурсы — смотрю и повторяю",
+                "Книги и документация — читаю и разбираюсь",
+                "Практика — сразу пишу код, разбираюсь по ходу",
+                "Менторство — нужен человек, который направит",
+                "Микс всего — зависит от темы",
+            ],
+        },
+        {
+            "text": "Как вы относитесь к изучению на английском языке?",
+            "type": "single",
+            "options": [
+                "Свободно читаю и смотрю на английском",
+                "Читаю нормально, видео сложнее",
+                "С трудом, предпочитаю русскоязычные материалы",
+                "Вообще не знаю английский",
+            ],
+        },
+        {
+            "text": "Как быстро вы теряете мотивацию при изучении нового?",
+            "type": "single",
+            "options": [
+                "Могу учить месяцами без потери мотивации",
+                "2-3 недели, потом нужен перерыв или смена темы",
+                "Несколько дней — быстро перегораю",
+                "Зависит от того, вижу ли я практический результат",
+            ],
+        },
+        {
+            "text": "Какую тему вы хотели бы изучить следующей?",
+            "type": "text",
+            "options": [],
+        },
+    ],
+  },
+]
 
 
 async def seed():
@@ -480,39 +567,40 @@ async def seed():
                     "spec": a["specialization"],
                 })
 
-        # Survey
-        exists = await session.execute(
-            text("SELECT 1 FROM db_schema.surveys WHERE title = :t"), {"t": SURVEY["title"]}
-        )
-        if not exists.scalar():
-            survey_id = uuid4()
-            await session.execute(text(
-                "INSERT INTO db_schema.surveys (id, title, description, is_mandatory, is_active, created_by, created_at, updated_at) "
-                "VALUES (:id, :title, :desc, :mand, true, :admin, now(), now())"
-            ), {
-                "id": str(survey_id), "title": SURVEY["title"],
-                "desc": SURVEY["description"], "mand": SURVEY["is_mandatory"],
-                "admin": str(ADMIN_ID),
-            })
-
-            for qi, q in enumerate(SURVEY["questions"]):
-                q_id = uuid4()
+        # Surveys
+        for survey_data in SURVEYS:
+            exists = await session.execute(
+                text("SELECT 1 FROM db_schema.surveys WHERE title = :t"), {"t": survey_data["title"]}
+            )
+            if not exists.scalar():
+                survey_id = uuid4()
                 await session.execute(text(
-                    "INSERT INTO db_schema.survey_questions (id, survey_id, text, question_type, \"order\", created_at, updated_at) "
-                    "VALUES (:id, :sid, :text, :type, :ord, now(), now())"
+                    "INSERT INTO db_schema.surveys (id, title, description, is_mandatory, is_active, created_by, created_at, updated_at) "
+                    "VALUES (:id, :title, :desc, :mand, true, :admin, now(), now())"
                 ), {
-                    "id": str(q_id), "sid": str(survey_id),
-                    "text": q["text"], "type": q["type"], "ord": qi,
+                    "id": str(survey_id), "title": survey_data["title"],
+                    "desc": survey_data["description"], "mand": survey_data["is_mandatory"],
+                    "admin": str(ADMIN_ID),
                 })
 
-                for oi, opt in enumerate(q["options"]):
+                for qi, q in enumerate(survey_data["questions"]):
+                    q_id = uuid4()
                     await session.execute(text(
-                        "INSERT INTO db_schema.survey_options (id, question_id, text, \"order\", created_at, updated_at) "
-                        "VALUES (:id, :qid, :text, :ord, now(), now())"
+                        "INSERT INTO db_schema.survey_questions (id, survey_id, text, question_type, \"order\", created_at, updated_at) "
+                        "VALUES (:id, :sid, :text, :type, :ord, now(), now())"
                     ), {
-                        "id": str(uuid4()), "qid": str(q_id),
-                        "text": opt, "ord": oi,
+                        "id": str(q_id), "sid": str(survey_id),
+                        "text": q["text"], "type": q["type"], "ord": qi,
                     })
+
+                    for oi, opt in enumerate(q["options"]):
+                        await session.execute(text(
+                            "INSERT INTO db_schema.survey_options (id, question_id, text, \"order\", created_at, updated_at) "
+                            "VALUES (:id, :qid, :text, :ord, now(), now())"
+                        ), {
+                            "id": str(uuid4()), "qid": str(q_id),
+                            "text": opt, "ord": oi,
+                        })
 
         await session.commit()
         print("Seed data applied successfully!")
