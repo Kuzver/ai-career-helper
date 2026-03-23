@@ -177,16 +177,14 @@ async def submit_survey(
         response.is_validated = True
         response.validation_result = validation_result
 
-        is_mandatory = survey.is_mandatory
+        if survey.is_mandatory:
+            await _sync_profile_from_survey(session, auth.id, survey_id, body)
 
         submit_response = SurveySubmitResponse(
             response_id=response_id,
             is_validated=True,
             validation_result=validation_result,
         )
-
-    if is_mandatory:
-        await _sync_profile_from_survey(session, auth.id, survey_id, body)
 
     return submit_response
 

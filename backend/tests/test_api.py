@@ -318,6 +318,94 @@ class TestRoadmap:
 
 # === RATE LIMITING ===
 
+class TestChangePassword:
+    def test_change_password(self, client, headers):
+        r = client.post("/api/profile/change-password", headers=headers, json={
+            "current_password": "TestPass123",
+            "new_password": "NewPass456!"
+        })
+        assert r.status_code == 200
+
+        # Change back
+        r2 = client.post("/api/profile/change-password", headers=headers, json={
+            "current_password": "NewPass456!",
+            "new_password": "TestPass123"
+        })
+        assert r2.status_code == 200
+
+    def test_change_password_wrong_current(self, client, headers):
+        r = client.post("/api/profile/change-password", headers=headers, json={
+            "current_password": "WrongPassword",
+            "new_password": "NewPass456!"
+        })
+        assert r.status_code == 400
+
+    def test_change_password_too_short(self, client, headers):
+        r = client.post("/api/profile/change-password", headers=headers, json={
+            "current_password": "TestPass123",
+            "new_password": "short"
+        })
+        assert r.status_code == 400
+
+
+class TestAdminLogin:
+    def test_admin_login(self, client):
+        r = client.post("/api/auth/login", json={
+            "email": "admin@career-helper.ru",
+            "password": "Admin123!"
+        })
+        assert r.status_code == 200
+        token = r.json()["token"]
+        h = {"Authorization": f"Bearer {token}"}
+
+        role = client.get("/api/profile/role", headers=h).json()
+        assert role["role"] == "admin"
+
+    def test_admin_can_list_users(self, client):
+        r = client.post("/api/auth/login", json={
+            "email": "admin@career-helper.ru",
+            "password": "Admin123!"
+        })
+        token = r.json()["token"]
+        h = {"Authorization": f"Bearer {token}"}
+
+        r2 = client.get("/api/admin/users", headers=h)
+        assert r2.status_code == 200
+        assert len(r2.json()) > 0
+
+
+class TestSurveyProfileSync:
+    def test_profile_filled_after_mandatory_survey(self, client):
+        import time
+        email = f"sync_{int(time.time())}@pytest.com"
+        r = client.post("/api/auth/register", json={"email": email, "password": "TestPass123"})
+        token = r.json()["token"]
+        h = {"Authorization": f"Bearer {token}"}
+
+        # Profile should be empty
+        profile = client.get("/api/profile", headers=h).json()
+        assert profile["specialization"] is None
+
+        # Submit mandatory survey
+        pending = client.get("/api/surveys/mandatory/pending", headers=h).json()
+        if not pending:
+            return
+
+        survey = client.get(f"/api/surveys/{pending[0]['id']}", headers=h).json()
+        answers = []
+        for q in survey["questions"]:
+            if q["question_type"] == "text":
+                answers.append({"question_id": q["id"], "free_text": "Python, Go"})
+            elif q["options"]:
+                answers.append({"question_id": q["id"], "option_id": q["options"][0]["id"]})
+
+        client.post(f"/api/surveys/{pending[0]['id']}/submit", headers=h, json={"answers": answers})
+
+        # Profile should be filled from survey
+        profile2 = client.get("/api/profile", headers=h).json()
+        assert profile2["specialization"] is not None or profile2["experience_level"] is not None
+
+
 class TestSecurity:
     def test_rate_limit_not_triggered_on_normal_use(self, client, headers):
         for _ in range(5):
