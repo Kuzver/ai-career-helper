@@ -5,6 +5,7 @@ import { ChatSidebar } from "~/modules/chat/ui/chat-sidebar"
 const navItems = [
   { title: "Дорожная карта", url: "/roadmap", icon: "/icons/icon map.svg" },
   { title: "ИИ-ассистент", url: "/chat", icon: "/icons/icon ai.svg" },
+  { title: "Опросы", url: "/surveys", icon: "/icons/icon homework.svg" },
   { title: "Мой профиль", url: "/profile", icon: "/icons/icon profile.svg" },
   { title: "База знаний", url: "/knowledge-base", icon: "/icons/icon info.svg" },
 ]

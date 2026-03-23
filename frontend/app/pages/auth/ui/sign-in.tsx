@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useUser } from "~/modules/user/lib/use-user"
 import { baseClient } from "~/shared/api/axios-client"
+import { getPendingMandatory } from "~/modules/survey/api/surveys"
 
 export default function SignIn() {
   const navigate = useNavigate()
@@ -25,6 +26,13 @@ export default function SignIn() {
         token: data.token,
         userId: data.user_id,
       })
+      try {
+        const pending = await getPendingMandatory()
+        if (pending.length > 0) {
+          navigate(`/survey/${pending[0].id}`)
+          return
+        }
+      } catch {}
       navigate("/")
     } catch (err: any) {
       const message = err?.response?.data?.detail

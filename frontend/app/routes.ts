@@ -7,6 +7,9 @@ export default [
     route("knowledge-base", "pages/knowledge-base/ui/knowledge-base.tsx"),
     route("profile", "pages/profile.tsx"),
     route("roadmap", "pages/roadmap.tsx"),
+    route("surveys", "pages/survey/survey-list.tsx"),
+    route("survey/:id", "pages/survey/survey-page.tsx"),
+    route("admin/surveys", "pages/admin/surveys.tsx"),
   ]),
 
   layout("pages/auth/ui/auth-layout.tsx", [
