@@ -1,8 +1,25 @@
 # ИИ-ассистент — Карьерный помощник
 
-Веб-приложение с ИИ-ассистентом для помощи в карьере и обучении. Бот помогает составлять резюме, готовиться к собеседованиям, строить учебные планы и отвечает на любые вопросы.
+Веб-приложение с ИИ-ассистентом для помощи в карьере и обучении в IT. Бот помогает составлять резюме, готовиться к собеседованиям, строить учебные планы и roadmap. Отклоняет вопросы не по теме.
 
 **Стек:** Python 3.11 + FastAPI | React 19 + TypeScript + Vite | PostgreSQL | Redis | GigaChat API
+
+---
+
+## Возможности
+
+- **Чат с ИИ** — карьерный и обучающий ассистент на базе GigaChat, контекст пользователя подгружается автоматически
+- **Загрузка файлов** — PDF, DOCX, MD через кнопку или drag & drop, бот анализирует содержимое
+- **Экспорт ответов** — скачивание ответов бота в MD, DOCX или HTML
+- **Управление чатами** — список в сайдбаре, переименование (ПКМ), удаление, авто-именование через GigaChat
+- **Профиль** — специализация, навыки, опыт, карьерная цель — хранятся в БД, подгружаются боту в контекст
+- **Опросы** — обязательные и дополнительные, валидация ответов через GigaChat, результаты в контексте бота
+- **База знаний** — статьи с категориями, фильтрация по специализации, markdown-рендеринг
+- **Дорожная карта** — персонализированный roadmap по специализации, прогресс в БД, видим боту
+- **Админка** — управление опросами (`/admin/surveys`) и статьями (`/admin/articles`) для пользователей с ролью `admin`
+- **Поиск** — глобальный поиск по чатам и статьям в хедере
+- **Адаптивность** — мобильный сайдбар, skeleton loaders
+- **Безопасность** — rate limiting (60 req/min), санитизация markdown (XSS), JWT авторизация
 
 ---
 
@@ -59,7 +76,7 @@ git --version
 Открой терминал (Terminal, PowerShell, Git Bash — любой) и выполни:
 
 ```bash
-git clone https://github.com/dkutugin3/ai-career-helper.git
+git clone https://github.com/Kuzver/ai-career-helper.git
 cd ai-career-helper
 ```
 
@@ -75,12 +92,27 @@ cd ai-career-helper
 cp backend/deploy/configs/exemple.config.toml backend/deploy/configs/config.toml
 ```
 
-> **Что делает эта команда:** копирует файл-пример `exemple.config.toml` в `config.toml`. В примере уже прописаны рабочие ключи GigaChat, так что больше ничего менять не нужно.
+> **Что делает эта команда:** копирует файл-пример `exemple.config.toml` в `config.toml`. В примере уже прописаны рабочие ключи GigaChat.
 
 Если команда `cp` не работает (бывает в PowerShell), используй:
 ```powershell
 copy backend\deploy\configs\exemple.config.toml backend\deploy\configs\config.toml
 ```
+
+**Важно:** после копирования откройте `config.toml` и замените JWT-секрет:
+
+```toml
+[jwt]
+secret = "ваш-случайный-секрет-минимум-32-символа"
+expire_days = 7
+```
+
+Сгенерировать секрет можно командой:
+```bash
+openssl rand -hex 32
+```
+
+> Если не поменять секрет — приложение будет работать, но в логах бэкенда появится предупреждение.
 
 ---
 
@@ -115,13 +147,20 @@ docker logs deploy-backend-1
 
 ### Шаг 4. Примени миграции базы данных
 
-Миграции создают таблицы в базе данных (пользователи, чаты, сообщения и т.д.). Без этого шага регистрация и всё остальное **не будет работать**.
+Миграции создают таблицы в базе данных. Без этого шага регистрация и всё остальное **не будет работать**.
 
 ```bash
 docker exec deploy-backend-1 alembic upgrade head
 ```
 
 > **Что делает:** заходит внутрь контейнера бэкенда и применяет все миграции. Должно вывести несколько строк вроде `Running upgrade ... -> ...` и закончиться без ошибок.
+
+**Текущие миграции создают таблицы:**
+- `users`, `chats`, `messages` — пользователи и чаты
+- `user_careers` — профиль пользователя
+- `surveys`, `survey_questions`, `survey_options`, `survey_responses`, `survey_answers` — опросы
+- `article_categories`, `articles` — база знаний
+- `user_roadmap_progress` — прогресс по дорожной карте
 
 **Если видишь ошибку "No such container":**
 Имя контейнера может отличаться. Проверь точное имя:
@@ -189,7 +228,22 @@ npm run dev
 2. Нажми "Регистрация" (или перейди на http://localhost:5173/sign-up)
 3. Введи email, пароль (минимум 8 символов), подтверди пароль
 4. Нажми "Зарегистрироваться"
-5. Готово! Тебя перекинет в чат с ИИ-ассистентом
+5. Если есть обязательные опросы — заполни их (тебя перенаправит автоматически)
+6. Готово! Тебя перекинет в чат с ИИ-ассистентом
+
+---
+
+### Шаг 8 (опционально). Настрой админ-доступ
+
+Для управления опросами и статьями нужна роль `admin`. Установить её можно через pgAdmin или напрямую через SQL:
+
+```bash
+docker exec deploy-database-1 psql -U postgres -d postgres -c "UPDATE db_schema.users SET role='admin' WHERE email='твой@email.com';"
+```
+
+После этого в браузере будут доступны:
+- http://localhost:5173/admin/surveys — управление опросами
+- http://localhost:5173/admin/articles — управление статьями базы знаний
 
 ---
 
@@ -281,38 +335,128 @@ docker logs deploy-backend-1
 3. Скопируй `client_id` и `authorization_key`
 4. Обнови их в `backend/deploy/configs/config.toml` в разделе `[gigachat]`
 
+### "429 Too Many Requests"
+
+Сработал rate limiter (60 запросов в минуту на IP). Подожди минуту и повтори.
+
 ---
 
 ## Структура проекта
 
 ```
 ai-career-helper/
-├── backend/                    # Серверная часть (Python)
+├── backend/                        # Серверная часть (Python 3.11)
 │   ├── src/
-│   │   ├── main/               # Точка входа, конфиг, DI-контейнер
-│   │   ├── presentation/       # API эндпоинты (роуты)
-│   │   ├── usecase/            # Бизнес-логика
-│   │   ├── infra/              # БД, GigaChat, Redis, авторизация
-│   │   └── application/        # Схемы (Pydantic), ошибки
+│   │   ├── main/                   # Точка входа, конфиг, DI-контейнер
+│   │   ├── presentation/           # API эндпоинты
+│   │   │   └── fastapi/routes/
+│   │   │       ├── auth/           #   /api/auth — регистрация, вход
+│   │   │       ├── admin/          #   /api/admin — опросы, статьи (admin only)
+│   │   │       └── core/           #   /api — чаты, сообщения, профиль, опросы, статьи, поиск, экспорт, roadmap
+│   │   ├── usecase/                # Бизнес-логика
+│   │   │   ├── chats/              #   создание, удаление, переименование, авто-именование
+│   │   │   ├── message/            #   отправка сообщений, контекст бота
+│   │   │   └── profile/            #   получение/обновление профиля
+│   │   ├── infra/                  # Инфраструктура
+│   │   │   ├── postgres/           #   ORM-модели, миграции, гейтвеи
+│   │   │   ├── gigachat/           #   клиент GigaChat, агенты (career, learning, orchestrator)
+│   │   │   ├── auth/               #   JWT, хеширование, проверка роли admin
+│   │   │   ├── files/              #   парсинг (PDF, DOCX, MD), экспорт (MD, DOCX, HTML)
+│   │   │   └── redis/              #   клиент Redis
+│   │   └── application/            # Pydantic-схемы, ошибки
 │   ├── deploy/
 │   │   ├── Dockerfile
 │   │   ├── docker-compose.yml
 │   │   └── configs/
-│   │       ├── exemple.config.toml   # Пример конфига (в git)
-│   │       └── config.toml           # Рабочий конфиг (НЕ в git)
+│   │       ├── exemple.config.toml # Пример конфига (в git)
+│   │       └── config.toml         # Рабочий конфиг (НЕ в git)
 │   └── pyproject.toml
 │
-├── frontend/                   # Клиентская часть (React)
+├── frontend/                       # Клиентская часть (React 19 + TypeScript)
 │   ├── app/
-│   │   ├── pages/              # Страницы (чат, профиль, авторизация)
-│   │   ├── modules/            # Модули (chat, user, auth)
-│   │   └── shared/             # Общие компоненты, API-клиент
-│   ├── .env.example            # Пример переменных окружения (в git)
-│   ├── .env                    # Рабочие переменные (НЕ в git)
+│   │   ├── pages/                  # Страницы
+│   │   │   ├── chat.tsx            #   чат с ботом, загрузка файлов, экспорт
+│   │   │   ├── profile.tsx         #   профиль пользователя
+│   │   │   ├── roadmap.tsx         #   дорожная карта
+│   │   │   ├── survey/             #   список опросов, прохождение
+│   │   │   ├── knowledge-base/     #   статьи, страница статьи
+│   │   │   ├── admin/              #   админка опросов и статей
+│   │   │   └── auth/               #   вход, регистрация
+│   │   ├── modules/                # Модули
+│   │   │   ├── chat/               #   API чатов, сайдбар чатов
+│   │   │   ├── user/               #   контекст, API профиля
+│   │   │   ├── survey/             #   API опросов
+│   │   │   ├── articles/           #   API статей
+│   │   │   └── roadmap/            #   API прогресса
+│   │   └── shared/                 # Общие ресурсы
+│   │       ├── api/                #   axios-клиент с JWT и 401-interceptor
+│   │       └── components/ui/      #   layout, skeleton loaders
+│   ├── .env.example
 │   └── package.json
 │
 └── README.md
 ```
+
+---
+
+## API эндпоинты
+
+### Авторизация
+| Метод | URL | Описание |
+|-------|-----|----------|
+| POST | `/api/auth/register` | Регистрация |
+| POST | `/api/auth/login` | Вход |
+
+### Чаты и сообщения
+| Метод | URL | Описание |
+|-------|-----|----------|
+| GET | `/api/chats/all` | Список чатов пользователя |
+| POST | `/api/chats` | Создать чат |
+| GET | `/api/chats/{id}` | Чат с сообщениями |
+| PATCH | `/api/chats/{id}` | Переименовать чат |
+| DELETE | `/api/chats/{id}` | Удалить чат |
+| POST | `/api/messages` | Отправить сообщение (+ файл) |
+
+### Профиль
+| Метод | URL | Описание |
+|-------|-----|----------|
+| GET | `/api/profile` | Получить профиль |
+| PUT | `/api/profile` | Обновить профиль |
+
+### Опросы
+| Метод | URL | Описание |
+|-------|-----|----------|
+| GET | `/api/surveys` | Список опросов |
+| GET | `/api/surveys/mandatory/pending` | Незавершённые обязательные |
+| GET | `/api/surveys/{id}` | Детали опроса |
+| POST | `/api/surveys/{id}/submit` | Отправить ответы |
+
+### База знаний
+| Метод | URL | Описание |
+|-------|-----|----------|
+| GET | `/api/articles` | Список статей (?specialization=, ?category=) |
+| GET | `/api/articles/categories` | Список категорий |
+| GET | `/api/articles/{slug}` | Статья по slug |
+
+### Прочее
+| Метод | URL | Описание |
+|-------|-----|----------|
+| POST | `/api/export` | Экспорт сообщения (md/docx/html) |
+| GET | `/api/search?q=` | Поиск по чатам и статьям |
+| GET | `/api/roadmap/progress` | Прогресс roadmap |
+| POST | `/api/roadmap/progress` | Отметить/снять шаг roadmap |
+
+### Админка (role=admin)
+| Метод | URL | Описание |
+|-------|-----|----------|
+| POST | `/api/admin/surveys` | Создать опрос |
+| PUT | `/api/admin/surveys/{id}` | Редактировать опрос |
+| DELETE | `/api/admin/surveys/{id}` | Удалить опрос |
+| POST | `/api/admin/articles` | Создать статью |
+| PUT | `/api/admin/articles/{id}` | Редактировать статью |
+| DELETE | `/api/admin/articles/{id}` | Удалить статью |
+| POST | `/api/admin/articles/categories` | Создать категорию |
+| DELETE | `/api/admin/articles/categories/{id}` | Удалить категорию |
 
 ---
 
@@ -336,6 +480,9 @@ docker compose -f deploy/docker-compose.yml down
 
 # Остановить и удалить все данные (БД, кэш — начать с чистого листа)
 docker compose -f deploy/docker-compose.yml down -v
+
+# Назначить пользователя администратором
+docker exec deploy-database-1 psql -U postgres -d postgres -c "UPDATE db_schema.users SET role='admin' WHERE email='email@example.com';"
 ```
 
 ---
@@ -348,3 +495,5 @@ docker compose -f deploy/docker-compose.yml down -v
 | Бэкенд API               | http://localhost:8000      | —                           |
 | Swagger (документация API)| http://localhost:8000/docs | —                           |
 | pgAdmin (управление БД)  | http://localhost:5050      | `admin@example.co` / `admin`|
+| Админка опросов           | http://localhost:5173/admin/surveys | role=admin          |
+| Админка статей            | http://localhost:5173/admin/articles | role=admin         |
