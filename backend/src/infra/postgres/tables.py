@@ -322,11 +322,67 @@ class MessageModel(BaseDBModel):
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
 
-class SenderTypesModel(BaseDBModel):  
+class SenderTypesModel(BaseDBModel):
     __tablename__ = 'sender_types'
     name: Mapped[str] = mapped_column(
         String(255),
         primary_key=True,
         nullable=False
     )
+
+
+class SurveyModel(BaseDBModel):
+    __tablename__ = 'surveys'
+    id: Mapped[uuid_pk]
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=True)
+    is_mandatory: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    created_by: Mapped[uuid.UUID] = mapped_column(UUID, ForeignKey('db_schema.users.id'), nullable=False)
+    created_at: Mapped[created_at]
+    updated_at: Mapped[updated_at]
+
+
+class SurveyQuestionModel(BaseDBModel):
+    __tablename__ = 'survey_questions'
+    id: Mapped[uuid_pk]
+    survey_id: Mapped[uuid.UUID] = mapped_column(UUID, ForeignKey('db_schema.surveys.id', ondelete='CASCADE'), nullable=False)
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+    question_type: Mapped[str] = mapped_column(String(50), nullable=False, default='single')
+    order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    created_at: Mapped[created_at]
+    updated_at: Mapped[updated_at]
+
+
+class SurveyOptionModel(BaseDBModel):
+    __tablename__ = 'survey_options'
+    id: Mapped[uuid_pk]
+    question_id: Mapped[uuid.UUID] = mapped_column(UUID, ForeignKey('db_schema.survey_questions.id', ondelete='CASCADE'), nullable=False)
+    text: Mapped[str] = mapped_column(String(500), nullable=False)
+    order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    created_at: Mapped[created_at]
+    updated_at: Mapped[updated_at]
+
+
+class SurveyResponseModel(BaseDBModel):
+    __tablename__ = 'survey_responses'
+    id: Mapped[uuid_pk]
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID, ForeignKey('db_schema.users.id'), nullable=False)
+    survey_id: Mapped[uuid.UUID] = mapped_column(UUID, ForeignKey('db_schema.surveys.id', ondelete='CASCADE'), nullable=False)
+    is_validated: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    validation_result: Mapped[str] = mapped_column(Text, nullable=True)
+    completed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=func.now())
+    created_at: Mapped[created_at]
+    updated_at: Mapped[updated_at]
+
+
+class SurveyAnswerModel(BaseDBModel):
+    __tablename__ = 'survey_answers'
+    id: Mapped[uuid_pk]
+    response_id: Mapped[uuid.UUID] = mapped_column(UUID, ForeignKey('db_schema.survey_responses.id', ondelete='CASCADE'), nullable=False)
+    question_id: Mapped[uuid.UUID] = mapped_column(UUID, ForeignKey('db_schema.survey_questions.id', ondelete='CASCADE'), nullable=False)
+    option_id: Mapped[uuid.UUID] = mapped_column(UUID, ForeignKey('db_schema.survey_options.id', ondelete='SET NULL'), nullable=True)
+    free_text: Mapped[str] = mapped_column(Text, nullable=True)
+    created_at: Mapped[created_at]
+    updated_at: Mapped[updated_at]
 
