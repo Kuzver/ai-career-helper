@@ -4,6 +4,7 @@ from loguru import logger
 from src.usecase.message.schemas import RequestMessageSchema
 from src.infra.gigachat.agents.career import CareerAgent
 from src.infra.gigachat.agents.learning import LearningAgent
+from src.infra.gigachat.chat import _is_on_topic, OFF_TOPIC_RESPONSE
 
 CAREER_KEYWORDS = [
     "резюме", "ваканси", "собеседован", "карьер", "работ", "cv",
@@ -32,6 +33,13 @@ class OrchestratorAgent:
     learning_agent: LearningAgent
 
     async def __call__(self, data: RequestMessageSchema, user_context: str | None = None) -> str:
+        # Off-topic проверка на ОРИГИНАЛЬНОМ тексте пользователя, ДО агентов
+        if not _is_on_topic(data.text):
+            response = OFF_TOPIC_RESPONSE
+            if user_context:
+                response += "\n\nСудя по вашему профилю, вам может быть полезно обратиться к разделу дорожной карты или задать вопрос по вашей специализации."
+            return response
+
         query = data.text.lower()
 
         career_score = sum(1 for k in CAREER_KEYWORDS if k in query)
