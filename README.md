@@ -160,7 +160,15 @@ docker exec deploy-backend-1 alembic upgrade head
 - `user_careers` — профиль пользователя
 - `surveys`, `survey_questions`, `survey_options`, `survey_responses`, `survey_answers` — опросы
 - `article_categories`, `articles` — база знаний
-- `user_roadmap_progress` — прогресс по дорожной карте
+- `user_roadmap_progress`, `user_roadmaps` — дорожная карта и прогресс
+
+После миграций заполни начальные данные (аккаунт администратора, опросы, статьи):
+
+```bash
+docker exec deploy-backend-1 python -m src.infra.postgres.seed
+```
+
+> Должно вывести `Seed data applied successfully!`
 
 **Если видишь ошибку "No such container":**
 Имя контейнера может отличаться. Проверь точное имя:
