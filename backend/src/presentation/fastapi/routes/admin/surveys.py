@@ -29,50 +29,51 @@ async def create_survey(
         raise HTTPException(status_code=400, detail="Добавьте хотя бы один вопрос")
 
     try:
-        async with session.begin():
-            survey_id = uuid4()
+        survey_id = uuid4()
 
-            if body.is_mandatory:
-                await session.execute(
-                    update(SurveyModel)
-                    .where(SurveyModel.is_mandatory == True, SurveyModel.id != survey_id)
-                    .values(is_mandatory=False)
-                )
+        if body.is_mandatory:
+            await session.execute(
+                update(SurveyModel)
+                .where(SurveyModel.is_mandatory == True, SurveyModel.id != survey_id)
+                .values(is_mandatory=False)
+            )
 
-            session.add(SurveyModel(
-                id=survey_id,
-                title=body.title,
-                description=body.description,
-                is_mandatory=body.is_mandatory,
-                is_active=True,
-                created_by=auth.id,
+        session.add(SurveyModel(
+            id=survey_id,
+            title=body.title,
+            description=body.description,
+            is_mandatory=body.is_mandatory,
+            is_active=True,
+            created_by=auth.id,
+        ))
+        await session.flush()
+
+        questions_out = []
+        for q in body.questions:
+            q_id = uuid4()
+            session.add(SurveyQuestionModel(
+                id=q_id,
+                survey_id=survey_id,
+                text=q.text,
+                question_type=q.question_type,
+                order=q.order,
             ))
             await session.flush()
 
-            questions_out = []
-            for q in body.questions:
-                q_id = uuid4()
-                session.add(SurveyQuestionModel(
-                    id=q_id,
-                    survey_id=survey_id,
-                    text=q.text,
-                    question_type=q.question_type,
-                    order=q.order,
+            options_out = []
+            for o in q.options:
+                o_id = uuid4()
+                session.add(SurveyOptionModel(
+                    id=o_id, question_id=q_id, text=o.text, order=o.order,
                 ))
-                await session.flush()
+                options_out.append(SurveyOptionOut(id=o_id, text=o.text, order=o.order))
 
-                options_out = []
-                for o in q.options:
-                    o_id = uuid4()
-                    session.add(SurveyOptionModel(
-                        id=o_id, question_id=q_id, text=o.text, order=o.order,
-                    ))
-                    options_out.append(SurveyOptionOut(id=o_id, text=o.text, order=o.order))
+            questions_out.append(SurveyQuestionOut(
+                id=q_id, text=q.text, question_type=q.question_type,
+                order=q.order, options=options_out,
+            ))
 
-                questions_out.append(SurveyQuestionOut(
-                    id=q_id, text=q.text, question_type=q.question_type,
-                    order=q.order, options=options_out,
-                ))
+        await session.commit()
 
         return SurveyDetail(
             id=survey_id, title=body.title, description=body.description,

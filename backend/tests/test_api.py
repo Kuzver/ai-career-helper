@@ -406,6 +406,104 @@ class TestSurveyProfileSync:
         assert profile2["specialization"] is not None or profile2["experience_level"] is not None
 
 
+class TestAdminSurveysCrud:
+    def test_admin_create_survey(self, client):
+        r = client.post("/api/auth/login", json={"email": "admin@career-helper.ru", "password": "Admin123!"})
+        h = {"Authorization": f"Bearer {r.json()['token']}"}
+
+        r2 = client.post("/api/admin/surveys", headers=h, json={
+            "title": "Test Survey",
+            "description": "Test desc",
+            "is_mandatory": False,
+            "questions": [
+                {"text": "Q1?", "question_type": "single", "order": 0, "options": [{"text": "A", "order": 0}, {"text": "B", "order": 1}]},
+            ],
+        })
+        assert r2.status_code == 201, f"Create survey failed: {r2.text}"
+        assert r2.json()["title"] == "Test Survey"
+
+    def test_only_one_mandatory(self, client):
+        r = client.post("/api/auth/login", json={"email": "admin@career-helper.ru", "password": "Admin123!"})
+        h = {"Authorization": f"Bearer {r.json()['token']}"}
+
+        surveys_before = client.get("/api/surveys", headers=h).json()
+        mandatory_before = [s for s in surveys_before if s["is_mandatory"]]
+
+        r2 = client.post("/api/admin/surveys", headers=h, json={
+            "title": "New Mandatory",
+            "is_mandatory": True,
+            "questions": [{"text": "Q?", "question_type": "text", "order": 0, "options": []}],
+        })
+        assert r2.status_code == 201
+
+        surveys_after = client.get("/api/surveys", headers=h).json()
+        mandatory_after = [s for s in surveys_after if s["is_mandatory"]]
+        assert len(mandatory_after) == 1, f"Should be exactly 1 mandatory, got {len(mandatory_after)}"
+
+
+class TestAdminArticlesCrud:
+    def test_admin_create_article(self, client):
+        r = client.post("/api/auth/login", json={"email": "admin@career-helper.ru", "password": "Admin123!"})
+        h = {"Authorization": f"Bearer {r.json()['token']}"}
+
+        r2 = client.post("/api/admin/articles", headers=h, json={
+            "title": "Test Article",
+            "slug": "test-article-crud",
+            "content_md": "# Test\n\nContent here",
+        })
+        assert r2.status_code == 201
+
+    def test_admin_update_article(self, client):
+        r = client.post("/api/auth/login", json={"email": "admin@career-helper.ru", "password": "Admin123!"})
+        h = {"Authorization": f"Bearer {r.json()['token']}"}
+
+        articles = client.get("/api/articles", headers=h).json()
+        if not articles:
+            return
+
+        r2 = client.put(f"/api/admin/articles/{articles[0]['id']}", headers=h, json={
+            "title": "Updated Title",
+        })
+        assert r2.status_code == 200
+        assert r2.json()["title"] == "Updated Title"
+
+
+class TestExportRoadmap:
+    def test_export_roadmap_md(self, client, headers):
+        r = client.post("/api/export/roadmap", headers=headers, json={
+            "markdown": "# My Roadmap\n\n## Step 1\nDescription",
+            "format": "md",
+        })
+        assert r.status_code == 200
+
+    def test_export_roadmap_docx(self, client, headers):
+        r = client.post("/api/export/roadmap", headers=headers, json={
+            "markdown": "# My Roadmap\n\n## Step 1\nDescription\n\n| Col1 | Col2 |\n|---|---|\n| A | B |",
+            "format": "docx",
+        })
+        assert r.status_code == 200
+        assert "wordprocessingml" in r.headers.get("content-type", "")
+
+
+class TestWelcomeChatsOrder:
+    def test_welcome_chat_messages_ordered(self, client):
+        import time
+        email = f"order_{int(time.time())}@pytest.com"
+        r = client.post("/api/auth/register", json={"email": email, "password": "TestPass123"})
+        token = r.json()["token"]
+        h = {"Authorization": f"Bearer {token}"}
+
+        chats = client.get("/api/chats/all", headers=h).json()
+        assert len(chats["items"]) >= 3
+
+        chat_id = chats["items"][0]["id"]
+        chat_data = client.get(f"/api/chats/{chat_id}", headers=h).json()
+        msgs = chat_data["items"][0]["messages"]
+        assert len(msgs) == 2
+        assert msgs[0]["sender_type_id"] == "user"
+        assert msgs[1]["sender_type_id"] == "chat"
+
+
 class TestSecurity:
     def test_rate_limit_not_triggered_on_normal_use(self, client, headers):
         for _ in range(5):

@@ -86,7 +86,6 @@ async def update_article(
     if body.content_md is not None: article.content_md = body.content_md
     if body.category_id is not None: article.category_id = body.category_id
     if body.specialization is not None: article.specialization = body.specialization
-    await session.commit()
 
     cat = None
     if article.category_id:
@@ -97,10 +96,13 @@ async def update_article(
         if c:
             cat = CategoryOut(id=c.id, name=c.name, slug=c.slug, order=c.order)
 
-    return ArticleDetail(
+    result_data = ArticleDetail(
         id=article.id, title=article.title, slug=article.slug,
         content_md=article.content_md, specialization=article.specialization, category=cat,
     )
+    await session.commit()
+
+    return result_data
 
 
 @ROUTER.delete("/{article_id}", status_code=status.HTTP_204_NO_CONTENT)
