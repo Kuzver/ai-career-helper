@@ -168,7 +168,29 @@ export default function ChatPage() {
           <div className="flex h-full flex-col items-center justify-center">
             <div className="mb-6 h-16 w-16 rounded-full bg-[#3649F9]" />
             <p className="mb-2 text-lg font-medium text-gray-600 dark:text-gray-300">ИИ-помощник</p>
-            <p className="text-sm text-[#C5CBD3]">Напишите сообщение, чтобы начать диалог</p>
+            <p className="mb-6 text-sm text-[#C5CBD3]">Выберите тему или напишите свой вопрос</p>
+            <div className="grid w-full max-w-xl grid-cols-2 gap-3 px-4">
+              {[
+                { icon: "📝", text: "Помоги составить резюме", desc: "ATS-оптимизация" },
+                { icon: "🗺️", text: "Составь мне roadmap", desc: "План обучения" },
+                { icon: "🎯", text: "Подготовь к собеседованию", desc: "Вопросы и кейсы" },
+                { icon: "📚", text: "Что изучить для frontend", desc: "Курсы и ресурсы" },
+                { icon: "💼", text: "Как найти первую работу в IT", desc: "Советы по поиску" },
+                { icon: "📊", text: "Проанализируй мои навыки", desc: "Оценка и план" },
+              ].map((item) => (
+                <button
+                  key={item.text}
+                  onClick={() => { setMessageText(item.text); }}
+                  className="group flex items-start gap-3 rounded-xl border border-gray-100 bg-white p-3.5 text-left transition-all hover:border-[#3649F9]/30 hover:shadow-sm dark:border-gray-700 dark:bg-[#1e293b] dark:hover:border-[#3649F9]/50"
+                >
+                  <span className="text-xl">{item.icon}</span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-800 group-hover:text-[#3649F9] dark:text-gray-200">{item.text}</p>
+                    <p className="text-xs text-[#C5CBD3]">{item.desc}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
           <div className="space-y-6">
