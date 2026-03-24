@@ -22,33 +22,79 @@ OFF_TOPIC_RESPONSE = (
     "- **Советы по поиску работы** — вакансии, зарплаты, нетворкинг"
 )
 
-TOPIC_CHECK_PROMPT = (
-    "Определи, относится ли вопрос пользователя к одной из этих тем: "
-    "карьера, IT, программирование, резюме, собеседования, обучение технологиям, "
-    "поиск работы, профессиональное развитие. "
-    "Ответь ОДНИМ словом: ДА или НЕТ. Ничего больше."
-)
-
+# Ключевые слова ON-topic — если есть хотя бы 1, вопрос может быть по теме
 ON_TOPIC_KEYWORDS = {
     "резюме", "cv", "ваканси", "собеседован", "карьер", "работ", "зарплат",
-    "обучен", "курс", "roadmap", "план", "программир", "код", "разработ",
-    "python", "java", "javascript", "react", "frontend", "backend", "devops",
-    "sql", "git", "docker", "алгоритм", "junior", "middle", "senior",
-    "стажир", "портфолио", "linkedin", "фриланс", "it", "айти",
-    "технолог", "фреймворк", "библиотек", "архитектур", "тестиров",
+    "обучен", "курс", "roadmap", "план обучен", "программир", "код", "разработ",
+    "python", "java", "javascript", "typescript", "react", "vue", "angular",
+    "frontend", "backend", "fullstack", "devops", "qa", "тестиров",
+    "sql", "git", "docker", "kubernetes", "алгоритм", "структур данных",
+    "junior", "middle", "senior", "lead", "стажир", "стажёр",
+    "портфолио", "linkedin", "фриланс", "it", "айти",
+    "технолог", "фреймворк", "библиотек", "архитектур",
     "навык", "компетенц", "проект", "команд", "agile", "scrum",
-    "rest",
+    "rest", "api", "http", "база данных", "бд", "orm",
+    "машинное обучен", "data science", "ml", "нейросет",
+    "ci/cd", "деплой", "сервер", "хостинг", "облак",
+    "soft skill", "менторств", "код ревью", "code review",
+    "open source", "open-source", "вклад",
+    "диплом", "курсов", "сертифик",
+    "повыш", "продвиж", "рост",
+}
+
+# Ключевые слова OFF-topic — если есть, вопрос точно не по теме
+OFF_TOPIC_KEYWORDS = {
+    "погод", "рецепт", "готов", "кулинар",
+    "планет", "плутон", "космос", "астроном", "звезд", "галактик",
+    "полити", "выбор", "президент", "депутат", "партия",
+    "фильм", "сериал", "кино", "музык", "песн",
+    "спорт", "футбол", "хоккей", "баскетбол",
+    "здоров", "медицин", "лекарств", "болезн", "врач",
+    "религ", "бог", "церков", "молитв",
+    "животн", "кошк", "собак", "питомец",
+    "путешеств", "отдых", "туризм", "отель",
+    "истори", "война", "битв", "древн", "средневеков",
+    "географ", "столиц", "населен", "океан", "гор",
+    "физик", "химия", "биолог", "математ",
+    "анекдот", "шутк", "мем", "смешн",
+    "знак зодиак", "гороскоп", "астролог",
+    "отношен", "любов", "свадьб", "развод",
+    "автомобил", "машин", "двигател",
+    "еда", "ресторан", "кафе",
+    "одежд", "мода", "стиль",
+    "недвижимост", "квартир", "ипотек",
+    "крипт", "биткоин", "форекс",
+    "игр", "playstation", "xbox", "steam",
+    "почему небо", "почему вода", "почему трава",
+    "сколько весит", "какой цвет", "кто изобрел",
+    "расскажи сказк", "напиши стих", "придумай истори",
 }
 
 
-def _quick_topic_check(query: str) -> bool | None:
+def _is_on_topic(query: str) -> bool:
+    """
+    Детерминистичная проверка: off-topic keywords имеют приоритет.
+    Если найден off-topic keyword И нет on-topic — точно off-topic.
+    Если найден on-topic keyword — on-topic.
+    Если ничего не найдено — off-topic (по умолчанию блокируем).
+    """
     q = query.lower()
-    matches = sum(1 for kw in ON_TOPIC_KEYWORDS if kw in q)
-    if matches >= 2:
-        return True
-    if len(q) < 15 and matches == 0:
+
+    on_matches = sum(1 for kw in ON_TOPIC_KEYWORDS if kw in q)
+    off_matches = sum(1 for kw in OFF_TOPIC_KEYWORDS if kw in q)
+
+    # Если есть off-topic маркер и нет on-topic → блокируем
+    if off_matches > 0 and on_matches == 0:
         return False
-    return None
+
+    # Если есть on-topic маркер → пропускаем
+    if on_matches > 0:
+        return True
+
+    # Нет ни одного маркера — по умолчанию БЛОКИРУЕМ
+    # Это ключевое изменение: раньше было True (пропускаем),
+    # теперь False (блокируем неизвестные запросы)
+    return False
 
 
 class Gigachat:
@@ -64,28 +110,10 @@ class Gigachat:
         history: Optional[List[Dict[str, str]]] = None,
         user_context: Optional[str] = None,
     ) -> str:
-        quick = _quick_topic_check(user_query)
-
-        if quick is None:
-            try:
-                check_messages = [
-                    Messages(role=MessagesRole.SYSTEM, content=TOPIC_CHECK_PROMPT),
-                    Messages(role=MessagesRole.USER, content=user_query),
-                ]
-                check_resp = await self.model.achat(Chat(messages=check_messages))
-                answer = check_resp.choices[0].message.content.strip().lower()
-                if answer.startswith("нет") or answer == "no":
-                    quick = False
-                else:
-                    quick = True
-            except Exception as e:
-                logger.error(f"Topic check error: {e}")
-                quick = True
-
-        if quick is False:
+        if not _is_on_topic(user_query):
             response = OFF_TOPIC_RESPONSE
             if user_context:
-                response += f"\n\nСудя по вашему профилю, вам может быть полезно обратиться к разделу дорожной карты или задать вопрос по вашей специализации."
+                response += "\n\nСудя по вашему профилю, вам может быть полезно обратиться к разделу дорожной карты или задать вопрос по вашей специализации."
             return response
 
         system_prompt = BASE_SYSTEM_PROMPT
