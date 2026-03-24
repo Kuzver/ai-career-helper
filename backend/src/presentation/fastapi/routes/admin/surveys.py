@@ -196,7 +196,7 @@ async def _load_questions(session: AsyncSession, survey_id: UUID) -> list[Survey
     return [
         SurveyQuestionOut(
             id=q.id, text=q.text, question_type=q.question_type,
-            order=q.order, options=opts_by_q.get(q.id, []),
+            is_required=q.is_required, order=q.order, options=opts_by_q.get(q.id, []),
         )
         for q in questions
     ]

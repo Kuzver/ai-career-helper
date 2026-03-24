@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm"
 import rehypeSanitize from "rehype-sanitize"
 import { createChat, getChatById, getChats, sendMessage, exportMessage } from "~/modules/chat/api/chats"
 import { useUser } from "~/modules/user/lib/use-user"
+import { Logo } from "~/shared/components/ui/logo"
 import type { Chat, ChatWithMessages, Message } from "~/modules/chat/model/types"
 
 function cleanLegacyContext(text: string): string {
@@ -73,7 +74,7 @@ export default function ChatPage() {
   if (!user.isAuthorized) {
     return (
       <div className="flex h-full flex-col items-center justify-center">
-        <div className="mb-6 h-16 w-16 rounded-full bg-[#3649F9]" />
+        <Logo size={64} />
         <p className="mb-2 text-lg font-medium text-gray-600">Войдите в аккаунт</p>
         <p className="mb-6 text-sm text-[#C5CBD3]">Чтобы начать общение с ИИ-помощником</p>
         <button onClick={() => navigate("/sign-in")}
@@ -166,7 +167,7 @@ export default function ChatPage() {
       <div className="flex-1 overflow-y-auto px-8 py-6 dark:bg-[#0f172a]">
         {serverMessages.length === 0 && !showOptimistic && !isSending ? (
           <div className="flex h-full flex-col items-center justify-center">
-            <div className="mb-6 h-16 w-16 rounded-full bg-[#3649F9]" />
+            <Logo size={64} />
             <p className="mb-2 text-lg font-medium text-gray-600 dark:text-gray-300">ИИ-помощник</p>
             <p className="mb-6 text-sm text-[#C5CBD3]">Выберите тему или напишите свой вопрос</p>
             <div className="grid w-full max-w-xl grid-cols-2 gap-3 px-4">
@@ -210,7 +211,7 @@ export default function ChatPage() {
             {isSending && (
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 shrink-0 rounded-full bg-[#3649F9]" />
+                  <Logo size={32} />
                   <span className="text-sm font-semibold text-gray-800">ИИ-помощник</span>
                 </div>
                 <div className="ml-10 rounded-2xl bg-[#E8EAFF] px-5 py-3">
@@ -301,7 +302,7 @@ function MessageBubble({ msg, onExport }: { msg: Message; onExport: (id: string,
   return (
     <div className="group space-y-2">
       <div className="flex items-center gap-2">
-        <div className="h-8 w-8 shrink-0 rounded-full bg-[#3649F9]" />
+        <Logo size={32} />
         <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">ИИ-помощник</span>
       </div>
       <div className="ml-10 max-w-2xl rounded-2xl bg-[#E8EAFF] px-5 py-3 text-sm leading-relaxed text-gray-800 dark:bg-[#3649F9]/15 dark:text-gray-200">

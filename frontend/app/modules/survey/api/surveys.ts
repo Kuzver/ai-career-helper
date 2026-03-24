@@ -18,6 +18,7 @@ export type SurveyQuestion = {
   id: string
   text: string
   question_type: "single" | "multi" | "text"
+  is_required: boolean
   order: number
   options: SurveyOption[]
 }

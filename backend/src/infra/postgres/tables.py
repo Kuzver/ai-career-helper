@@ -352,6 +352,7 @@ class SurveyQuestionModel(BaseDBModel):
     id: Mapped[uuid_pk]
     survey_id: Mapped[uuid.UUID] = mapped_column(UUID, ForeignKey('db_schema.surveys.id', ondelete='CASCADE'), nullable=False)
     text: Mapped[str] = mapped_column(Text, nullable=False)
+    is_required: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, server_default='true')
     question_type: Mapped[str] = mapped_column(String(50), nullable=False, default='single')
     order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     created_at: Mapped[created_at]

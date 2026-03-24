@@ -87,7 +87,7 @@ export default function AdminArticles() {
     catch (err: any) { setError(err.response?.data?.detail || "Ошибка") }
   }
 
-  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-3 py-2 text-sm outline-none focus:border-[#3649F9] dark:border-gray-600 dark:bg-[#1e293b] dark:text-gray-200"
+  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-3 py-2 text-sm outline-none focus:border-[#3649F9] dark:border-gray-600 dark:bg-[#1e293b] dark:text-gray-200 dark:placeholder-gray-500"
 
   if (loading) return <div className="flex h-full items-center justify-center"><p className="text-sm text-[#C5CBD3]">Загрузка...</p></div>
 
@@ -128,7 +128,7 @@ export default function AdminArticles() {
       </div>
 
       {showCatForm && (
-        <div className="mb-6 flex items-end gap-2 rounded-xl border border-gray-100 p-4">
+        <div className="mb-6 flex items-end gap-2 rounded-xl border border-gray-100 p-4 dark:border-gray-700 dark:bg-[#1e293b]">
           <input value={catName} onChange={(e) => setCatName(e.target.value)} placeholder="Название" className={inputCls + " flex-1"} />
           <input value={catSlug} onChange={(e) => setCatSlug(e.target.value)} placeholder="Slug" className={inputCls + " flex-1"} />
           <button onClick={handleSaveCategory} className="rounded-lg bg-[#3649F9] px-4 py-2 text-xs text-white">OK</button>

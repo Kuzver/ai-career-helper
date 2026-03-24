@@ -99,7 +99,7 @@ export default function Profile() {
     return (
       <div className="flex h-full flex-col items-center justify-center">
         <div className="mb-4 h-16 w-16 rounded-full bg-[#3649F9]/10" />
-        <p className="mb-2 text-lg font-medium text-gray-600">Вы не авторизованы</p>
+        <p className="mb-2 text-lg font-medium text-gray-600 dark:text-gray-300">Вы не авторизованы</p>
         <p className="mb-6 text-sm text-[#C5CBD3]">Войдите, чтобы просматривать профиль</p>
         <Link to="/sign-in" className="rounded-lg bg-[#3649F9] px-6 py-2.5 text-sm font-medium text-white hover:bg-[#3649F9]/90">
           Войти
@@ -163,7 +163,7 @@ export default function Profile() {
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-400">Специализация</label>
             <select value={form.specialization} onChange={(e) => update("specialization", e.target.value)}
-              className={inputCls + " text-gray-600"}>
+              className={inputCls + " text-gray-600 dark:text-gray-200"}>
               <option value="">Выберите специализацию</option>
               {SPECIALIZATIONS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
             </select>
@@ -171,7 +171,7 @@ export default function Profile() {
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-400">Уровень опыта</label>
             <select value={form.experience} onChange={(e) => update("experience", e.target.value)}
-              className={inputCls + " text-gray-600"}>
+              className={inputCls + " text-gray-600 dark:text-gray-200"}>
               <option value="">Выберите уровень</option>
               {EXPERIENCE_LEVELS.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
             </select>
@@ -256,7 +256,7 @@ function ChangePassword() {
         {pwError && <p className="text-sm text-red-500">{pwError}</p>}
         {pwSuccess && <p className="text-sm text-green-600">Пароль изменён</p>}
         <button onClick={handleChangePassword} disabled={pwLoading}
-          className="rounded-lg bg-gray-800 px-6 py-2.5 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-50">
+          className="rounded-lg bg-gray-800 px-6 py-2.5 text-sm font-medium text-white hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 disabled:opacity-50">
           {pwLoading ? "Сохранение..." : "Изменить пароль"}
         </button>
       </div>

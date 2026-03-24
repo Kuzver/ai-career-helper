@@ -47,14 +47,14 @@ export default function ArticlePage() {
         </Link>
         <div className="relative">
           <button onClick={() => setShowExport((v) => !v)}
-            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-[#6D7C90] hover:border-[#3649F9] hover:text-[#3649F9]">
+            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-[#6D7C90] hover:border-[#3649F9] hover:text-[#3649F9] dark:border-gray-700">
             Скачать
           </button>
           {showExport && (
-            <div className="absolute right-0 top-full z-10 mt-1 rounded-lg border bg-white py-1 shadow-lg">
+            <div className="absolute right-0 top-full z-10 mt-1 rounded-lg border bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-[#1e293b]">
               {(["md", "docx", "html"] as const).map((fmt) => (
                 <button key={fmt} onClick={() => handleExport(fmt)}
-                  className="block w-full px-4 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50">
+                  className="block w-full px-4 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
                   {fmt.toUpperCase()}
                 </button>
               ))}
@@ -63,12 +63,12 @@ export default function ArticlePage() {
         </div>
       </div>
       {article.category && (
-        <span className="mb-3 inline-block rounded bg-[#E8EAFF] px-2 py-0.5 text-xs text-[#3649F9]">
+        <span className="mb-3 inline-block rounded bg-[#E8EAFF] px-2 py-0.5 text-xs text-[#3649F9] dark:bg-[#3649F9]/20">
           {article.category.name}
         </span>
       )}
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">{article.title}</h1>
-      <div className="bot-markdown prose max-w-none text-sm leading-relaxed text-gray-700">
+      <h1 className="mb-6 text-2xl font-bold text-gray-900 dark:text-gray-100">{article.title}</h1>
+      <div className="bot-markdown prose max-w-none text-sm leading-relaxed text-gray-700 dark:text-gray-300">
         <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>{article.content_md}</Markdown>
       </div>
     </div>

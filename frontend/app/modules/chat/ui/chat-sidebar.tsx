@@ -83,7 +83,7 @@ export function ChatSidebar() {
       <div className="flex items-center justify-between px-4 pb-2">
         <span className="text-xs font-medium text-[#6D7C90]">Чаты</span>
         <button onClick={handleNewChat}
-          className="rounded px-2 py-0.5 text-xs text-[#3649F9] hover:bg-[#E8EAFF]">
+          className="rounded px-2 py-0.5 text-xs text-[#3649F9] hover:bg-[#E8EAFF] dark:hover:bg-[#3649F9]/20">
           + Новый
         </button>
       </div>
@@ -101,7 +101,7 @@ export function ChatSidebar() {
                   if (e.key === "Enter") handleRename()
                   if (e.key === "Escape") setEditingId(null)
                 }}
-                className="w-full rounded-md border border-[#3649F9] px-3 py-1.5 text-xs outline-none"
+                className="w-full rounded-md border border-[#3649F9] px-3 py-1.5 text-xs outline-none dark:bg-[#1e293b] dark:text-gray-200"
               />
             ) : (
               <button
@@ -110,7 +110,7 @@ export function ChatSidebar() {
                 className={[
                   "w-full truncate rounded-md px-3 py-1.5 text-left text-xs transition-colors",
                   chat.id === selectedChatId
-                    ? "bg-[#E8EAFF] font-medium text-[#3649F9]"
+                    ? "bg-[#E8EAFF] font-medium text-[#3649F9] dark:bg-[#3649F9]/20"
                     : "text-[#6D7C90] hover:bg-gray-50 dark:hover:bg-gray-700",
                 ].join(" ")}
                 title={chat.title}
@@ -142,7 +142,7 @@ export function ChatSidebar() {
           </button>
           <button
             onClick={() => handleDelete(contextMenu.id)}
-            className="block w-full px-4 py-1.5 text-left text-xs text-red-500 hover:bg-red-50"
+            className="block w-full px-4 py-1.5 text-left text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
           >
             Удалить
           </button>

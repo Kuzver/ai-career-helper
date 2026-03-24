@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom"
 import { useUser } from "~/modules/user/lib/use-user"
 import { ChatSidebar } from "~/modules/chat/ui/chat-sidebar"
 import { baseClient } from "~/shared/api/axios-client"
+import { Logo } from "~/shared/components/ui/logo"
 
 type SearchResult = { type: string; id: string; title: string; url: string }
 
@@ -93,7 +94,7 @@ export default function AppLayout() {
         sidebarOpen ? "translate-x-0" : "-translate-x-full",
       ].join(" ")}>
         <Link to="/" className="flex items-center gap-3 px-5 py-5">
-          <div className="h-9 w-9 shrink-0 rounded-full bg-[#3649F9]" />
+          <Logo size={36} />
           <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">ИИ-ассистент</span>
         </Link>
         <nav className="space-y-1 px-3 pt-2">

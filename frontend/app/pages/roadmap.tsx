@@ -90,12 +90,26 @@ const DEFAULT_ROADMAP: Roadmap = {
   ],
 }
 
+function mdToHtml(md: string): string {
+  return md
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/`(.+?)`/g, "<code>$1</code>")
+    .replace(/^- (.+)$/gm, "<li>$1</li>")
+    .replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`)
+    .replace(/\n\n/g, "</p><p>")
+    .replace(/\n/g, "<br>")
+    .replace(/^(.+)$/gm, (line) => line.startsWith("<") ? line : `<p>${line}</p>`)
+    .replace(/<p><\/p>/g, "")
+}
+
 function buildRoadmapHtml(rm: Roadmap, completed: Set<string>, progress: number): string {
   const stepsHtml = rm.steps.map((step, i) => {
     const done = completed.has(step.id)
-    const icon = done ? "&#9745;" : "&#9744;"
     const statusCls = done ? "step-done" : ""
-    const detailsHtml = step.details ? `<div class="details"><div class="details-title">Подробно</div><p>${step.details}</p></div>` : ""
+    const descHtml = mdToHtml(step.description)
+    const detailsHtml = step.details ? `<div class="details"><div class="details-title">Подробно</div>${mdToHtml(step.details)}</div>` : ""
     const resourcesHtml = step.resources.length > 0
       ? `<div class="resources"><div class="details-title">Ресурсы</div><ul>${step.resources.map(r => `<li>${r}</li>`).join("")}</ul></div>`
       : ""
@@ -106,13 +120,13 @@ function buildRoadmapHtml(rm: Roadmap, completed: Set<string>, progress: number)
         <div class="step-num">${done ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' : String(i + 1)}</div>
         <div class="step-meta">
           <div class="step-title">${step.title}</div>
-          <div class="step-duration">${step.duration}</div>
+          ${step.duration ? `<div class="step-duration">${step.duration}</div>` : ""}
         </div>
       </div>
-      <p class="step-desc">${step.description}</p>
+      <div class="step-desc">${descHtml}</div>
       ${detailsHtml}
       ${resourcesHtml}
-      <div class="skills">${skillsHtml}</div>
+      ${skillsHtml ? `<div class="skills">${skillsHtml}</div>` : ""}
     </div>`
   }).join("")
 
@@ -496,7 +510,7 @@ export default function RoadmapPage() {
         <div className="mb-8 rounded-2xl border border-[#3649F9]/30 bg-[#f8f9ff] p-6 dark:bg-[#1e293b]">
           <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100">Редактирование roadmap</h2>
           <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)}
-            className="mb-4 w-full rounded-lg border border-[#C5CBD3] px-4 py-2 text-sm outline-none dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200"
+            className="mb-4 w-full rounded-lg border border-[#C5CBD3] px-4 py-2 text-sm outline-none dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200 dark:placeholder-gray-500"
             placeholder="Название roadmap" />
           <div className="space-y-4">
             {editSteps.map((step, idx) => (
@@ -506,15 +520,15 @@ export default function RoadmapPage() {
                   <button onClick={() => handleRemoveStep(idx)} className="text-xs text-red-400">Удалить</button>
                 </div>
                 <input value={step.title} onChange={(e) => updateStep(idx, "title", e.target.value)}
-                  className="mb-2 w-full rounded border border-gray-200 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200" placeholder="Название" />
+                  className="mb-2 w-full rounded border border-gray-200 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200 dark:placeholder-gray-500" placeholder="Название" />
                 <input value={step.description} onChange={(e) => updateStep(idx, "description", e.target.value)}
-                  className="mb-2 w-full rounded border border-gray-200 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200" placeholder="Описание" />
+                  className="mb-2 w-full rounded border border-gray-200 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200 dark:placeholder-gray-500" placeholder="Описание" />
                 <input value={step.duration} onChange={(e) => updateStep(idx, "duration", e.target.value)}
-                  className="mb-2 w-full rounded border border-gray-200 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200" placeholder="Длительность (1-2 месяца)" />
+                  className="mb-2 w-full rounded border border-gray-200 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200 dark:placeholder-gray-500" placeholder="Длительность (1-2 месяца)" />
                 <textarea value={step.details} onChange={(e) => updateStep(idx, "details", e.target.value)}
-                  className="mb-2 w-full rounded border border-gray-200 px-3 py-1.5 text-xs dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200 min-h-[60px] resize-none" placeholder="Подробности" />
+                  className="mb-2 w-full rounded border border-gray-200 px-3 py-1.5 text-xs dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200 dark:placeholder-gray-500 min-h-[60px] resize-none" placeholder="Подробности" />
                 <input value={step.skills.join(", ")} onChange={(e) => updateStep(idx, "skills", e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))}
-                  className="w-full rounded border border-gray-200 px-3 py-1.5 text-xs dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200" placeholder="Навыки (через запятую)" />
+                  className="w-full rounded border border-gray-200 px-3 py-1.5 text-xs dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200 dark:placeholder-gray-500" placeholder="Навыки (через запятую)" />
               </div>
             ))}
           </div>

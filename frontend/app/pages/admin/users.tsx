@@ -47,9 +47,9 @@ export default function AdminUsers() {
   if (error && users.length === 0) return <div className="flex h-full items-center justify-center"><p className="text-sm text-red-500">{error}</p></div>
 
   const roleColor = (role: string) => {
-    if (role === "admin") return "bg-red-50 text-red-600"
-    if (role === "editor") return "bg-blue-50 text-blue-600"
-    return "bg-gray-50 text-gray-500"
+    if (role === "admin") return "bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400"
+    if (role === "editor") return "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
+    return "bg-gray-50 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
   }
 
   return (

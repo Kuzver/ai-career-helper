@@ -8,6 +8,7 @@ import {
 type QuestionDraft = {
   text: string
   question_type: string
+  is_required: boolean
   options: { text: string }[]
 }
 
@@ -20,7 +21,7 @@ type SurveyDraft = {
 
 const emptyDraft = (): SurveyDraft => ({
   title: "", description: "", is_mandatory: false,
-  questions: [{ text: "", question_type: "single", options: [{ text: "" }] }],
+  questions: [{ text: "", question_type: "single", is_required: true, options: [{ text: "" }] }],
 })
 
 export default function AdminSurveys() {
@@ -69,6 +70,7 @@ export default function AdminSurveys() {
         questions: draft.questions.map((q, qi) => ({
           text: q.text,
           question_type: q.question_type,
+          is_required: q.is_required,
           order: qi,
           options: q.options.filter((o) => o.text.trim()).map((o, oi) => ({ text: o.text, order: oi })),
         })),
@@ -99,6 +101,7 @@ export default function AdminSurveys() {
         questions: detail.questions.map((q) => ({
           text: q.text,
           question_type: q.question_type,
+          is_required: q.is_required,
           options: q.options.length > 0 ? q.options.map((o) => ({ text: o.text })) : [{ text: "" }],
         })),
       })
@@ -130,7 +133,7 @@ export default function AdminSurveys() {
   const addQuestion = () => {
     setDraft((prev) => ({
       ...prev,
-      questions: [...prev.questions, { text: "", question_type: "single", options: [{ text: "" }] }],
+      questions: [...prev.questions, { text: "", question_type: "single", is_required: true, options: [{ text: "" }] }],
     }))
   }
 
@@ -158,45 +161,45 @@ export default function AdminSurveys() {
     })
   }
 
-  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-3 py-2 text-sm outline-none focus:border-[#3649F9] dark:border-gray-600 dark:bg-[#1e293b] dark:text-gray-200"
+  const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-3 py-2 text-sm outline-none focus:border-[#3649F9] dark:border-gray-600 dark:bg-[#1e293b] dark:text-gray-200 dark:placeholder-gray-500"
 
   if (showForm) {
     return (
       <div className="mx-auto max-w-3xl p-8">
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{editingId ? "Редактирование" : "Новый опрос"}</h1>
-          <button onClick={() => setShowForm(false)} className="text-sm text-[#C5CBD3] hover:text-gray-600">Отмена</button>
+          <button onClick={() => setShowForm(false)} className="text-sm text-[#C5CBD3] hover:text-gray-600 dark:hover:text-gray-400">Отмена</button>
         </div>
 
         <div className="space-y-6">
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-600">Название</label>
+            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-400">Название</label>
             <input value={draft.title} onChange={(e) => setDraft((p) => ({ ...p, title: e.target.value }))} className={inputCls} />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-600">Описание</label>
+            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-400">Описание</label>
             <textarea value={draft.description} onChange={(e) => setDraft((p) => ({ ...p, description: e.target.value }))}
               className={inputCls + " min-h-[60px] resize-none"} />
           </div>
-          <label className="flex items-center gap-2 text-sm text-gray-600">
+          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <input type="checkbox" checked={draft.is_mandatory} onChange={(e) => setDraft((p) => ({ ...p, is_mandatory: e.target.checked }))} />
             Обязательный опрос
           </label>
 
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-gray-800">Вопросы</h2>
+              <h2 className="text-sm font-bold text-gray-800 dark:text-gray-200">Вопросы</h2>
               <button onClick={addQuestion} className="text-xs text-[#3649F9] hover:underline">+ Добавить вопрос</button>
             </div>
 
             {draft.questions.map((q, qi) => (
-              <div key={qi} className="rounded-xl border border-gray-100 p-5">
+              <div key={qi} className="rounded-xl border border-gray-100 p-5 dark:border-gray-700 dark:bg-[#1e293b]">
                 <div className="mb-3 flex items-start gap-2">
                   <span className="mt-2 text-sm font-medium text-[#3649F9]">{qi + 1}.</span>
                   <input value={q.text} onChange={(e) => updateQuestion(qi, { text: e.target.value })}
                     placeholder="Текст вопроса" className={inputCls + " flex-1"} />
                   <select value={q.question_type} onChange={(e) => updateQuestion(qi, { question_type: e.target.value })}
-                    className="rounded-lg border border-[#C5CBD3] px-2 py-2 text-xs outline-none">
+                    className="rounded-lg border border-[#C5CBD3] px-2 py-2 text-xs outline-none dark:border-gray-600 dark:bg-[#1e293b] dark:text-gray-200">
                     <option value="single">Один ответ</option>
                     <option value="multi">Несколько</option>
                     <option value="text">Текст</option>
@@ -205,15 +208,20 @@ export default function AdminSurveys() {
                     <button onClick={() => removeQuestion(qi)} className="mt-2 text-xs text-red-400 hover:text-red-500">&times;</button>
                   )}
                 </div>
+                <label className="mb-3 flex items-center gap-2 pl-6 text-xs text-gray-600 dark:text-gray-400">
+                  <input type="checkbox" checked={q.is_required} onChange={(e) => updateQuestion(qi, { is_required: e.target.checked })}
+                    className="h-3.5 w-3.5 rounded accent-[#3649F9]" />
+                  Обязательный ответ
+                </label>
 
                 {q.question_type !== "text" && (
                   <div className="ml-6 space-y-2">
                     {q.options.map((o, oi) => (
                       <div key={oi} className="flex items-center gap-2">
-                        <div className="h-3 w-3 rounded-full border border-[#C5CBD3]" />
+                        <div className="h-3 w-3 rounded-full border border-[#C5CBD3] dark:border-gray-500" />
                         <input value={o.text} onChange={(e) => updateOption(qi, oi, e.target.value)}
                           placeholder={`Вариант ${oi + 1}`}
-                          className="flex-1 rounded border border-gray-100 px-3 py-1.5 text-xs outline-none focus:border-[#3649F9]" />
+                          className="flex-1 rounded border border-gray-100 px-3 py-1.5 text-xs outline-none focus:border-[#3649F9] dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200 dark:placeholder-gray-500" />
                         {q.options.length > 1 && (
                           <button onClick={() => removeOption(qi, oi)} className="text-xs text-red-400">&times;</button>
                         )}
@@ -260,17 +268,17 @@ export default function AdminSurveys() {
               <div>
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{s.title}</p>
-                  {s.is_mandatory && <span className="rounded bg-red-50 px-2 py-0.5 text-xs text-red-500">Обяз.</span>}
+                  {s.is_mandatory && <span className="rounded bg-red-50 px-2 py-0.5 text-xs text-red-500 dark:bg-red-500/10">Обяз.</span>}
                 </div>
                 {s.description && <p className="mt-0.5 text-xs text-[#6D7C90]">{s.description}</p>}
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={() => handleEdit(s.id)}
-                  className="rounded px-3 py-1 text-xs text-[#3649F9] hover:bg-[#E8EAFF]">
+                  className="rounded px-3 py-1 text-xs text-[#3649F9] hover:bg-[#E8EAFF] dark:hover:bg-[#3649F9]/20">
                   Редактировать
                 </button>
                 <button onClick={() => handleDelete(s.id)}
-                  className="rounded px-3 py-1 text-xs text-red-400 hover:bg-red-50 hover:text-red-500">
+                  className="rounded px-3 py-1 text-xs text-red-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10">
                   Удалить
                 </button>
               </div>

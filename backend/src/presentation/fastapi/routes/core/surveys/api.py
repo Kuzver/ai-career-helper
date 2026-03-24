@@ -113,7 +113,7 @@ async def get_survey(
         questions=[
             SurveyQuestionOut(
                 id=q.id, text=q.text, question_type=q.question_type,
-                order=q.order, options=options_by_q.get(q.id, []),
+                is_required=q.is_required, order=q.order, options=options_by_q.get(q.id, []),
             )
             for q in questions
         ],

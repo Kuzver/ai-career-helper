@@ -70,9 +70,8 @@ export default function SurveyPage() {
   }
 
   const handleSubmit = async () => {
-    // Проверяем только вопросы с вариантами (single/multi). Текстовые — необязательны.
     const unanswered = survey.questions.filter(
-      (q) => q.question_type !== "text" && !answers[q.id]
+      (q) => q.is_required && !answers[q.id]
     )
     if (unanswered.length > 0) {
       setError(`Ответьте на все вопросы (осталось: ${unanswered.length})`)
@@ -123,7 +122,7 @@ export default function SurveyPage() {
 
       <div className="space-y-8">
         {survey.questions.map((q, idx) => {
-          const isUnanswered = error && q.question_type !== "text" && !answers[q.id]
+          const isUnanswered = error && q.is_required && !answers[q.id]
           return (
             <div
               key={q.id}
@@ -136,7 +135,7 @@ export default function SurveyPage() {
               <p className="mb-4 text-sm font-medium text-gray-800 dark:text-gray-200">
                 <span className="mr-2 text-[#3649F9]">{idx + 1}.</span>
                 {q.text}
-                {q.question_type === "text" && <span className="ml-2 text-xs text-[#C5CBD3]">(необязательно)</span>}
+                {!q.is_required && <span className="ml-2 text-xs text-[#C5CBD3]">(необязательно)</span>}
               </p>
 
               {q.question_type === "text" ? (

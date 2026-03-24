@@ -13,6 +13,7 @@ class SurveyQuestionOut(BaseModel):
     id: UUID
     text: str
     question_type: str
+    is_required: bool = True
     order: int
     options: list[SurveyOptionOut]
 
@@ -59,6 +60,7 @@ class SurveyOptionCreate(BaseModel):
 class SurveyQuestionCreate(BaseModel):
     text: str
     question_type: str = "single"
+    is_required: bool = True
     order: int = 0
     options: list[SurveyOptionCreate] = []
 

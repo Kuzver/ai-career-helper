@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useUser } from "~/modules/user/lib/use-user"
 import { baseClient } from "~/shared/api/axios-client"
+import { Logo } from "~/shared/components/ui/logo"
 import { getPendingMandatory } from "~/modules/survey/api/surveys"
 
 export default function SignUp() {
@@ -54,7 +55,7 @@ export default function SignUp() {
     <div className="flex min-h-screen flex-col bg-white dark:bg-[#0f172a]">
       <div className="px-10 py-8">
         <Link to="/" className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-[#3649F9]" />
+          <Logo size={40} />
           <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">ИИ-ассистент</span>
         </Link>
       </div>
