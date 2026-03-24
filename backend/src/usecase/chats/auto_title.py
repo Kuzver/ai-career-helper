@@ -4,7 +4,7 @@ from uuid import UUID
 from loguru import logger
 
 from src.infra.postgres.tables import ChatModel, MessageModel
-from src.infra.gigachat.chat import Gigachat
+from src.infra.gigachat.chat import Gigachat, OFF_TOPIC_RESPONSE
 
 
 class AutoTitleUsecase:
@@ -28,6 +28,21 @@ class AutoTitleUsecase:
         messages = result.all()
         if not messages:
             return None
+
+        # Если последнее сообщение бота — off-topic ответ, ставим нейтральное название
+        bot_messages = [m for m in messages if m.sender_type_id == "chat"]
+        if bot_messages and OFF_TOPIC_RESPONSE[:40] in bot_messages[-1].text:
+            try:
+                chat_result = await self.session.execute(
+                    select(ChatModel).where(ChatModel.id == chat_id)
+                )
+                chat = chat_result.scalar_one_or_none()
+                if chat:
+                    chat.title = "Новый диалог"
+                    await self.session.commit()
+            except Exception:
+                pass
+            return "Новый диалог"
 
         conversation = "\n".join(
             f"{'User' if m.sender_type_id == 'user' else 'Bot'}: {m.text[:200]}"
