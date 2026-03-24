@@ -316,6 +316,49 @@ class TestRoadmap:
         assert r.json()["action"] == "removed"
 
 
+class TestPersonalRoadmap:
+    def test_no_personal_roadmap(self, client, headers):
+        r = client.get("/api/roadmap/personal", headers=headers)
+        assert r.status_code == 200
+        assert r.json() is None
+
+    def test_save_personal_roadmap(self, client, headers):
+        r = client.put("/api/roadmap/personal", headers=headers, json={
+            "title": "My Roadmap",
+            "description": "Test",
+            "steps": [
+                {"id": "1", "title": "Step 1", "description": "Desc", "details": "Details", "resources": ["Res1"], "skills": ["Python"], "duration": "1m"},
+                {"id": "2", "title": "Step 2", "description": "Desc2", "details": "", "resources": [], "skills": ["JS"], "duration": "2m"},
+            ],
+        })
+        assert r.status_code == 200
+        assert r.json()["title"] == "My Roadmap"
+        assert len(r.json()["steps"]) == 2
+
+    def test_get_personal_roadmap(self, client, headers):
+        r = client.get("/api/roadmap/personal", headers=headers)
+        assert r.status_code == 200
+        data = r.json()
+        assert data is not None
+        assert data["title"] == "My Roadmap"
+
+    def test_update_personal_roadmap(self, client, headers):
+        r = client.put("/api/roadmap/personal", headers=headers, json={
+            "title": "Updated Roadmap",
+            "steps": [{"id": "1", "title": "Only Step", "description": "D", "details": "", "resources": [], "skills": [], "duration": "1w"}],
+        })
+        assert r.status_code == 200
+        assert r.json()["title"] == "Updated Roadmap"
+        assert len(r.json()["steps"]) == 1
+
+    def test_delete_personal_roadmap(self, client, headers):
+        r = client.delete("/api/roadmap/personal", headers=headers)
+        assert r.status_code == 204
+
+        r2 = client.get("/api/roadmap/personal", headers=headers)
+        assert r2.json() is None
+
+
 # === RATE LIMITING ===
 
 class TestChangePassword:
