@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import confetti from "canvas-confetti"
+import Markdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import { useUser } from "~/modules/user/lib/use-user"
 import { getProfile } from "~/modules/user/api/profile"
 import { getProgress, toggleProgress, getPersonalRoadmap, savePersonalRoadmap, deletePersonalRoadmap } from "~/modules/roadmap/api/roadmap"
@@ -576,12 +578,16 @@ export default function RoadmapPage() {
 
               {isExpanded && (
                 <div className="border-t border-gray-100 px-5 pb-5 pt-4 dark:border-gray-700">
-                  <p className="mb-3 text-sm leading-relaxed text-[#6D7C90]">{step.description}</p>
+                  <div className="bot-markdown mb-3 text-sm leading-relaxed text-[#6D7C90]">
+                    <Markdown remarkPlugins={[remarkGfm]}>{step.description}</Markdown>
+                  </div>
 
                   {step.details && (
                     <div className="mb-4 rounded-lg bg-[#f8f9ff] p-4 dark:bg-[#0f172a]">
                       <p className="mb-1 text-xs font-semibold text-gray-800 dark:text-gray-200">Подробно:</p>
-                      <p className="text-xs leading-relaxed text-[#6D7C90]">{step.details}</p>
+                      <div className="bot-markdown text-xs leading-relaxed text-[#6D7C90]">
+                        <Markdown remarkPlugins={[remarkGfm]}>{step.details}</Markdown>
+                      </div>
                     </div>
                   )}
 
