@@ -147,12 +147,13 @@ async def update_survey(
     else:
         questions_out = await _load_questions(session, survey_id)
 
-    await session.commit()
-
-    return SurveyDetail(
+    result = SurveyDetail(
         id=survey.id, title=survey.title, description=survey.description,
         is_mandatory=survey.is_mandatory, questions=questions_out,
     )
+    await session.commit()
+
+    return result
 
 
 @ROUTER.delete("/{survey_id}", status_code=status.HTTP_204_NO_CONTENT)
