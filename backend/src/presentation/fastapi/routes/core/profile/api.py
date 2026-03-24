@@ -55,17 +55,17 @@ async def change_password(
     if len(body.new_password) < 8:
         raise HTTPException(status_code=400, detail="Новый пароль должен быть не менее 8 символов")
 
-    async with session.begin():
-        result = await session.execute(
-            select(UserModel).where(UserModel.id == auth.id)
-        )
-        user = result.scalar_one_or_none()
-        if not user:
-            raise HTTPException(status_code=404, detail="Пользователь не найден")
+    result = await session.execute(
+        select(UserModel).where(UserModel.id == auth.id)
+    )
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
 
-        if not user.password_hash or not verify_password(body.current_password, user.password_hash):
-            raise HTTPException(status_code=400, detail="Неверный текущий пароль")
+    if not user.password_hash or not verify_password(body.current_password, user.password_hash):
+        raise HTTPException(status_code=400, detail="Неверный текущий пароль")
 
-        user.password_hash = hash_password(body.new_password)
+    user.password_hash = hash_password(body.new_password)
+    await session.commit()
 
     return {"detail": "Пароль успешно изменён"}

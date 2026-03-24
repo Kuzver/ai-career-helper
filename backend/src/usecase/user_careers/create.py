@@ -9,7 +9,8 @@ from dataclasses import dataclass
 class CreateUserCareerUsecase(Usecase[CreateUserCareersSchema, UserCareersSchema]):
     session: AsyncSession
     create_user_career: CreateReturningGate[UserCareersModel, CreateUserCareersSchema, UserCareersSchema]
-    
+
     async def __call__(self, data: CreateUserCareersSchema) -> UserCareersSchema:
-        async with self.session.begin():
-            return await self.create_user_career(data)
+        result = await self.create_user_career(data)
+        await self.session.commit()
+        return result

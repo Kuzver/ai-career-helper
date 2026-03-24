@@ -45,13 +45,13 @@ class AutoTitleUsecase:
             return None
 
         try:
-            async with self.session.begin():
-                chat_result = await self.session.execute(
-                    select(ChatModel).where(ChatModel.id == chat_id)
-                )
-                chat = chat_result.scalar_one_or_none()
-                if chat:
-                    chat.title = title
+            chat_result = await self.session.execute(
+                select(ChatModel).where(ChatModel.id == chat_id)
+            )
+            chat = chat_result.scalar_one_or_none()
+            if chat:
+                chat.title = title
+                await self.session.commit()
             return title
         except Exception as e:
             logger.error(f"Auto-title db error: {e}")

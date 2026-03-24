@@ -62,14 +62,14 @@ async def set_user_role(
     if user_id == auth.id:
         raise HTTPException(status_code=400, detail="Нельзя менять свою роль")
 
-    async with session.begin():
-        result = await session.execute(
-            select(UserModel).where(UserModel.id == user_id)
-        )
-        user = result.scalar_one_or_none()
-        if not user:
-            raise HTTPException(status_code=404, detail="Пользователь не найден")
+    result = await session.execute(
+        select(UserModel).where(UserModel.id == user_id)
+    )
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
 
-        user.role = body.role
+    user.role = body.role
+    await session.commit()
 
     return {"id": str(user_id), "role": body.role}

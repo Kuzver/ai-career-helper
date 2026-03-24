@@ -11,19 +11,18 @@ class GetProfileUsecase:
         self.session = session
 
     async def __call__(self, user_id: UUID) -> ProfileResponse:
-        async with self.session.begin():
-            result = await self.session.execute(
-                select(UserCareersModel).where(UserCareersModel.user_id == user_id)
-            )
-            career = result.scalar_one_or_none()
+        result = await self.session.execute(
+            select(UserCareersModel).where(UserCareersModel.user_id == user_id)
+        )
+        career = result.scalar_one_or_none()
 
-            if not career:
-                return ProfileResponse()
+        if not career:
+            return ProfileResponse()
 
-            return ProfileResponse(
-                name=career.name,
-                specialization=career.specialization,
-                experience_level=career.experience_level,
-                skills=career.skills,
-                career_goal=career.career_goal,
-            )
+        return ProfileResponse(
+            name=career.name,
+            specialization=career.specialization,
+            experience_level=career.experience_level,
+            skills=career.skills,
+            career_goal=career.career_goal,
+        )

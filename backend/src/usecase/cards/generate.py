@@ -22,19 +22,19 @@ class GenerateCardsUsecase(Usecase[None, List[CardSchema]]):
     async def __call__(self, cards: None = None) -> List[CardSchema]:
         results: List[CardSchema] = []
 
-        async with self.session.begin():
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            json_path = os.path.join(current_dir, 'cards.json')
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        json_path = os.path.join(current_dir, 'cards.json')
 
-            with open(json_path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-            for info_item in data:
-                information = await self.create_information(CreateInformationSchema(title=info_item['information_title']))
-                for card_data in info_item['cards']:
-                    card_result = await self.create_card(CreateCardDBSchema(
-                        information_id=information.id,
-                        title=card_data['title'],
-                        description=card_data['description']
-                    ))
-                    results.append(card_result)
+        with open(json_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        for info_item in data:
+            information = await self.create_information(CreateInformationSchema(title=info_item['information_title']))
+            for card_data in info_item['cards']:
+                card_result = await self.create_card(CreateCardDBSchema(
+                    information_id=information.id,
+                    title=card_data['title'],
+                    description=card_data['description']
+                ))
+                results.append(card_result)
+        await self.session.commit()
         return results

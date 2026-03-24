@@ -11,5 +11,4 @@ class GetAllCardsUsecase(Usecase[PaginationSchema, ResponseCardsSchema]):
     get_cards: GetCardsGate
 
     async def __call__(self, data: PaginationSchema) -> ResponseCardsSchema:
-        async with self.session.begin():
-            return await self.get_cards(limit=data.limit, offset=data.offset)
+        return await self.get_cards(limit=data.limit, offset=data.offset)
