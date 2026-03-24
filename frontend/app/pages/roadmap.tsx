@@ -88,6 +88,135 @@ const DEFAULT_ROADMAP: Roadmap = {
   ],
 }
 
+function buildRoadmapHtml(rm: Roadmap, completed: Set<string>, progress: number): string {
+  const stepsHtml = rm.steps.map((step, i) => {
+    const done = completed.has(step.id)
+    const icon = done ? "&#9745;" : "&#9744;"
+    const statusCls = done ? "step-done" : ""
+    const detailsHtml = step.details ? `<div class="details"><div class="details-title">Подробно</div><p>${step.details}</p></div>` : ""
+    const resourcesHtml = step.resources.length > 0
+      ? `<div class="resources"><div class="details-title">Ресурсы</div><ul>${step.resources.map(r => `<li>${r}</li>`).join("")}</ul></div>`
+      : ""
+    const skillsHtml = step.skills.map(s => `<span class="skill">${s}</span>`).join("")
+    return `
+    <div class="step ${statusCls}">
+      <div class="step-header">
+        <div class="step-num">${done ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' : String(i + 1)}</div>
+        <div class="step-meta">
+          <div class="step-title">${step.title}</div>
+          <div class="step-duration">${step.duration}</div>
+        </div>
+      </div>
+      <p class="step-desc">${step.description}</p>
+      ${detailsHtml}
+      ${resourcesHtml}
+      <div class="skills">${skillsHtml}</div>
+    </div>`
+  }).join("")
+
+  return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${rm.title} — ИИ-ассистент</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#ffffff;--bg2:#f8f9ff;--bg3:#f1f3f9;
+    --border:#e5e7eb;--border2:#d1d5db;
+    --text:#111827;--text2:#4b5563;--text3:#9ca3af;
+    --brand:#3649F9;--brand-dim:rgba(54,73,249,0.08);--brand-border:rgba(54,73,249,0.25);
+    --green:#22c55e;--green-dim:rgba(34,197,94,0.08);--green-border:rgba(34,197,94,0.3);
+  }
+  .dark{
+    --bg:#0f172a;--bg2:#1e293b;--bg3:#334155;
+    --border:#334155;--border2:#475569;
+    --text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+    --brand:#818cf8;--brand-dim:rgba(129,140,248,0.12);--brand-border:rgba(129,140,248,0.3);
+    --green:#4ade80;--green-dim:rgba(74,222,128,0.1);--green-border:rgba(74,222,128,0.3);
+  }
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:40px 20px 80px;transition:background 0.3s,color 0.3s}
+  .container{max-width:800px;margin:0 auto}
+
+  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:40px}
+  .logo{display:flex;align-items:center;gap:12px}
+  .logo-circle{width:36px;height:36px;border-radius:50%;background:#3649F9;display:flex;align-items:center;justify-content:center}
+  .logo-circle svg{width:18px;height:18px;color:white}
+  .logo-text{font-size:14px;font-weight:600;color:var(--text)}
+  .theme-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all 0.2s}
+  .theme-btn:hover{border-color:var(--brand);color:var(--brand)}
+
+  h1{font-size:clamp(22px,4vw,32px);font-weight:700;line-height:1.2;margin-bottom:8px}
+  .subtitle{font-size:15px;color:var(--text2);line-height:1.7;margin-bottom:32px}
+
+  .progress-wrap{margin-bottom:36px}
+  .progress-info{display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px}
+  .progress-label{color:var(--text2)}
+  .progress-value{font-weight:600;color:${progress === 100 ? "var(--green)" : "var(--text)"}}
+  .progress-bar{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+  .progress-fill{height:100%;border-radius:4px;background:${progress === 100 ? "var(--green)" : "#3649F9"};width:${progress}%;transition:width 0.5s}
+
+  .step{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px;transition:border-color 0.2s}
+  .step-done{border-color:var(--green-border);background:var(--green-dim)}
+  .step-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px}
+  .step-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0;background:var(--brand-dim);color:var(--brand);border:1px solid var(--brand-border)}
+  .step-done .step-num{background:var(--green-dim);color:var(--green);border-color:var(--green-border)}
+  .step-meta{flex:1}
+  .step-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:2px}
+  .step-duration{font-size:12px;color:var(--text3)}
+  .step-desc{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:12px}
+
+  .details{background:var(--bg3);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+  .details-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:8px}
+  .details p{font-size:13px;color:var(--text2);line-height:1.7;margin:0}
+  .resources ul{list-style:none;padding:0}
+  .resources li{font-size:13px;color:var(--brand);padding:3px 0;display:flex;align-items:center;gap:8px}
+  .resources li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--brand);flex-shrink:0}
+
+  .skills{display:flex;flex-wrap:wrap;gap:6px}
+  .skill{display:inline-block;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:500;background:var(--brand-dim);color:var(--brand);border:1px solid var(--brand-border)}
+
+  .footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);display:flex;justify-content:space-between}
+
+  @media(max-width:540px){.step{padding:16px}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">
+      <div class="logo-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+      <span class="logo-text">ИИ-ассистент по карьере</span>
+    </div>
+    <button class="theme-btn" onclick="document.documentElement.classList.toggle('dark')" title="Переключить тему">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+
+  <h1>${rm.title}</h1>
+  <p class="subtitle">${rm.description}</p>
+
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span class="progress-label">Прогресс</span>
+      <span class="progress-value">${progress}%${progress === 100 ? " — Завершено!" : ""}</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill"></div></div>
+  </div>
+
+  ${stepsHtml}
+
+  <div class="footer">
+    <span>Сгенерировано ИИ-ассистентом по карьере</span>
+    <span>${new Date().toLocaleDateString("ru-RU")}</span>
+  </div>
+</div>
+</body>
+</html>`
+}
+
 export default function RoadmapPage() {
   const { user } = useUser()
   const navigate = useNavigate()
@@ -203,7 +332,7 @@ export default function RoadmapPage() {
       const a = document.createElement("a"); a.href = url; a.download = `roadmap-${roadmap.key}.md`; a.click()
       URL.revokeObjectURL(url)
     } else if (format === "html") {
-      const html = `<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><title>${roadmap.title}</title><style>body{font-family:system-ui,-apple-system,sans-serif;max-width:800px;margin:40px auto;padding:0 20px;color:#333;line-height:1.6}h1{color:#3649F9;border-bottom:2px solid #E8EAFF;padding-bottom:8px}h2{margin-top:1.5em;color:#1f2937}h3{color:#4b5563;font-size:1em}ul{padding-left:1.5em}li{margin:4px 0}strong{color:#3649F9}hr{border:none;border-top:1px solid #e5e7eb;margin:2em 0}code{background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:0.9em}</style></head><body>${markdown.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/^# (.+)$/gm, "<h1>$1</h1>").replace(/^## (.+)$/gm, "<h2>$1</h2>").replace(/^### (.+)$/gm, "<h3>$1</h3>").replace(/^- (.+)$/gm, "<li>$1</li>").replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\[x\]/g, "&#9745;").replace(/\[ \]/g, "&#9744;").replace(/---/g, "<hr>").replace(/\n\n/g, "<br><br>").replace(/\n/g, "<br>")}</body></html>`
+      const html = buildRoadmapHtml(roadmap, completedSteps, progress)
       const blob = new Blob([html], { type: "text/html" })
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a"); a.href = url; a.download = `roadmap-${roadmap.key}.html`; a.click()
