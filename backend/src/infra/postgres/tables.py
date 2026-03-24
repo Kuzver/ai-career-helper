@@ -413,6 +413,17 @@ class ArticleModel(BaseDBModel):
     updated_at: Mapped[updated_at]
 
 
+class UserRoadmapModel(BaseDBModel):
+    __tablename__ = 'user_roadmaps'
+    id: Mapped[uuid_pk]
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID, ForeignKey('db_schema.users.id'), nullable=False, unique=True)
+    title: Mapped[str] = mapped_column(String(500), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=True)
+    data_json: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[created_at]
+    updated_at: Mapped[updated_at]
+
+
 class UserRoadmapProgressModel(BaseDBModel):
     __tablename__ = 'user_roadmap_progress'
     id: Mapped[uuid_pk]

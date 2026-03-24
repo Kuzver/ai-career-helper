@@ -9,7 +9,7 @@ from src.infra.postgres.tables import (
     MessageModel, UserCareersModel,
     SurveyResponseModel, SurveyAnswerModel,
     SurveyQuestionModel, SurveyOptionModel,
-    UserRoadmapProgressModel,
+    UserRoadmapProgressModel, UserRoadmapModel,
 )
 from src.application.schemas.messages import MessageSchemas, CreateMessageSchema
 from src.application.schemas.auth import AuthSchema
@@ -144,7 +144,50 @@ class MessengerUsecase(Usecase[RequestMessageSchema, MessageSchemas]):
             updated_at=bot_message.updated_at,
         )
 
+        # Автосохранение roadmap если бот вернул JSON
+        await _try_save_roadmap(self.session, self.auth.id, answer)
+
         await self.session.commit()
         await self.auto_title(chat_id=data.chat_id)
 
         return response
+
+
+async def _try_save_roadmap(session: AsyncSession, user_id: UUID, answer: str) -> None:
+    """Если ответ бота содержит ```roadmap-json [...] ```, сохраняем в БД."""
+    import json as _json
+    import re
+
+    match = re.search(r"```roadmap-json\s*\n(.+?)\n```", answer, re.DOTALL)
+    if not match:
+        return
+
+    try:
+        steps = _json.loads(match.group(1))
+        if not isinstance(steps, list) or len(steps) == 0:
+            return
+
+        data_json = _json.dumps(steps, ensure_ascii=False)
+
+        result = await session.execute(
+            select(UserRoadmapModel).where(UserRoadmapModel.user_id == user_id)
+        )
+        rm = result.scalar_one_or_none()
+
+        title = steps[0].get("title", "Мой roadmap") if steps else "Мой roadmap"
+        full_title = f"Персональный roadmap: {title}"
+
+        if rm:
+            rm.title = full_title
+            rm.data_json = data_json
+        else:
+            from uuid import uuid4 as _uuid4
+            session.add(UserRoadmapModel(
+                id=_uuid4(),
+                user_id=user_id,
+                title=full_title,
+                description="Создан ИИ-ассистентом на основе вашего профиля",
+                data_json=data_json,
+            ))
+    except Exception as e:
+        logger.error(f"Roadmap auto-save error: {e}")

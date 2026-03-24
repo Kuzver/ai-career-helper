@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import confetti from "canvas-confetti"
 import { useUser } from "~/modules/user/lib/use-user"
 import { getProfile } from "~/modules/user/api/profile"
-import { getProgress, toggleProgress } from "~/modules/roadmap/api/roadmap"
+import { getProgress, toggleProgress, getPersonalRoadmap, savePersonalRoadmap, deletePersonalRoadmap } from "~/modules/roadmap/api/roadmap"
 import { getPendingMandatory } from "~/modules/survey/api/surveys"
 import { baseClient } from "~/shared/api/axios-client"
 
@@ -226,17 +226,42 @@ export default function RoadmapPage() {
   const [loading, setLoading] = useState(true)
   const [showExport, setShowExport] = useState(false)
   const [needsSurvey, setNeedsSurvey] = useState(false)
+  const [isPersonal, setIsPersonal] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [editSteps, setEditSteps] = useState<typeof roadmap.steps>([])
+  const [editTitle, setEditTitle] = useState("")
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     if (!user.isAuthorized) { setLoading(false); return }
 
     const load = async () => {
       try {
-        const [profile, pending] = await Promise.all([getProfile(), getPendingMandatory()])
+        const [profile, pending, personal] = await Promise.all([
+          getProfile(), getPendingMandatory(), getPersonalRoadmap(),
+        ])
         setNeedsSurvey(pending.length > 0)
 
-        const spec = profile.specialization || ""
-        const rm = ROADMAPS[spec] || DEFAULT_ROADMAP
+        let rm: Roadmap
+        if (personal && personal.steps.length > 0) {
+          rm = {
+            key: "personal",
+            title: personal.title,
+            description: personal.description || "",
+            steps: personal.steps.map((s) => ({
+              ...s,
+              details: s.details || "",
+              resources: s.resources || [],
+              skills: s.skills || [],
+              duration: s.duration || "",
+            })),
+          }
+          setIsPersonal(true)
+        } else {
+          const spec = profile.specialization || ""
+          rm = ROADMAPS[spec] || DEFAULT_ROADMAP
+          setIsPersonal(false)
+        }
         setRoadmap(rm)
 
         const progress = await getProgress(rm.key)
@@ -261,6 +286,54 @@ export default function RoadmapPage() {
     }
     load()
   }, [user.isAuthorized])
+
+  // Автообновление из чата
+  useEffect(() => {
+    const handler = () => { setLoading(true); window.location.reload() }
+    window.addEventListener("roadmap-updated", handler)
+    return () => window.removeEventListener("roadmap-updated", handler)
+  }, [])
+
+  const handleStartEdit = () => {
+    setEditSteps(roadmap.steps.map((s) => ({ ...s })))
+    setEditTitle(roadmap.title)
+    setEditing(true)
+  }
+
+  const handleSaveEdit = async () => {
+    setSaving(true)
+    try {
+      await savePersonalRoadmap({ title: editTitle, steps: editSteps })
+      setRoadmap({ ...roadmap, title: editTitle, steps: editSteps, key: "personal" })
+      setIsPersonal(true)
+      setEditing(false)
+    } catch {}
+    setSaving(false)
+  }
+
+  const handleResetToDefault = async () => {
+    if (!confirm("Сбросить к стандартному roadmap?")) return
+    try {
+      await deletePersonalRoadmap()
+      setIsPersonal(false)
+      window.location.reload()
+    } catch {}
+  }
+
+  const handleAddStep = () => {
+    setEditSteps((prev) => [...prev, {
+      id: String(prev.length + 1),
+      title: "", description: "", details: "", resources: [], skills: [], duration: "",
+    }])
+  }
+
+  const handleRemoveStep = (idx: number) => {
+    setEditSteps((prev) => prev.filter((_, i) => i !== idx))
+  }
+
+  const updateStep = (idx: number, field: string, value: any) => {
+    setEditSteps((prev) => prev.map((s, i) => i === idx ? { ...s, [field]: value } : s))
+  }
 
   if (!user.isAuthorized) {
     return (
@@ -362,7 +435,18 @@ export default function RoadmapPage() {
             <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">{roadmap.title}</h1>
             <p className="text-sm text-[#6D7C90]">{roadmap.description}</p>
           </div>
-          <div className="relative shrink-0">
+          <div className="flex shrink-0 items-center gap-2">
+            <button onClick={handleStartEdit}
+              className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-[#6D7C90] hover:border-[#3649F9] hover:text-[#3649F9] dark:border-gray-700">
+              Редактировать
+            </button>
+            {isPersonal && (
+              <button onClick={handleResetToDefault}
+                className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-red-400 hover:border-red-400 dark:border-gray-700">
+                Сбросить
+              </button>
+            )}
+            <div className="relative">
             <button onClick={() => setShowExport((v) => !v)}
               className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-[#6D7C90] hover:border-[#3649F9] hover:text-[#3649F9] dark:border-gray-700">
               Скачать
@@ -374,6 +458,7 @@ export default function RoadmapPage() {
                 <button onClick={() => handleExportRoadmap("docx")} className="block w-full px-4 py-1.5 text-left text-xs text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">DOCX</button>
               </div>
             )}
+          </div>
           </div>
         </div>
 
@@ -388,17 +473,59 @@ export default function RoadmapPage() {
                 </button>
               </div>
             ) : (
-              <p className="text-sm text-[#3649F9]">
-                Укажите специализацию в{" "}
-                <Link to="/profile" className="font-medium underline">профиле</Link>
-                {", "}а затем{" "}
-                <Link to="/chat" className="font-medium underline">пообщайтесь с ботом</Link>
-                {" "}для персонализированной дорожной карты
-              </p>
+              <div>
+                <p className="mb-2 text-sm text-[#3649F9]">
+                  Попросите бота составить персональный roadmap в{" "}
+                  <Link to="/chat" className="font-medium underline">чате</Link>
+                  {" "}или отредактируйте стандартный
+                </p>
+                <button onClick={() => navigate("/chat")}
+                  className="rounded-lg bg-[#3649F9] px-4 py-2 text-xs font-medium text-white">
+                  Сгенерировать через бота
+                </button>
+              </div>
             )}
           </div>
         )}
       </div>
+
+      {/* Режим редактирования */}
+      {editing && (
+        <div className="mb-8 rounded-2xl border border-[#3649F9]/30 bg-[#f8f9ff] p-6 dark:bg-[#1e293b]">
+          <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-gray-100">Редактирование roadmap</h2>
+          <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)}
+            className="mb-4 w-full rounded-lg border border-[#C5CBD3] px-4 py-2 text-sm outline-none dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200"
+            placeholder="Название roadmap" />
+          <div className="space-y-4">
+            {editSteps.map((step, idx) => (
+              <div key={idx} className="rounded-xl border border-gray-200 p-4 dark:border-gray-600">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-xs font-bold text-[#3649F9]">Шаг {idx + 1}</span>
+                  <button onClick={() => handleRemoveStep(idx)} className="text-xs text-red-400">Удалить</button>
+                </div>
+                <input value={step.title} onChange={(e) => updateStep(idx, "title", e.target.value)}
+                  className="mb-2 w-full rounded border border-gray-200 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200" placeholder="Название" />
+                <input value={step.description} onChange={(e) => updateStep(idx, "description", e.target.value)}
+                  className="mb-2 w-full rounded border border-gray-200 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200" placeholder="Описание" />
+                <input value={step.duration} onChange={(e) => updateStep(idx, "duration", e.target.value)}
+                  className="mb-2 w-full rounded border border-gray-200 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200" placeholder="Длительность (1-2 месяца)" />
+                <textarea value={step.details} onChange={(e) => updateStep(idx, "details", e.target.value)}
+                  className="mb-2 w-full rounded border border-gray-200 px-3 py-1.5 text-xs dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200 min-h-[60px] resize-none" placeholder="Подробности" />
+                <input value={step.skills.join(", ")} onChange={(e) => updateStep(idx, "skills", e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))}
+                  className="w-full rounded border border-gray-200 px-3 py-1.5 text-xs dark:border-gray-600 dark:bg-[#0f172a] dark:text-gray-200" placeholder="Навыки (через запятую)" />
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex items-center gap-3">
+            <button onClick={handleAddStep} className="rounded-lg border border-[#3649F9] px-4 py-2 text-xs text-[#3649F9]">+ Добавить шаг</button>
+            <button onClick={handleSaveEdit} disabled={saving}
+              className="rounded-lg bg-[#3649F9] px-6 py-2 text-xs font-medium text-white disabled:opacity-50">
+              {saving ? "Сохранение..." : "Сохранить"}
+            </button>
+            <button onClick={() => setEditing(false)} className="text-xs text-[#C5CBD3]">Отмена</button>
+          </div>
+        </div>
+      )}
 
       {/* Progress bar */}
       <div className="mb-8">

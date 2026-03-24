@@ -19,3 +19,33 @@ export async function toggleProgress(roadmapKey: string, stepId: string): Promis
   })
   return data
 }
+
+export type RoadmapStep = {
+  id: string
+  title: string
+  description: string
+  details: string
+  resources: string[]
+  skills: string[]
+  duration: string
+}
+
+export type PersonalRoadmap = {
+  title: string
+  description: string | null
+  steps: RoadmapStep[]
+}
+
+export async function getPersonalRoadmap(): Promise<PersonalRoadmap | null> {
+  const { data } = await baseClient.get<PersonalRoadmap | null>("/api/roadmap/personal")
+  return data
+}
+
+export async function savePersonalRoadmap(roadmap: { title: string; description?: string; steps: RoadmapStep[] }): Promise<PersonalRoadmap> {
+  const { data } = await baseClient.put<PersonalRoadmap>("/api/roadmap/personal", roadmap)
+  return data
+}
+
+export async function deletePersonalRoadmap(): Promise<void> {
+  await baseClient.delete("/api/roadmap/personal")
+}
