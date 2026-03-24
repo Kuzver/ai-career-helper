@@ -3,23 +3,23 @@ from dataclasses import dataclass
 from src.infra.gigachat.chat import Gigachat
 from src.usecase.message.schemas import RequestMessageSchema
 
-ROADMAP_JSON_PROMPT = (
+ROADMAP_PROMPT = (
     "Ты — опытный ментор в IT. Создай персональный roadmap обучения.\n\n"
-    "ВАЖНО: В конце ответа ОБЯЗАТЕЛЬНО добавь JSON-блок с данными roadmap в формате:\n"
-    "```roadmap-json\n"
-    '[{{"id":"1","title":"Название шага","description":"Описание","details":"Подробные инструкции 3-5 предложений",'
-    '"resources":["Ресурс 1","Ресурс 2"],"skills":["Навык1","Навык2"],"duration":"1-2 месяца"}}]\n'
-    "```\n"
-    "Сначала дай текстовый ответ пользователю с описанием плана, "
-    "а затем добавь JSON-блок. Создай 5-7 шагов с конкретными инструкциями."
+    "ФОРМАТ ОТВЕТА — строго Markdown с нумерованными шагами:\n"
+    "### 1. Название шага\n"
+    "**Срок:** 1-2 месяца\n"
+    "**Описание:** что изучить и зачем\n"
+    "**Ресурсы:** книги, курсы, сайты\n"
+    "**Навыки:** что освоите\n\n"
+    "Создай 5-7 шагов. НЕ используй блоки кода (```). Только текст и Markdown."
 )
 
 ROADMAP_EDIT_PROMPT = (
     "Ты — опытный ментор. Пользователь хочет изменить свой roadmap.\n"
     "Текущий roadmap:\n{current}\n\n"
-    "ВАЖНО: В конце ответа ОБЯЗАТЕЛЬНО добавь обновлённый JSON-блок:\n"
-    "```roadmap-json\n[...шаги...]\n```\n"
-    "Объясни что изменил, затем добавь полный обновлённый JSON."
+    "Внеси изменения и верни полный обновлённый roadmap в том же формате:\n"
+    "### 1. Название шага\n...\n"
+    "НЕ используй блоки кода. Только Markdown."
 )
 
 
@@ -45,7 +45,7 @@ class LearningAgent:
         return await self._general_learning_help(data.text, user_context)
 
     async def _create_roadmap(self, user_text: str, user_context: str | None = None) -> str:
-        prompt = f"{ROADMAP_JSON_PROMPT}\n\nЗапрос пользователя: {user_text}"
+        prompt = f"{ROADMAP_PROMPT}\n\nЗапрос пользователя: {user_text}"
         return await self.chat(prompt, user_context=user_context)
 
     async def _edit_roadmap(self, user_text: str, user_context: str | None = None) -> str:

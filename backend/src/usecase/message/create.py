@@ -165,7 +165,7 @@ async def _try_save_roadmap(session: AsyncSession, user_id: UUID, answer: str) -
     if match:
         try:
             parsed = _json.loads(match.group(1))
-            if isinstance(parsed, list) and len(parsed) > 0:
+            if isinstance(parsed, list) and len(parsed) >= 3:
                 steps = parsed
         except Exception:
             pass
