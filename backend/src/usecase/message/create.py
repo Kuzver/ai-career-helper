@@ -154,19 +154,62 @@ class MessengerUsecase(Usecase[RequestMessageSchema, MessageSchemas]):
 
 
 async def _try_save_roadmap(session: AsyncSession, user_id: UUID, answer: str) -> None:
-    """Если ответ бота содержит ```roadmap-json [...] ```, сохраняем в БД."""
+    """Парсит roadmap из ответа бота (JSON-блок или markdown-шаги) и сохраняет в БД."""
     import json as _json
     import re
 
-    match = re.search(r"```roadmap-json\s*\n(.+?)\n```", answer, re.DOTALL)
-    if not match:
+    steps = []
+
+    # Способ 1: JSON-блок ```roadmap-json [...]```
+    match = _json_match = re.search(r"```(?:roadmap-json|json)\s*\n(.+?)\n```", answer, re.DOTALL)
+    if match:
+        try:
+            parsed = _json.loads(match.group(1))
+            if isinstance(parsed, list) and len(parsed) > 0:
+                steps = parsed
+        except Exception:
+            pass
+
+    # Способ 2: Парсинг markdown-шагов (#### **Шаг N: ...**  или ## N. ... или **Шаг N:**)
+    if not steps:
+        step_patterns = [
+            r"#{2,4}\s*\*{0,2}(?:Шаг|Step)\s*(\d+)[.:]\s*(.+?)(?:\*{0,2})\s*$",
+            r"#{2,4}\s*(\d+)\.\s*(.+?)$",
+            r"\*{2}(?:Шаг|Этап)\s*(\d+)[.:]\s*(.+?)\*{2}",
+        ]
+        raw_steps = []
+        for pattern in step_patterns:
+            found = re.findall(pattern, answer, re.MULTILINE)
+            if len(found) >= 3:
+                raw_steps = found
+                break
+
+        if raw_steps:
+            for i, (num, title) in enumerate(raw_steps):
+                title = title.strip().strip("*").strip()
+                # Попробуем найти описание после заголовка
+                desc_pattern = re.escape(title) + r"[*]*\s*\n+([\s\S]*?)(?=\n#{2,4}|\n\*{2}(?:Шаг|Этап)|\Z)"
+                desc_match = re.search(desc_pattern, answer)
+                description = ""
+                if desc_match:
+                    desc_text = desc_match.group(1).strip()
+                    lines = [l.strip() for l in desc_text.split("\n") if l.strip() and not l.strip().startswith("#")]
+                    description = " ".join(lines[:3])[:300]
+
+                steps.append({
+                    "id": str(i + 1),
+                    "title": title[:200],
+                    "description": description,
+                    "details": "",
+                    "resources": [],
+                    "skills": [],
+                    "duration": "",
+                })
+
+    if not steps:
         return
 
     try:
-        steps = _json.loads(match.group(1))
-        if not isinstance(steps, list) or len(steps) == 0:
-            return
-
         data_json = _json.dumps(steps, ensure_ascii=False)
 
         result = await session.execute(
@@ -175,7 +218,7 @@ async def _try_save_roadmap(session: AsyncSession, user_id: UUID, answer: str) -
         rm = result.scalar_one_or_none()
 
         title = steps[0].get("title", "Мой roadmap") if steps else "Мой roadmap"
-        full_title = f"Персональный roadmap: {title}"
+        full_title = f"Персональный roadmap"
 
         if rm:
             rm.title = full_title
@@ -189,5 +232,6 @@ async def _try_save_roadmap(session: AsyncSession, user_id: UUID, answer: str) -
                 description="Создан ИИ-ассистентом на основе вашего профиля",
                 data_json=data_json,
             ))
+        logger.info(f"Roadmap auto-saved: {len(steps)} steps for user {user_id}")
     except Exception as e:
         logger.error(f"Roadmap auto-save error: {e}")
