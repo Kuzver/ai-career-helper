@@ -131,6 +131,7 @@ async def update_survey(
                 id=q_id, survey_id=survey_id, text=q.text,
                 question_type=q.question_type, order=q.order,
             ))
+            await session.flush()
 
             options_out = []
             for o in q.options:
