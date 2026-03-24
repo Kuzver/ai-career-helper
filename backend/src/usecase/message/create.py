@@ -185,25 +185,53 @@ async def _try_save_roadmap(session: AsyncSession, user_id: UUID, answer: str) -
                 break
 
         if raw_steps:
-            for i, (num, title) in enumerate(raw_steps):
-                title = title.strip().strip("*").strip()
-                # Попробуем найти описание после заголовка
-                desc_pattern = re.escape(title) + r"[*]*\s*\n+([\s\S]*?)(?=\n#{2,4}|\n\*{2}(?:Шаг|Этап)|\Z)"
-                desc_match = re.search(desc_pattern, answer)
-                description = ""
-                if desc_match:
-                    desc_text = desc_match.group(1).strip()
-                    lines = [l.strip() for l in desc_text.split("\n") if l.strip() and not l.strip().startswith("#")]
-                    description = " ".join(lines[:3])[:300]
+            # Разбиваем текст на секции по заголовкам шагов
+            split_pattern = r"(?=#{2,4}\s*(?:\*{0,2}(?:Шаг|Step)\s*)?\d+[.:]\s)"
+            sections = re.split(split_pattern, answer)
+            sections = [s.strip() for s in sections if s.strip() and re.match(r"#{2,4}\s*", s)]
+
+            for i, section in enumerate(sections):
+                lines = section.split("\n")
+                # Первая строка — заголовок
+                header = lines[0].strip().lstrip("#").strip().strip("*").strip()
+                # Убираем номер из заголовка
+                header = re.sub(r"^\d+[.:]\s*", "", header).strip()
+
+                body = "\n".join(lines[1:]).strip()
+
+                # Извлекаем поля из body
+                duration = ""
+                description_parts = []
+                resources = []
+                skills = []
+
+                for line in body.split("\n"):
+                    l = line.strip()
+                    ll = l.lower()
+                    if ll.startswith("**срок") or ll.startswith("**длительность") or ll.startswith("**duration"):
+                        duration = re.sub(r"^\*{2}[^*]+\*{2}:?\s*", "", l).strip()
+                    elif ll.startswith("**ресурс") or ll.startswith("**материал"):
+                        continue  # заголовок секции ресурсов
+                    elif ll.startswith("**навык") or ll.startswith("**skills"):
+                        sk = re.sub(r"^\*{2}[^*]+\*{2}:?\s*", "", l).strip()
+                        skills = [s.strip() for s in sk.split(",") if s.strip()]
+                    elif l.startswith("- ") and resources is not None and any(
+                        kw in body.lower()[:body.lower().find(l.lower())+1] for kw in ["ресурс", "материал"]
+                    ):
+                        resources.append(l[2:].strip())
+                    else:
+                        description_parts.append(l)
+
+                full_description = "\n".join(description_parts).strip()
 
                 steps.append({
                     "id": str(i + 1),
-                    "title": title[:200],
-                    "description": description,
+                    "title": header[:200],
+                    "description": full_description,
                     "details": "",
-                    "resources": [],
-                    "skills": [],
-                    "duration": "",
+                    "resources": resources,
+                    "skills": skills,
+                    "duration": duration,
                 })
 
     if not steps:
