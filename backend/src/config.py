@@ -53,6 +53,13 @@ class Config(BaseSchema):
 
 
 def get_config() -> Config:
+    # Диагностика: выводим переменные окружения, начинающиеся с LIZA
+    logger.info("=== Environment variables with LIZA prefix ===")
+    for key, value in os.environ.items():
+        if 'LIZA' in key:
+            logger.info(f"{key}={value}")
+    logger.info("==============================================")
+
     dynaconf = Dynaconf(
         settings_files=[
             '././deploy/configs/config.toml'
@@ -60,8 +67,55 @@ def get_config() -> Config:
         envvar_prefix='LIZA_API',
         load_dotenv=True,
     )
-    logger.info(dynaconf.api)
-    cfg = Config.model_validate(dynaconf)
+
+    # Выводим то, что загрузил dynaconf
+    logger.info("Dynaconf settings: %s", dynaconf.to_dict())
+
+    # ----- Собираем API config -----
+    if 'API' in dynaconf:
+        api_data = dynaconf.API
+    else:
+        # Если API нет, берём верхнеуровневые ключи (как от Render)
+        api_data = {
+            'host': dynaconf.get('HOST', '0.0.0.0'),
+            'port': dynaconf.get('PORT', 8000),
+            'project_name': dynaconf.get('PROJECT_NAME', 'base'),
+            'cors': dynaconf.get('CORS', ["*"]),
+        }
+    api = ApiConfig(**api_data)
+
+    # ----- База данных -----
+    if 'DATABASE' not in dynaconf:
+        logger.error("DATABASE section not found in dynaconf! Available keys: %s", list(dynaconf.keys()))
+        raise RuntimeError("Missing DATABASE configuration")
+    db_data = dynaconf.DATABASE
+    database = DatabaseConfig(**db_data)
+
+    # ----- Redis (опционально) -----
+    redis = None
+    if 'REDIS' in dynaconf:
+        redis = RedisConfig(**dynaconf.REDIS)
+
+    # ----- GigaChat -----
+    if 'GIGACHAT' not in dynaconf:
+        logger.error("GIGACHAT section not found in dynaconf! Available keys: %s", list(dynaconf.keys()))
+        raise RuntimeError("Missing GIGACHAT configuration")
+    gc_data = dynaconf.GIGACHAT
+    gigachat = GigachatConfig(**gc_data)
+
+    # ----- JWT -----
+    if 'JWT' in dynaconf:
+        jwt = JwtConfig(**dynaconf.JWT)
+    else:
+        jwt = JwtConfig()
+
+    cfg = Config(
+        api=api,
+        database=database,
+        redis=redis,
+        gigachat=gigachat,
+        jwt=jwt,
+    )
 
     if cfg.jwt.secret == _DEFAULT_JWT_SECRET:
         logger.warning(
