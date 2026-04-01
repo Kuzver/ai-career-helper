@@ -15,8 +15,8 @@ RUN pip install poetry
 RUN poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi --no-root
 
 COPY src /app/src
-
 COPY deploy/start.sh /app/deploy/start.sh
 RUN chmod +x /app/deploy/start.sh
+
 CMD ["/app/deploy/start.sh"]
 
