@@ -12,6 +12,7 @@ class ApiConfig(BaseSchema):
     project_name: str = 'base'
     cors: list[str] = ["*"]
 
+
 class DatabaseConfig(BaseSchema):
     host: str
     port: int
@@ -21,8 +22,9 @@ class DatabaseConfig(BaseSchema):
     driver: str = 'postgresql+psycopg_async'
 
     @property
-    def dsn(self, db = True) -> str:
+    def dsn(self, db=True) -> str:
         return f'{self.driver}://{self.username}:{self.password}@{self.host}:{self.port}/{self.database}'
+
 
 class RedisConfig(BaseSchema):
     host: str = 'localhost'
@@ -31,10 +33,12 @@ class RedisConfig(BaseSchema):
     db: int = 0
     decode_responses: bool = True
 
+
 class GigachatConfig(BaseSchema):
     client_id: str
     scope: str
     authorization_key: str
+
 
 _DEFAULT_JWT_SECRET = "ai-career-helper-jwt-secret-key-change-in-production"
 
@@ -42,6 +46,7 @@ _DEFAULT_JWT_SECRET = "ai-career-helper-jwt-secret-key-change-in-production"
 class JwtConfig(BaseSchema):
     secret: str = _DEFAULT_JWT_SECRET
     expire_days: int = 7
+
 
 class Config(BaseSchema):
     model_config = ConfigDict(extra='allow', from_attributes=True)
@@ -53,7 +58,7 @@ class Config(BaseSchema):
 
 
 def get_config() -> Config:
-    # Диагностика: выводим переменные окружения, начинающиеся с LIZA
+    # Диагностика: выводим переменные окружения с LIZA
     logger.info("=== Environment variables with LIZA prefix ===")
     for key, value in os.environ.items():
         if 'LIZA' in key:
@@ -67,25 +72,23 @@ def get_config() -> Config:
         environments=True,
     )
 
-    # Выводим то, что загрузил dynaconf
     logger.info("Dynaconf settings: %s", dynaconf.to_dict())
 
-    # ----- Собираем API config -----
-    if 'API' in dynaconf:
-        api_data = dynaconf.API
-    else:
-        # Если API нет, берём верхнеуровневые ключи (как от Render)
-        api_data = {
-            'host': dynaconf.get('HOST', '0.0.0.0'),
-            'port': dynaconf.get('PORT', 8000),
-            'project_name': dynaconf.get('PROJECT_NAME', 'base'),
-            'cors': dynaconf.get('CORS', ["*"]),
-        }
+    # --- helper для секций с _ ---
+    def get_section(name: str):
+        return dynaconf.get(f"_{name}") or dynaconf.get(name)
+
+    # ----- API -----
+    api_data = dynaconf.get("API") or {
+        'host': dynaconf.get('HOST', '0.0.0.0'),
+        'port': dynaconf.get('PORT', 8000),
+        'project_name': dynaconf.get('PROJECT_NAME', 'base'),
+        'cors': dynaconf.get('CORS', ["*"]),
+    }
     api = ApiConfig(**api_data)
 
-    # ----- База данных -----
-    db_section = dynaconf.get("_DATABASE")
-
+    # ----- DATABASE -----
+    db_section = get_section("_DATABASE")
     if not db_section:
         raise RuntimeError(f"Missing DATABASE section: {dynaconf.as_dict()}")
 
@@ -96,29 +99,24 @@ def get_config() -> Config:
         "password": db_section.get("PASSWORD"),
         "database": db_section.get("DATABASE"),
     }
-
     if not all(db_data.values()):
         raise RuntimeError(f"Missing DATABASE configuration: {db_data}")
-
     database = DatabaseConfig(**db_data)
 
-    # ----- Redis (опционально) -----
-    redis = None
-    if 'REDIS' in dynaconf:
-        redis = RedisConfig(**dynaconf.REDIS)
+    # ----- REDIS (опционально) -----
+    redis_section = get_section("_REDIS")
+    redis = RedisConfig(**redis_section) if redis_section else None
 
-    # ----- GigaChat -----
-    if 'GIGACHAT' not in dynaconf:
+    # ----- GIGACHAT -----
+    gc_section = get_section("_GIGACHAT")
+    if not gc_section:
         logger.error("GIGACHAT section not found in dynaconf! Available keys: %s", list(dynaconf.keys()))
         raise RuntimeError("Missing GIGACHAT configuration")
-    gc_data = dynaconf.GIGACHAT
-    gigachat = GigachatConfig(**gc_data)
+    gigachat = GigachatConfig(**gc_section)
 
     # ----- JWT -----
-    if 'JWT' in dynaconf:
-        jwt = JwtConfig(**dynaconf.JWT)
-    else:
-        jwt = JwtConfig()
+    jwt_section = get_section("_JWT")
+    jwt = JwtConfig(**jwt_section) if jwt_section else JwtConfig()
 
     cfg = Config(
         api=api,
