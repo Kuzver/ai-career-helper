@@ -108,16 +108,15 @@ def get_config() -> Config:
     redis = RedisConfig(**redis_section) if redis_section else None
 
     # ----- GIGACHAT -----
-    gc_section = settings.get("GIGACHAT", {})
+    gc_section = dynaconf.get("GIGACHAT", {})
 
-    gigachat = GigachatConfig(
-        client_id=gc_section.get("CLIENT_ID"),
-        scope=gc_section.get("SCOPE"),
-        authorization_key=gc_section.get("AUTHORIZATION_KEY")
-    )
     if not gc_section:
-        logger.error("GIGACHAT section not found in dynaconf! Available keys: %s", list(dynaconf.keys()))
+        logger.error(
+            "GIGACHAT section not found in dynaconf! Available keys: %s",
+            list(dynaconf.keys())
+        )
         raise RuntimeError("Missing GIGACHAT configuration")
+
     gigachat = GigachatConfig(**gc_section)
 
     # ----- JWT -----
