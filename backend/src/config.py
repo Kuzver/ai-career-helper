@@ -88,7 +88,7 @@ def get_config() -> Config:
     api = ApiConfig(**api_data)
 
     # ----- DATABASE -----
-    db_section = get_section("_DATABASE")
+    db_section = get_section("DATABASE")
     if not db_section:
         raise RuntimeError(f"Missing DATABASE section: {dynaconf.as_dict()}")
 
@@ -104,18 +104,18 @@ def get_config() -> Config:
     database = DatabaseConfig(**db_data)
 
     # ----- REDIS (опционально) -----
-    redis_section = get_section("_REDIS")
+    redis_section = get_section("REDIS")
     redis = RedisConfig(**redis_section) if redis_section else None
 
     # ----- GIGACHAT -----
-    gc_section = get_section("_GIGACHAT")
+    gc_section = get_section("GIGACHAT")
     if not gc_section:
         logger.error("GIGACHAT section not found in dynaconf! Available keys: %s", list(dynaconf.keys()))
         raise RuntimeError("Missing GIGACHAT configuration")
     gigachat = GigachatConfig(**gc_section)
 
     # ----- JWT -----
-    jwt_section = get_section("_JWT")
+    jwt_section = get_section("JWT")
     jwt = JwtConfig(**jwt_section) if jwt_section else JwtConfig()
 
     cfg = Config(
