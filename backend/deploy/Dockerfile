@@ -16,4 +16,7 @@ RUN poetry config virtualenvs.create false && poetry install --no-interaction --
 
 COPY src /app/src
 
-CMD ["uvicorn", "src.main.web:app", "--host", "0.0.0.0", "--port", "10000"]
+COPY deploy/start.sh /app/deploy/start.sh
+RUN chmod +x /app/deploy/start.sh
+CMD ["/app/deploy/start.sh"]
+
