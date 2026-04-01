@@ -58,21 +58,24 @@ class Config(BaseSchema):
 
 
 def get_config() -> Config:
-    # Диагностика: выводим переменные окружения с LIZA
-    logger.info("=== Environment variables with LIZA prefix ===")
+    # Диагностика — очень полезно, оставь пока
+    logger.info("=== Environment variables with LIZA_API prefix ===")
     for key, value in os.environ.items():
-        if 'LIZA' in key:
-            logger.info(f"{key}={value}")
+        if key.startswith('LIZA_API'):
+            logger.info(f"{key}={value[:50]}{'...' if len(value) > 50 else ''}")
     logger.info("==============================================")
 
+    # Исправленный Dynaconf
     dynaconf = Dynaconf(
-        settings_files=['././deploy/configs/config.toml'],
-        envvar_prefix='LIZA_API',
-        load_dotenv=True,
+        settings_files=["deploy/configs/config.toml"],   # ← убрал ././
+        envvar_prefix="LIZA_API",                        # оставляем твой префикс
+        load_dotenv=False,                               # на Render бесполезно
         environments=True,
+        # Optional: чтобы лучше работал с вложенными секциями
+        merge_enabled=True,
     )
 
-    logger.info("Dynaconf settings: %s", dynaconf.to_dict())
+    logger.info("Dynaconf loaded settings keys: %s", list(dynaconf.keys()))
 
     # --- helper для секций с _ ---
     def get_section(name: str):
@@ -108,25 +111,26 @@ def get_config() -> Config:
     redis = RedisConfig(**redis_section) if redis_section else None
 
         # ----- GIGACHAT -----
-    gc_section = dynaconf.get("GIGACHAT", {})
+    gc_section = dynaconf.get("GIGACHAT") or {}
 
-    if not gc_section:
-        # подтягиваем из env vars напрямую
+    # Если в TOML ничего нет — Dynaconf должен был подхватить из env vars с префиксом
+    if not gc_section or not gc_section.get("client_id"):
         gc_section = {
             "client_id": dynaconf.get("GIGACHAT__CLIENT_ID"),
-            "scope": dynaconf.get("GIGACHAT__SCOPE"),
+            "scope": dynaconf.get("GIGACHAT__SCOPE", "GIGACHAT_API_PERS"),
             "authorization_key": dynaconf.get("GIGACHAT__AUTHORIZATION_KEY"),
         }
 
-    # Приводим все ключи к нижнему регистру и проверяем значения
+    # Приводим ключи к нижнему регистру для Pydantic-модели
     gc_section = {k.lower(): v for k, v in gc_section.items() if v is not None}
 
-    required_keys = {"client_id", "scope", "authorization_key"}
-    if not required_keys.issubset(gc_section):
-        logger.error(
-            "GIGACHAT configuration incomplete! Found keys: %s",
-            list(gc_section.keys())
-        )
+    required_keys = {"client_id", "authorization_key"}
+    if not required_keys.issubset(gc_section) or not all(gc_section.get(k) for k in required_keys):
+        logger.error("GIGACHAT configuration incomplete!")
+        logger.error("Current gc_section: %s", gc_section)
+        logger.error("Make sure these env vars are set on Render:")
+        logger.error("LIZA_API_GIGACHAT__CLIENT_ID")
+        logger.error("LIZA_API_GIGACHAT__AUTHORIZATION_KEY")
         raise RuntimeError("Missing or incomplete GIGACHAT configuration")
 
     gigachat = GigachatConfig(**gc_section)
