@@ -107,26 +107,28 @@ def get_config() -> Config:
     redis_section = get_section("REDIS")
     redis = RedisConfig(**redis_section) if redis_section else None
 
-        # Попробуем сначала из Dynaconf секции
+        # ----- GIGACHAT -----
     gc_section = dynaconf.get("GIGACHAT", {})
 
-    # Если секция пустая, подтягиваем из переменных окружения с двойным подчеркиванием
     if not gc_section:
+        # подтягиваем из env vars напрямую
         gc_section = {
             "client_id": dynaconf.get("GIGACHAT__CLIENT_ID"),
             "scope": dynaconf.get("GIGACHAT__SCOPE"),
             "authorization_key": dynaconf.get("GIGACHAT__AUTHORIZATION_KEY"),
         }
 
-    # Проверяем, что все обязательные поля есть
-    if not all(gc_section.values()):
+    # Приводим все ключи к нижнему регистру и проверяем значения
+    gc_section = {k.lower(): v for k, v in gc_section.items() if v is not None}
+
+    required_keys = {"client_id", "scope", "authorization_key"}
+    if not required_keys.issubset(gc_section):
         logger.error(
-            "GIGACHAT configuration incomplete! Available dynaconf keys: %s",
-            list(dynaconf.keys()),
+            "GIGACHAT configuration incomplete! Found keys: %s",
+            list(gc_section.keys())
         )
         raise RuntimeError("Missing or incomplete GIGACHAT configuration")
 
-    # Создаем объект Pydantic
     gigachat = GigachatConfig(**gc_section)
 
     # ----- JWT -----
