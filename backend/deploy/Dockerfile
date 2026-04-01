@@ -16,4 +16,4 @@ RUN poetry config virtualenvs.create false && poetry install --no-interaction --
 
 COPY src /app/src
 
-CMD ["uvicorn", "src.main.web:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "src.main.web:app", "--host", "0.0.0.0", "--port", "10000"]
