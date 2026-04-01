@@ -61,11 +61,10 @@ def get_config() -> Config:
     logger.info("==============================================")
 
     dynaconf = Dynaconf(
-        settings_files=[
-            '././deploy/configs/config.toml'
-        ],
+        settings_files=['././deploy/configs/config.toml'],
         envvar_prefix='LIZA_API',
         load_dotenv=True,
+        environments=True,
     )
 
     # Выводим то, что загрузил dynaconf
@@ -85,10 +84,17 @@ def get_config() -> Config:
     api = ApiConfig(**api_data)
 
     # ----- База данных -----
-    if 'DATABASE' not in dynaconf:
-        logger.error("DATABASE section not found in dynaconf! Available keys: %s", list(dynaconf.keys()))
-        raise RuntimeError("Missing DATABASE configuration")
-    db_data = dynaconf.DATABASE
+    db_data = {
+        "host": dynaconf.get("DATABASE__HOST"),
+        "port": dynaconf.get("DATABASE__PORT"),
+        "username": dynaconf.get("DATABASE__USERNAME"),
+        "password": dynaconf.get("DATABASE__PASSWORD"),
+        "database": dynaconf.get("DATABASE__DATABASE"),
+    }
+
+    if not all(db_data.values()):
+        raise RuntimeError(f"Missing DATABASE configuration: {db_data}")
+
     database = DatabaseConfig(**db_data)
 
     # ----- Redis (опционально) -----
