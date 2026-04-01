@@ -84,7 +84,7 @@ def get_config() -> Config:
     api = ApiConfig(**api_data)
 
     # ----- База данных -----
-    db_section = dynaconf.get("DATABASE")
+    db_section = dynaconf.get("_DATABASE")
 
     if not db_section:
         raise RuntimeError(f"Missing DATABASE section: {dynaconf.as_dict()}")
