@@ -48,7 +48,7 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://ai-career-helper-1.onrender.com"],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

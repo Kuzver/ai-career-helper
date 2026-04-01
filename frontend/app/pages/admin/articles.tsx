@@ -93,9 +93,9 @@ export default function AdminArticles() {
 
   if (showForm) {
     return (
-      <div className="mx-auto max-w-3xl p-8">
+      <div className="mx-auto max-w-3xl px-4 py-6 md:p-8">
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{editingId ? "Редактирование статьи" : "Новая статья"}</h1>
+          <h1 className="text-xl font-bold text-gray-900 md:text-2xl dark:text-gray-100">{editingId ? "Редактирование статьи" : "Новая статья"}</h1>
           <button onClick={() => { setShowForm(false); setEditingId(null) }} className="text-sm text-[#C5CBD3]">Отмена</button>
         </div>
         <div className="space-y-4">
@@ -106,7 +106,7 @@ export default function AdminArticles() {
             {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
           <input value={specialization} onChange={(e) => setSpecialization(e.target.value)} placeholder="Специализация (frontend, backend, ...)" className={inputCls} />
-          <textarea value={contentMd} onChange={(e) => setContentMd(e.target.value)} placeholder="Содержимое (Markdown)" className={inputCls + " min-h-[300px] font-mono text-xs"} />
+          <textarea value={contentMd} onChange={(e) => setContentMd(e.target.value)} placeholder="Содержимое (Markdown)" className={inputCls + " min-h-[150px] font-mono text-xs md:min-h-[300px]"} />
           {error && <p className="text-sm text-red-500">{error}</p>}
           <button onClick={handleSaveArticle} disabled={saving}
             className="rounded-lg bg-[#3649F9] px-8 py-3 text-sm font-medium text-white hover:bg-[#3649F9]/90 disabled:opacity-50">
@@ -118,9 +118,9 @@ export default function AdminArticles() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl p-8">
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Управление статьями</h1>
+    <div className="mx-auto max-w-3xl px-4 py-6 md:p-8">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between md:mb-8">
+        <h1 className="text-xl font-bold text-gray-900 md:text-2xl dark:text-gray-100">Управление статьями</h1>
         <div className="flex gap-2">
           <button onClick={() => setShowCatForm(true)} className="rounded-lg border border-[#3649F9] px-4 py-2 text-xs text-[#3649F9]">+ Категория</button>
           <button onClick={() => { setEditingId(null); setTitle(""); setSlug(""); setContentMd(""); setCategoryId(""); setSpecialization(""); setShowForm(true); setError(null) }} className="rounded-lg bg-[#3649F9] px-4 py-2 text-xs text-white">+ Статья</button>
@@ -128,7 +128,7 @@ export default function AdminArticles() {
       </div>
 
       {showCatForm && (
-        <div className="mb-6 flex items-end gap-2 rounded-xl border border-gray-100 p-4 dark:border-gray-700 dark:bg-[#1e293b]">
+        <div className="mb-6 flex flex-col gap-2 rounded-xl border border-gray-100 p-4 sm:flex-row sm:items-end dark:border-gray-700 dark:bg-[#1e293b]">
           <input value={catName} onChange={(e) => setCatName(e.target.value)} placeholder="Название" className={inputCls + " flex-1"} />
           <input value={catSlug} onChange={(e) => setCatSlug(e.target.value)} placeholder="Slug" className={inputCls + " flex-1"} />
           <button onClick={handleSaveCategory} className="rounded-lg bg-[#3649F9] px-4 py-2 text-xs text-white">OK</button>
@@ -143,8 +143,8 @@ export default function AdminArticles() {
       ) : (
         <div className="space-y-3">
           {articles.map((a) => (
-            <div key={a.id} className="flex items-center justify-between rounded-xl border border-gray-100 p-4 dark:border-gray-700 dark:bg-[#1e293b]">
-              <div>
+            <div key={a.id} className="flex flex-col gap-2 rounded-xl border border-gray-100 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-gray-700 dark:bg-[#1e293b]">
+              <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{a.title}</p>
                 <div className="mt-0.5 flex gap-2 text-xs text-[#C5CBD3]">
                   {a.category && <span>{a.category.name}</span>}

@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom"
 import Markdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeSanitize from "rehype-sanitize"
+import { ArrowLeft, Download } from "lucide-react"
 import { getArticle, type ArticleDetail } from "~/modules/articles/api/articles"
 import { baseClient } from "~/shared/api/axios-client"
 
@@ -40,14 +41,16 @@ export default function ArticlePage() {
   if (!article) return null
 
   return (
-    <div className="mx-auto max-w-3xl p-8">
+    <div className="mx-auto max-w-3xl px-4 py-6 md:p-8">
       <div className="mb-6 flex items-center justify-between">
-        <Link to="/knowledge-base" className="text-sm text-[#3649F9] hover:underline">
-          &larr; Назад к статьям
+        <Link to="/knowledge-base" className="flex items-center gap-1 text-sm text-[#3649F9] hover:underline">
+          <ArrowLeft className="h-4 w-4" />
+          Назад к статьям
         </Link>
         <div className="relative">
           <button onClick={() => setShowExport((v) => !v)}
-            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-[#6D7C90] hover:border-[#3649F9] hover:text-[#3649F9] dark:border-gray-700">
+            className="flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-[#6D7C90] hover:border-[#3649F9] hover:text-[#3649F9] dark:border-gray-700">
+            <Download className="h-3.5 w-3.5" />
             Скачать
           </button>
           {showExport && (

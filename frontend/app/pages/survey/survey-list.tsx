@@ -28,17 +28,17 @@ export default function SurveyList() {
   if (loading) return <div className="flex h-full items-center justify-center"><p className="text-sm text-[#C5CBD3]">Загрузка...</p></div>
 
   return (
-    <div className="mx-auto max-w-2xl p-8">
-      <h1 className="mb-8 text-2xl font-bold text-gray-900 dark:text-gray-100">Опросы</h1>
+    <div className="mx-auto max-w-2xl px-4 py-6 md:p-8">
+      <h1 className="mb-6 text-xl font-bold text-gray-900 md:mb-8 md:text-2xl dark:text-gray-100">Опросы</h1>
 
       {surveys.length === 0 ? (
         <p className="text-sm text-[#C5CBD3]">Опросов пока нет</p>
       ) : (
         <div className="space-y-4">
           {surveys.map((s) => (
-            <div key={s.id} className="flex items-center justify-between rounded-xl border border-gray-100 p-5 dark:border-gray-700 dark:bg-[#1e293b]">
-              <div>
-                <div className="flex items-center gap-2">
+            <div key={s.id} className="flex flex-col gap-3 rounded-xl border border-gray-100 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5 dark:border-gray-700 dark:bg-[#1e293b]">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
                   <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{s.title}</p>
                   {s.is_mandatory && (
                     <span className="rounded bg-red-50 px-2 py-0.5 text-xs text-red-500">Обязательный</span>

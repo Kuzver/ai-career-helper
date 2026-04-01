@@ -4,6 +4,7 @@ import { useLoaderData, useNavigate, useRevalidator, useSearchParams } from "rea
 import Markdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeSanitize from "rehype-sanitize"
+import { FileText, Map, Target, BookOpen, Briefcase, BarChart3, Paperclip, Send, Download, User } from "lucide-react"
 import { createChat, getChatById, getChats, sendMessage, exportMessage } from "~/modules/chat/api/chats"
 import { useUser } from "~/modules/user/lib/use-user"
 import { Logo } from "~/shared/components/ui/logo"
@@ -164,27 +165,27 @@ export default function ChatPage() {
       onDrop={handleDrop}
     >
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-8 py-6 dark:bg-[#0f172a]">
+      <div className="flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-6 dark:bg-[#0f172a]">
         {serverMessages.length === 0 && !showOptimistic && !isSending ? (
           <div className="flex h-full flex-col items-center justify-center">
             <Logo size={64} />
             <p className="mb-2 text-lg font-medium text-gray-600 dark:text-gray-300">ИИ-помощник</p>
             <p className="mb-6 text-sm text-[#C5CBD3]">Выберите тему или напишите свой вопрос</p>
-            <div className="grid w-full max-w-xl grid-cols-2 gap-3 px-4">
+            <div className="grid w-full max-w-xl grid-cols-1 gap-2 px-2 sm:grid-cols-2 sm:gap-3 sm:px-4">
               {[
-                { icon: "📝", text: "Помоги составить резюме", desc: "ATS-оптимизация" },
-                { icon: "🗺️", text: "Составь мне roadmap", desc: "План обучения" },
-                { icon: "🎯", text: "Подготовь к собеседованию", desc: "Вопросы и кейсы" },
-                { icon: "📚", text: "Что изучить для frontend", desc: "Курсы и ресурсы" },
-                { icon: "💼", text: "Как найти первую работу в IT", desc: "Советы по поиску" },
-                { icon: "📊", text: "Проанализируй мои навыки", desc: "Оценка и план" },
+                { icon: FileText, text: "Помоги составить резюме", desc: "ATS-оптимизация" },
+                { icon: Map, text: "Составь мне roadmap", desc: "План обучения" },
+                { icon: Target, text: "Подготовь к собеседованию", desc: "Вопросы и кейсы" },
+                { icon: BookOpen, text: "Что изучить для frontend", desc: "Курсы и ресурсы" },
+                { icon: Briefcase, text: "Как найти первую работу в IT", desc: "Советы по поиску" },
+                { icon: BarChart3, text: "Проанализируй мои навыки", desc: "Оценка и план" },
               ].map((item) => (
                 <button
                   key={item.text}
                   onClick={() => { setMessageText(item.text); }}
-                  className="group flex items-start gap-3 rounded-xl border border-gray-100 bg-white p-3.5 text-left transition-all hover:border-[#3649F9]/30 hover:shadow-sm dark:border-gray-700 dark:bg-[#1e293b] dark:hover:border-[#3649F9]/50"
+                  className="group flex items-start gap-3 rounded-xl border border-gray-100 bg-white p-3 text-left transition-all hover:border-[#3649F9]/30 hover:shadow-sm sm:p-3.5 dark:border-gray-700 dark:bg-[#1e293b] dark:hover:border-[#3649F9]/50"
                 >
-                  <span className="text-xl">{item.icon}</span>
+                  <item.icon className="mt-0.5 h-5 w-5 shrink-0 text-[#3649F9]" />
                   <div>
                     <p className="text-sm font-medium text-gray-800 group-hover:text-[#3649F9] dark:text-gray-200">{item.text}</p>
                     <p className="text-xs text-[#C5CBD3]">{item.desc}</p>
@@ -199,12 +200,12 @@ export default function ChatPage() {
               <MessageBubble key={msg.id} msg={msg} onExport={handleExport} />
             ))}
             {showOptimistic && (
-              <div className="flex justify-end gap-3">
-                <div className="max-w-lg rounded-2xl bg-[#E8EAFF] px-5 py-3">
+              <div className="flex justify-end gap-2 md:gap-3">
+                <div className="max-w-[85%] rounded-2xl bg-[#E8EAFF] px-4 py-3 md:max-w-lg md:px-5">
                   <p className="text-sm leading-relaxed text-gray-800">{optimisticText}</p>
                 </div>
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#3649F9]">
-                  <img src="/icons/icon profile.svg" alt="" className="h-4 w-4 brightness-0 invert" />
+                  <User className="h-4 w-4 text-white" />
                 </div>
               </div>
             )}
@@ -227,11 +228,11 @@ export default function ChatPage() {
         )}
       </div>
 
-      {sendError && <div className="px-8 pb-2"><p className="text-sm text-red-500">{sendError}</p></div>}
+      {sendError && <div className="px-4 pb-2 md:px-8"><p className="text-sm text-red-500">{sendError}</p></div>}
 
       {/* Attached file preview */}
       {attachedFile && (
-        <div className="flex items-center gap-2 px-8 pb-2">
+        <div className="flex items-center gap-2 px-4 pb-2 md:px-8">
           <div className="flex items-center gap-2 rounded-lg bg-[#E8EAFF] px-3 py-1.5 text-xs text-[#3649F9]">
             <span>{attachedFile.name}</span>
             <button onClick={() => setAttachedFile(null)} className="ml-1 text-gray-400 hover:text-red-500">&times;</button>
@@ -240,11 +241,11 @@ export default function ChatPage() {
       )}
 
       {/* Input */}
-      <div className="px-8 pb-6 pt-2">
+      <div className="px-4 pb-4 pt-2 md:px-8 md:pb-6">
         <div className="rounded-2xl border border-[#C5CBD3]/50 px-4 pb-3 pt-4 dark:border-gray-700 dark:bg-[#1e293b]">
           <textarea
             placeholder="Спросите про карьеру, резюме, обучение..."
-            className="min-h-[80px] w-full resize-none bg-transparent text-sm text-gray-700 placeholder-[#C5CBD3] outline-none dark:text-gray-200"
+            className="min-h-[56px] w-full resize-none bg-transparent text-sm text-gray-700 placeholder-[#C5CBD3] outline-none md:min-h-[80px] dark:text-gray-200"
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
             disabled={isSending}
@@ -263,18 +264,18 @@ export default function ChatPage() {
               />
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="rounded-full p-1.5 hover:bg-gray-100"
+                className="rounded-full p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700"
                 title="Прикрепить файл (PDF, DOCX, MD)"
                 aria-label="Прикрепить файл"
               >
-                <img src="/icons/upload.svg" alt="" className="h-5 w-5 opacity-40" />
+                <Paperclip className="h-5 w-5 text-[#C5CBD3]" />
               </button>
             </div>
             <button onClick={handleSendMessage}
               disabled={(!messageText.trim() && !attachedFile) || isSending}
               aria-label="Отправить сообщение"
               className="flex h-9 w-9 items-center justify-center rounded-full bg-[#3649F9] text-white hover:bg-[#3649F9]/90 disabled:opacity-40">
-              <img src="/icons/write.svg" alt="" className="h-4 w-4 brightness-0 invert" />
+              <Send className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -288,12 +289,12 @@ function MessageBubble({ msg, onExport }: { msg: Message; onExport: (id: string,
 
   if (msg.senderTypeId === "user") {
     return (
-      <div className="flex justify-end gap-3">
-        <div className="max-w-lg rounded-2xl bg-[#E8EAFF] px-5 py-3">
+      <div className="flex justify-end gap-2 md:gap-3">
+        <div className="max-w-[85%] rounded-2xl bg-[#E8EAFF] px-4 py-3 md:max-w-lg md:px-5">
           <p className="text-sm leading-relaxed text-gray-800">{cleanLegacyContext(msg.text)}</p>
         </div>
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#3649F9]">
-          <img src="/icons/icon profile.svg" alt="" className="h-4 w-4 brightness-0 invert" />
+          <User className="h-4 w-4 text-white" />
         </div>
       </div>
     )
@@ -305,14 +306,15 @@ function MessageBubble({ msg, onExport }: { msg: Message; onExport: (id: string,
         <Logo size={32} />
         <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">ИИ-помощник</span>
       </div>
-      <div className="ml-10 max-w-2xl rounded-2xl bg-[#E8EAFF] px-5 py-3 text-sm leading-relaxed text-gray-800 dark:bg-[#3649F9]/15 dark:text-gray-200">
+      <div className="ml-10 max-w-[90%] rounded-2xl bg-[#E8EAFF] px-4 py-3 text-sm leading-relaxed text-gray-800 md:max-w-2xl md:px-5 dark:bg-[#3649F9]/15 dark:text-gray-200">
         <BotMessage text={msg.text} />
       </div>
       <div className="relative ml-10">
         <button
           onClick={() => setShowExport((v) => !v)}
-          className="rounded px-2 py-0.5 text-xs text-[#C5CBD3] opacity-0 transition-opacity hover:text-[#3649F9] group-hover:opacity-100"
+          className="flex items-center gap-1 rounded px-2 py-0.5 text-xs text-[#C5CBD3] opacity-0 transition-opacity hover:text-[#3649F9] group-hover:opacity-100"
         >
+          <Download className="h-3.5 w-3.5" />
           Скачать
         </button>
         {showExport && (

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { CircleCheck } from "lucide-react"
 import { getSurvey, submitSurvey, getMyAnswers, type SurveyDetail, type SubmitAnswer } from "~/modules/survey/api/surveys"
 import { useUser } from "~/modules/user/lib/use-user"
 
@@ -101,9 +102,9 @@ export default function SurveyPage() {
 
   if (validationResult !== null) {
     return (
-      <div className="mx-auto max-w-2xl p-8">
-        <div className="rounded-2xl border border-green-200 bg-green-50 p-8 text-center dark:border-green-800 dark:bg-green-950">
-          <div className="mb-4 text-4xl">&#10003;</div>
+      <div className="mx-auto max-w-2xl px-4 py-6 md:p-8">
+        <div className="rounded-2xl border border-green-200 bg-green-50 p-6 text-center md:p-8 dark:border-green-800 dark:bg-green-950">
+          <CircleCheck className="mx-auto mb-4 h-12 w-12 text-green-500" />
           <h2 className="mb-3 text-xl font-bold text-gray-900 dark:text-gray-100">Спасибо за прохождение опроса!</h2>
           <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">Ваши ответы сохранены и будут учитываться при рекомендациях. Перейдите в чат — ИИ-ассистент поможет вам достичь вашей цели.</p>
           <div className="flex justify-center gap-3">
@@ -116,8 +117,8 @@ export default function SurveyPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl p-8">
-      <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">{survey.title}</h1>
+    <div className="mx-auto max-w-2xl px-4 py-6 md:p-8">
+      <h1 className="mb-2 text-xl font-bold text-gray-900 md:text-2xl dark:text-gray-100">{survey.title}</h1>
       {survey.description && <p className="mb-8 text-sm text-[#6D7C90]">{survey.description}</p>}
 
       <div className="space-y-8">

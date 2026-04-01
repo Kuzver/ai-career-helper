@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useUser } from "~/modules/user/lib/use-user"
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout() {
     const { user: { isAuthorized } } = useUser();
 
     if (isAuthorized) {

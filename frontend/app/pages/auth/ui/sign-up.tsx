@@ -53,14 +53,14 @@ export default function SignUp() {
 
   return (
     <div className="flex min-h-screen flex-col bg-white dark:bg-[#0f172a]">
-      <div className="px-10 py-8">
+      <div className="px-5 py-6 md:px-10 md:py-8">
         <Link to="/" className="flex items-center gap-3">
           <Logo size={40} />
           <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">ИИ-ассистент</span>
         </Link>
       </div>
-      <div className="mx-auto w-full max-w-md px-10 py-8">
-        <h1 className="mb-2 text-3xl font-bold uppercase tracking-tight text-gray-900 dark:text-gray-100">Создать аккаунт</h1>
+      <div className="mx-auto w-full max-w-md px-5 py-6 md:px-10 md:py-8">
+        <h1 className="mb-2 text-2xl font-bold uppercase tracking-tight text-gray-900 md:text-3xl dark:text-gray-100">Создать аккаунт</h1>
         <p className="mb-12 text-[#C5CBD3]">Зарегистрируйтесь, чтобы начать работу</p>
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>

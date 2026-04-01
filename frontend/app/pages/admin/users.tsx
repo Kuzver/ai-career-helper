@@ -53,17 +53,17 @@ export default function AdminUsers() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl p-8">
-      <h1 className="mb-8 text-2xl font-bold text-gray-900 dark:text-gray-100">Управление пользователями</h1>
+    <div className="mx-auto max-w-3xl px-4 py-6 md:p-8">
+      <h1 className="mb-6 text-xl font-bold text-gray-900 md:mb-8 md:text-2xl dark:text-gray-100">Управление пользователями</h1>
 
       {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
       <div className="space-y-3">
         {users.map((u) => (
-          <div key={u.id} className="flex items-center justify-between rounded-xl border border-gray-100 p-4 dark:border-gray-700 dark:bg-[#1e293b]">
-            <div>
-              <div className="flex items-center gap-2">
-                <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{u.email}</p>
+          <div key={u.id} className="flex flex-col gap-3 rounded-xl border border-gray-100 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-gray-700 dark:bg-[#1e293b]">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="truncate text-sm font-medium text-gray-800 dark:text-gray-200">{u.email}</p>
                 <span className={`rounded px-2 py-0.5 text-xs font-medium ${roleColor(u.role)}`}>
                   {u.role}
                 </span>

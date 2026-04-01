@@ -53,9 +53,9 @@ export default function KnowledgeBase() {
     : articles
 
   return (
-    <div className="p-8">
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">База знаний</h1>
+    <div className="px-4 py-6 md:p-8">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between md:mb-8">
+        <h1 className="text-xl font-bold text-gray-900 md:text-2xl dark:text-gray-100">База знаний</h1>
         <div className="flex items-center gap-3">
           {userSpec && (
             <button

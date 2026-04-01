@@ -135,15 +135,15 @@ export default function Profile() {
   const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#3649F9] focus:ring-1 focus:ring-[#3649F9] dark:border-gray-600 dark:bg-[#1e293b] dark:text-gray-200 dark:placeholder-gray-500"
 
   return (
-    <div className="mx-auto max-w-2xl p-8">
-      <h1 className="mb-8 text-2xl font-bold text-gray-900 dark:text-gray-100">Мой профиль</h1>
+    <div className="mx-auto max-w-2xl px-4 py-6 md:p-8">
+      <h1 className="mb-6 text-xl font-bold text-gray-900 md:mb-8 md:text-2xl dark:text-gray-100">Мой профиль</h1>
 
-      <div className="mb-8 flex items-center gap-4">
+      <div className="mb-6 flex items-center gap-3 md:mb-8 md:gap-4">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#3649F9] text-xl font-bold text-white">
           {(form.name?.[0] || user.email?.[0] || "U").toUpperCase()}
         </div>
         <div>
-          <p className="text-lg font-medium text-gray-900 dark:text-gray-100">{form.name || user.email}</p>
+          <p className="truncate text-lg font-medium text-gray-900 dark:text-gray-100">{form.name || user.email}</p>
           <p className="text-sm text-[#C5CBD3]">
             {SPECIALIZATIONS.find((s) => s.value === form.specialization)?.label || "Специализация не указана"}
           </p>

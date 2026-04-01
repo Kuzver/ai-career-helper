@@ -165,9 +165,9 @@ export default function AdminSurveys() {
 
   if (showForm) {
     return (
-      <div className="mx-auto max-w-3xl p-8">
+      <div className="mx-auto max-w-3xl px-4 py-6 md:p-8">
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{editingId ? "Редактирование" : "Новый опрос"}</h1>
+          <h1 className="text-xl font-bold text-gray-900 md:text-2xl dark:text-gray-100">{editingId ? "Редактирование" : "Новый опрос"}</h1>
           <button onClick={() => setShowForm(false)} className="text-sm text-[#C5CBD3] hover:text-gray-600 dark:hover:text-gray-400">Отмена</button>
         </div>
 
@@ -248,9 +248,9 @@ export default function AdminSurveys() {
   if (loading) return <div className="flex h-full items-center justify-center"><p className="text-sm text-[#C5CBD3]">Загрузка...</p></div>
 
   return (
-    <div className="mx-auto max-w-3xl p-8">
+    <div className="mx-auto max-w-3xl px-4 py-6 md:p-8">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Управление опросами</h1>
+        <h1 className="text-xl font-bold text-gray-900 md:text-2xl dark:text-gray-100">Управление опросами</h1>
         <button onClick={handleNew}
           className="rounded-lg bg-[#3649F9] px-4 py-2 text-sm font-medium text-white hover:bg-[#3649F9]/90">
           + Создать опрос

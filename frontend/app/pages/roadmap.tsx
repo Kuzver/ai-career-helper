@@ -444,14 +444,14 @@ export default function RoadmapPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl p-8">
-      <div className="mb-8">
-        <div className="flex items-start justify-between">
+    <div className="mx-auto max-w-3xl px-4 py-6 md:p-8">
+      <div className="mb-6 md:mb-8">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">{roadmap.title}</h1>
+            <h1 className="mb-2 text-xl font-bold text-gray-900 md:text-2xl dark:text-gray-100">{roadmap.title}</h1>
             <p className="text-sm text-[#6D7C90]">{roadmap.description}</p>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
             <button onClick={handleStartEdit}
               className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-[#6D7C90] hover:border-[#3649F9] hover:text-[#3649F9] dark:border-gray-700">
               Редактировать

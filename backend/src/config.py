@@ -58,14 +58,7 @@ class Config(BaseSchema):
 
 
 def get_config() -> Config:
-    # Диагностика — очень полезно, оставь пока
-    logger.info("=== Environment variables with LIZA_API prefix ===")
-    for key, value in os.environ.items():
-        if key.startswith('LIZA_API'):
-            logger.info(f"{key}={value[:50]}{'...' if len(value) > 50 else ''}")
-    logger.info("==============================================")
-
-    # Исправленный Dynaconf
+    # Dynaconf
     dynaconf = Dynaconf(
         settings_files=["deploy/configs/config.toml"],   # ← убрал ././
         envvar_prefix="LIZA_API",                        # оставляем твой префикс
@@ -110,7 +103,7 @@ def get_config() -> Config:
     redis_section = get_section("REDIS")
     redis = RedisConfig(**redis_section) if redis_section else None
 
-        # ----- GIGACHAT -----
+    # ----- GIGACHAT -----
     gc_section = dynaconf.get("GIGACHAT") or {}
 
     # Если в TOML ничего нет — Dynaconf должен был подхватить из env vars с префиксом

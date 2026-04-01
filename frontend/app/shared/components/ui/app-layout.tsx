@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom"
+import { Menu, Moon, Sun, LogOut, LogIn, Search, User } from "lucide-react"
 import { useUser } from "~/modules/user/lib/use-user"
 import { ChatSidebar } from "~/modules/chat/ui/chat-sidebar"
 import { baseClient } from "~/shared/api/axios-client"
@@ -136,12 +137,12 @@ export default function AppLayout() {
         <div className="mt-auto px-5 py-4">
           {user.isAuthorized ? (
             <button onClick={handleLogout} className="flex items-center gap-2 text-sm text-red-400 hover:text-red-500">
-              <img src="/icons/icon exit.svg" alt="" className="h-5 w-5" />
+              <LogOut className="h-5 w-5" />
               Выйти
             </button>
           ) : (
             <Link to="/sign-in" className="flex items-center gap-2 text-sm text-[#3649F9]">
-              <img src="/icons/icon exit.svg" alt="" className="h-5 w-5" />
+              <LogIn className="h-5 w-5" />
               Войти
             </Link>
           )}
@@ -152,16 +153,14 @@ export default function AppLayout() {
         <header className="flex items-center gap-4 border-b border-gray-100 px-4 py-3 md:px-6 dark:border-gray-700">
           {/* Mobile hamburger */}
           <button onClick={() => setSidebarOpen(true)} className="shrink-0 md:hidden" aria-label="Открыть меню">
-            <svg className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+            <Menu className="h-6 w-6 text-gray-600 dark:text-gray-400" />
           </button>
 
           {/* Search */}
           {user.isAuthorized && (
-            <div className="relative flex-1">
+            <div className="relative hidden flex-1 md:block">
               <div className="flex items-center gap-2">
-                <img src="/icons/search.svg" alt="" className="h-5 w-5 opacity-40" />
+                <Search className="h-5 w-5 text-[#C5CBD3]" />
                 <input
                   type="text"
                   placeholder="Поиск по чатам и статьям..."
@@ -193,19 +192,15 @@ export default function AppLayout() {
             </div>
           )}
 
-          <button onClick={toggleTheme} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600" aria-label="Переключить тему">
+          <button onClick={toggleTheme} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 md:h-10 md:w-10 dark:bg-gray-700 dark:hover:bg-gray-600" aria-label="Переключить тему">
             {theme === "dark" ? (
-              <svg className="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
+              <Sun className="h-5 w-5 text-yellow-400" />
             ) : (
-              <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
+              <Moon className="h-5 w-5 text-gray-500" />
             )}
           </button>
-          <Link to="/profile" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600" aria-label="Мой профиль">
-            <img src="/icons/icon profile.svg" alt="" className="h-5 w-5 opacity-50" />
+          <Link to="/profile" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 md:h-10 md:w-10 dark:bg-gray-700 dark:hover:bg-gray-600" aria-label="Мой профиль">
+            <User className="h-5 w-5 text-gray-500 dark:text-gray-400" />
           </Link>
         </header>
         <main className="flex-1 overflow-auto">
