@@ -52,7 +52,7 @@ export default function SignUp() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white dark:bg-[#0f172a]">
+    <div className="flex min-h-dvh flex-col bg-white dark:bg-[#0f172a]">
       <div className="px-5 py-6 md:px-10 md:py-8">
         <Link to="/" className="flex items-center gap-3">
           <Logo size={40} />

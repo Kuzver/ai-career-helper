@@ -46,7 +46,7 @@ export default function SignIn() {
   const inputCls = "w-full rounded-lg border border-[#C5CBD3] px-4 py-3 text-sm outline-none placeholder-[#C5CBD3] focus:border-[#3649F9] focus:ring-1 focus:ring-[#3649F9] dark:border-gray-600 dark:bg-[#1e293b] dark:text-gray-200 dark:placeholder-gray-500"
 
   return (
-    <div className="flex min-h-screen flex-col bg-white dark:bg-[#0f172a]">
+    <div className="flex min-h-dvh flex-col bg-white dark:bg-[#0f172a]">
       <div className="px-5 py-6 md:px-10 md:py-8">
         <div className="flex items-center gap-3">
           <Logo size={40} />

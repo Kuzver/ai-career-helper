@@ -12,3 +12,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     </UserContextProvider>
   </React.StrictMode>
 );
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js").catch(() => {})
+}

@@ -83,7 +83,7 @@ export default function AppLayout() {
   useEffect(() => { setShowResults(false); setSearchQuery("") }, [location.pathname])
 
   return (
-    <div className="flex h-screen bg-white dark:bg-[#0f172a]">
+    <div className="flex h-dvh bg-white dark:bg-[#0f172a]">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 bg-black/30 md:hidden" onClick={() => setSidebarOpen(false)} />

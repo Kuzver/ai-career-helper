@@ -167,10 +167,10 @@ export default function ChatPage() {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-6 dark:bg-[#0f172a]">
         {serverMessages.length === 0 && !showOptimistic && !isSending ? (
-          <div className="flex h-full flex-col items-center justify-center">
-            <Logo size={64} />
-            <p className="mb-2 text-lg font-medium text-gray-600 dark:text-gray-300">ИИ-помощник</p>
-            <p className="mb-6 text-sm text-[#C5CBD3]">Выберите тему или напишите свой вопрос</p>
+          <div className="flex min-h-full flex-col items-center justify-center py-6">
+            <Logo size={48} />
+            <p className="mb-1 mt-3 text-base font-medium text-gray-600 md:text-lg dark:text-gray-300">ИИ-помощник</p>
+            <p className="mb-4 text-sm text-[#C5CBD3] md:mb-6">Выберите тему или напишите свой вопрос</p>
             <div className="grid w-full max-w-xl grid-cols-1 gap-2 px-2 sm:grid-cols-2 sm:gap-3 sm:px-4">
               {[
                 { icon: FileText, text: "Помоги составить резюме", desc: "ATS-оптимизация" },
