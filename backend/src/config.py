@@ -84,12 +84,17 @@ def get_config() -> Config:
     api = ApiConfig(**api_data)
 
     # ----- База данных -----
+    db_section = dynaconf.get("DATABASE")
+
+    if not db_section:
+        raise RuntimeError(f"Missing DATABASE section: {dynaconf.as_dict()}")
+
     db_data = {
-        "host": dynaconf.get("DATABASE__HOST"),
-        "port": dynaconf.get("DATABASE__PORT"),
-        "username": dynaconf.get("DATABASE__USERNAME"),
-        "password": dynaconf.get("DATABASE__PASSWORD"),
-        "database": dynaconf.get("DATABASE__DATABASE"),
+        "host": db_section.get("HOST"),
+        "port": db_section.get("PORT"),
+        "username": db_section.get("USERNAME"),
+        "password": db_section.get("PASSWORD"),
+        "database": db_section.get("DATABASE"),
     }
 
     if not all(db_data.values()):
