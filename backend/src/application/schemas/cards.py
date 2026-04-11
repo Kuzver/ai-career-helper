@@ -1,3 +1,4 @@
+from typing import List
 from uuid import UUID
 from datetime import datetime
 from src.application.schemas.common import BaseModel
@@ -25,3 +26,11 @@ class CreateCardDBSchema(BaseModel):
     information_id: UUID
     title: str
     description: str
+
+class GeneratedCard(BaseModel):
+    title: str
+    description: str
+    tag: str
+
+class GeneratedCardsResponse(BaseModel):
+    cards: List[GeneratedCard]
