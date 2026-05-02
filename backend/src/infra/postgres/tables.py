@@ -82,6 +82,9 @@ class UserModel(BaseDBModel):
 
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
+    policy_accepted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    policy_accepted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_active_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
 
 class UserCareersModel(BaseDBModel):
     __tablename__ = 'user_careers'

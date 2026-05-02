@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from src.infra.postgres.gateways.base import GetByEmailGate
 from src.application.errors import DuplicateError, NotFoundError
 
+
 @dataclass(slots=True, frozen=True, kw_only=True)
 class CreateUserUsecase(Usecase[CreateUserSchema, None]):
     create_user: CreateGate[UserModel, CreateUserSchema]
@@ -14,6 +15,10 @@ class CreateUserUsecase(Usecase[CreateUserSchema, None]):
     get_user_by_email: GetByEmailGate[UserModel, UserSchemas]
     
     async def __call__(self, data: CreateUserSchema) -> None:
+        # Если пользователь не согласен с политикой, то выходит ошибка
+        if not data.policy_accepted:
+            raise ValueError("Необходимо согласие с Политикой конфиденциальности")
+        
         # Если пользователь с таким email уже существует то происходит конфликт
         existing = await self.get_user_by_email(data.email)
         if existing is not None:
@@ -24,3 +29,5 @@ class CreateUserUsecase(Usecase[CreateUserSchema, None]):
             await self.get_user(data.id)
         except NotFoundError:
             await self.create_user(data)
+
+        

@@ -16,3 +16,4 @@ class CreateUserSchema(BaseModel):
     email: str = "example@email.com"
     first_name: str | None = None
     is_active: bool = True
+    policy_accepted: bool

@@ -5,6 +5,7 @@ import { baseClient } from "~/shared/api/axios-client"
 import { Logo } from "~/shared/components/ui/logo"
 import { getPendingMandatory } from "~/modules/survey/api/surveys"
 
+
 export default function SignUp() {
   const navigate = useNavigate()
   const { setUser } = useUser()
@@ -24,11 +25,16 @@ export default function SignUp() {
     if (!email || !password || !confirmPassword) { setError("Заполните все поля"); return }
     if (password.length < 8) { setError("Пароль должен быть не менее 8 символов"); return }
     if (password !== confirmPassword) { setError("Пароли не совпадают"); return }
-    if (!agree) { setError("Необходимо согласиться с условиями использования"); return }
+    if (!agree) { setError("Необходимо согласиться с политикой конфиденциальности"); return }
 
     setLoading(true)
     try {
-      const { data } = await baseClient.post("/api/auth/register", { email, password })
+      const { data } = await baseClient.post("/api/auth/register", { 
+          email, 
+          password,
+          policy_accepted: agree 
+      })
+      
       setUser({
         isAuthorized: true,
         email: data.email,
@@ -78,11 +84,24 @@ export default function SignUp() {
             <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Повторите пароль" autoComplete="new-password" className={inputCls} />
           </div>
-          <label className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <label className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400 cursor-pointer">
             <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)}
               className="mt-0.5 h-4 w-4 rounded border-[#C5CBD3] accent-[#3649F9]" />
-            <span>Я согласен с <span className="text-[#3649F9]">условиями использования</span> и <span className="text-[#3649F9]">политикой конфиденциальности</span></span>
+            <span>
+              Я принимаю условия{" "}
+              <a 
+                href="http://localhost:8000/api/legal/privacy-policy" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-[#3649F9] hover:underline"
+                onClick={(e) => e.stopPropagation()} // Чтобы клик по ссылке не переключал чекбокс
+              >
+                Политики конфиденциальности
+              </a>
+              {" "}и даю согласие на обработку персональных данных.
+            </span>
           </label>
+
           {error && <p className="text-sm text-red-500">{error}</p>}
           <button type="submit" disabled={loading}
             className="w-full rounded-lg bg-[#3649F9] py-4 text-sm font-semibold text-white hover:bg-[#3649F9]/90 disabled:opacity-50">

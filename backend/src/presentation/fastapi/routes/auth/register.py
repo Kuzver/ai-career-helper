@@ -93,6 +93,12 @@ async def register_user(
     session: FromDishka[AsyncSession],
     jwt_config: FromDishka[JwtConfig],
 ):
+    if not body.policy_accepted:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Необходимо согласие с политикой конфиденциальности"
+        )
+    
     result = await session.execute(
         select(UserModel).where(UserModel.email == body.email)
     )
@@ -110,6 +116,9 @@ async def register_user(
         first_name=body.first_name,
         is_active=True,
         role="user",
+        policy_accepted=True,
+        policy_accepted_at=datetime.now(timezone.utc),
+        last_active_at=datetime.now(timezone.utc)
     )
     session.add(user)
     await session.flush()
