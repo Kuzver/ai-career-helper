@@ -1,6 +1,7 @@
 import { type RouteConfig, index, layout, route } from "@react-router/dev/routes"
 
 export default [
+
   layout("shared/components/ui/app-layout.tsx", [
     index("pages/index.tsx"),
     route("chat", "pages/chat.tsx"),
@@ -18,5 +19,7 @@ export default [
   layout("pages/auth/ui/auth-layout.tsx", [
     route("sign-in", "pages/auth/ui/sign-in.tsx"),
     route("sign-up", "pages/auth/ui/sign-up.tsx"),
+    route("privacy-policy", "pages/privacy-policy.tsx"),
   ]),
+
 ] satisfies RouteConfig

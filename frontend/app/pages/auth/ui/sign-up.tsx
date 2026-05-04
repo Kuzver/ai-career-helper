@@ -89,15 +89,14 @@ export default function SignUp() {
               className="mt-0.5 h-4 w-4 rounded border-[#C5CBD3] accent-[#3649F9]" />
             <span>
               Я принимаю условия{" "}
-              <a 
-                href="http://localhost:8000/api/legal/privacy-policy" 
+              <Link 
+                to="/privacy-policy" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-[#3649F9] hover:underline"
-                onClick={(e) => e.stopPropagation()} // Чтобы клик по ссылке не переключал чекбокс
+                className="text-blue-600 underline hover:text-blue-800"
               >
                 Политики конфиденциальности
-              </a>
+              </Link>
               {" "}и даю согласие на обработку персональных данных.
             </span>
           </label>

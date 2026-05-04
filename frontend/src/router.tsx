@@ -15,6 +15,7 @@ import AdminSurveys from "../app/pages/admin/surveys"
 import AdminArticles from "../app/pages/admin/articles"
 import AdminUsers from "../app/pages/admin/users"
 import NotFoundPage from "../app/pages/not-found"
+import PrivacyPolicy from "../app/pages/privacy-policy"
 
 const router = createBrowserRouter([
   {
@@ -42,6 +43,11 @@ const router = createBrowserRouter([
       { path: "/sign-in", element: <SignIn /> },
       { path: "/sign-up", element: <SignUp /> },
     ],
+  },
+
+  {
+    path: "/privacy-policy",
+    element: <PrivacyPolicy />,
   },
 ])
 
